@@ -114,8 +114,10 @@ func main() {
 }
 
 ```
-
+Without flags: 
 ![disable png](https://github.com/logrusorgru/aurora/blob/master/disable.png)
+  
+With `-colors` flag:
 ![enable png](https://github.com/logrusorgru/aurora/blob/master/enable.png)
 
 # Supported colors & formats
