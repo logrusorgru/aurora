@@ -120,6 +120,52 @@ Without flags:
 With `-colors` flag:
 ![enable png](https://github.com/logrusorgru/aurora/blob/master/enable.png)
 
+# Chains
+
+The following samples are equal
+
+```go
+x := BgMagenta(Bold(Red("x")))
+```
+
+```go
+x := Red("x").Bold().BgMagenta()
+```
+
+The second is more readable
+
+# Colorize
+
+There is `Colorize` function that allows to choose some colors and
+format from a side
+
+```go
+
+func getColors() Color {
+	// some stuff that returns appropriate colors and format
+}
+
+// [...]
+
+func main() {
+	fmt.Println(Colorize("Greeting", getColors()))
+}
+
+```
+Less complicated example
+
+```go
+x := Colorize("Greeting", GreenFg|GrayBg|BoldFm)
+```
+
+Unlike other color functions and methods (such as Red/BgBlue etc)
+a `Colorize` clears previous colors
+
+```go
+x := Red("x").Colorize(BgGreen) // will be with green background only
+```
+
+
 # Supported colors & formats
 
 - background and foreground colors
@@ -134,6 +180,38 @@ With `-colors` flag:
 - formats
   + bold
   + inversed
+
+![linux png](https://github.com/logrusorgru/aurora/blob/master/linux_colors.png)  
+![white png](https://github.com/logrusorgru/aurora/blob/master/white.png)
+
+# Limitations
+
+There is no way to represent `%T` and `%p` with colors using
+a standard approach
+
+```go
+package main
+
+import (
+	"fmt"
+
+	. "github.com/logrusorgru/aurora"
+)
+
+func main() {
+	r := Red("red")
+	var i int
+	fmt.Printf("%T %p\n", r, Green(&i))
+}
+```
+
+Output will be without colors
+
+```
+aurora.value %!p(aurora.value={0xc42000a310 768 0})
+```
+
+The obvious workaround is `Red(fmt.Sprintf("%T", some))`
 
 ### Licensing
 

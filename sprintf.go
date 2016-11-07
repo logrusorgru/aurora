@@ -47,11 +47,10 @@ func Sprintf(format interface{}, args ...interface{}) string {
 	case Value:
 		for i, v := range args {
 			if val, ok := v.(Value); ok {
-				val.tail = ft.color
-				args[i] = val
+				args[i] = val.setTail(ft.Color())
 				continue
 			}
-			args[i] = Value{v, 0, ft.color}
+			args[i] = value{v, 0, ft.Color()}
 		}
 		return fmt.Sprintf(ft.String(), args...)
 	}

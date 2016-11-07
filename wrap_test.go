@@ -30,17 +30,23 @@ import (
 )
 
 func testFunc(t *testing.T, name string, v Value, clr Color) {
-	if str, ok := v.value.(string); !ok {
-		t.Errorf("%s wrong value type: %t, expected string", name, v.value)
+	if str, ok := v.Value().(string); !ok {
+		t.Errorf("%s wrong value type: %t, expected string", name, v.Value())
 	} else if str != "x" {
-		t.Errorf("%s wrong value: '%v', expected 'x'", name, v.value)
+		t.Errorf("%s wrong value: '%v', expected 'x'", name, v.Value())
 	}
 	if !isTail(v, 0) {
-		t.Errorf("%s wrong tail: %d", name, v.tail)
+		t.Errorf("%s wrong tail: %d", name, v.tail())
 	}
 	if !isColor(v, clr) {
-		t.Errorf("%s wrong color: %d, want: %d", name, v.color, clr)
+		t.Errorf("%s wrong color: %d, want: %d", name, v.Color(), clr)
 	}
+}
+
+func Test_Colorize(t *testing.T) {
+	testFunc(t, "Colorize", Colorize("x", BlackFg|BoldFm), BlackFg|BoldFm)
+	testFunc(t, "Complex Colorize", Colorize(BgRed("x"), BlackFg|BoldFm),
+		BlackFg|BoldFm)
 }
 
 func Test_Black(t *testing.T) {

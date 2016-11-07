@@ -51,6 +51,7 @@ type Aurora interface {
 	BgGray(arg interface{}) Value
 	Bold(arg interface{}) Value
 	Inverse(arg interface{}) Value
+	Colorize(arg interface{}, color Color) Value
 	Sprintf(format interface{}, args ...interface{}) string
 }
 
@@ -68,24 +69,28 @@ func NewAurora(enableColors bool) Aurora {
 
 type auroraClear struct{}
 
-func (auroraClear) Black(arg interface{}) Value     { return Value{value: arg} }
-func (auroraClear) Red(arg interface{}) Value       { return Value{value: arg} }
-func (auroraClear) Green(arg interface{}) Value     { return Value{value: arg} }
-func (auroraClear) Brown(arg interface{}) Value     { return Value{value: arg} }
-func (auroraClear) Blue(arg interface{}) Value      { return Value{value: arg} }
-func (auroraClear) Magenta(arg interface{}) Value   { return Value{value: arg} }
-func (auroraClear) Cyan(arg interface{}) Value      { return Value{value: arg} }
-func (auroraClear) Gray(arg interface{}) Value      { return Value{value: arg} }
-func (auroraClear) BgBlack(arg interface{}) Value   { return Value{value: arg} }
-func (auroraClear) BgRed(arg interface{}) Value     { return Value{value: arg} }
-func (auroraClear) BgGreen(arg interface{}) Value   { return Value{value: arg} }
-func (auroraClear) BgBrown(arg interface{}) Value   { return Value{value: arg} }
-func (auroraClear) BgBlue(arg interface{}) Value    { return Value{value: arg} }
-func (auroraClear) BgMagenta(arg interface{}) Value { return Value{value: arg} }
-func (auroraClear) BgCyan(arg interface{}) Value    { return Value{value: arg} }
-func (auroraClear) BgGray(arg interface{}) Value    { return Value{value: arg} }
-func (auroraClear) Bold(arg interface{}) Value      { return Value{value: arg} }
-func (auroraClear) Inverse(arg interface{}) Value   { return Value{value: arg} }
+func (auroraClear) Black(arg interface{}) Value     { return valueClear{arg} }
+func (auroraClear) Red(arg interface{}) Value       { return valueClear{arg} }
+func (auroraClear) Green(arg interface{}) Value     { return valueClear{arg} }
+func (auroraClear) Brown(arg interface{}) Value     { return valueClear{arg} }
+func (auroraClear) Blue(arg interface{}) Value      { return valueClear{arg} }
+func (auroraClear) Magenta(arg interface{}) Value   { return valueClear{arg} }
+func (auroraClear) Cyan(arg interface{}) Value      { return valueClear{arg} }
+func (auroraClear) Gray(arg interface{}) Value      { return valueClear{arg} }
+func (auroraClear) BgBlack(arg interface{}) Value   { return valueClear{arg} }
+func (auroraClear) BgRed(arg interface{}) Value     { return valueClear{arg} }
+func (auroraClear) BgGreen(arg interface{}) Value   { return valueClear{arg} }
+func (auroraClear) BgBrown(arg interface{}) Value   { return valueClear{arg} }
+func (auroraClear) BgBlue(arg interface{}) Value    { return valueClear{arg} }
+func (auroraClear) BgMagenta(arg interface{}) Value { return valueClear{arg} }
+func (auroraClear) BgCyan(arg interface{}) Value    { return valueClear{arg} }
+func (auroraClear) BgGray(arg interface{}) Value    { return valueClear{arg} }
+func (auroraClear) Bold(arg interface{}) Value      { return valueClear{arg} }
+func (auroraClear) Inverse(arg interface{}) Value   { return valueClear{arg} }
+
+func (auroraClear) Colorize(arg interface{}, color Color) Value {
+	return valueClear{arg}
+}
 
 func (auroraClear) Sprintf(format interface{}, args ...interface{}) string {
 	if str, ok := format.(string); ok {
@@ -116,6 +121,10 @@ func (aurora) BgCyan(arg interface{}) Value    { return BgCyan(arg) }
 func (aurora) BgGray(arg interface{}) Value    { return BgGray(arg) }
 func (aurora) Bold(arg interface{}) Value      { return Bold(arg) }
 func (aurora) Inverse(arg interface{}) Value   { return Inverse(arg) }
+
+func (aurora) Colorize(arg interface{}, color Color) Value {
+	return Colorize(arg, color)
+}
 
 func (aurora) Sprintf(format interface{}, args ...interface{}) string {
 	return Sprintf(format, args...)

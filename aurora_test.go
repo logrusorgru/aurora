@@ -30,15 +30,15 @@ import (
 )
 
 func isClear(v Value) bool {
-	return v.color == 0 && v.tail == 0
+	return v.Color() == 0 && v.tail() == 0
 }
 
 func isColor(v Value, clr Color) bool {
-	return v.color == clr
+	return v.Color() == clr
 }
 
 func isTail(v Value, tl Color) bool {
-	return v.tail == tl
+	return v.tail() == tl
 }
 
 func Test_NewAurora(t *testing.T) {
@@ -58,7 +58,7 @@ func Test_auroraClear_methods(t *testing.T) {
 	test := func(mn string, v Value) {
 		if !isClear(v) {
 			t.Errorf("NewAurora(false).%s is not clear", mn)
-		} else if str, ok := v.value.(string); !ok {
+		} else if str, ok := v.Value().(string); !ok {
 			t.Errorf("NewAurora(false).%s wrong value type", mn)
 		} else if str != "x" {
 			t.Errorf("NewAurora(false).%s wrong value", mn)
@@ -82,6 +82,7 @@ func Test_auroraClear_methods(t *testing.T) {
 	test("BgGray", a.BgGray("x"))
 	test("Bold", a.Bold("x"))
 	test("Inverse", a.Inverse("x"))
+	test("Colorize", a.Colorize("x", RedFg|RedBg))
 }
 
 func Test_auroraClear_sprintf(t *testing.T) {
@@ -98,10 +99,10 @@ func Test_aurora_methods(t *testing.T) {
 	a := NewAurora(true)
 	test := func(mn string, v Value, clr Color) {
 		if !isColor(v, clr) {
-			t.Errorf("NewAurora(true).%s wrong color: %d", mn, v.color)
+			t.Errorf("NewAurora(true).%s wrong color: %d", mn, v.Color())
 		} else if !isTail(v, 0) {
 			t.Errorf("NewAurora(true).%s unexpected tail value", mn)
-		} else if str, ok := v.value.(string); !ok {
+		} else if str, ok := v.Value().(string); !ok {
 			t.Errorf("NewAurora(true).%s wrong value type", mn)
 		} else if str != "x" {
 			t.Errorf("NewAurora(true).%s wrong value", mn)
@@ -125,6 +126,7 @@ func Test_aurora_methods(t *testing.T) {
 	test("BgGray", a.BgGray("x"), GrayBg)
 	test("Bold", a.Bold("x"), BoldFm)
 	test("Inverse", a.Inverse("x"), InverseFm)
+	test("Colorize", a.Colorize("x", RedFg|RedBg), RedFg|RedBg)
 }
 
 func Test_aurora_Sprintf(t *testing.T) {

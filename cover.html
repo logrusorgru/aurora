@@ -54,17 +54,17 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/logrusorgru/svin/aurora/aurora.go (100.0%)</option>
+				<option value="file0">github.com/logrusorgru/aurora/aurora.go (100.0%)</option>
 				
-				<option value="file1">github.com/logrusorgru/svin/aurora/color.go (100.0%)</option>
+				<option value="file1">github.com/logrusorgru/aurora/color.go (100.0%)</option>
 				
-				<option value="file2">github.com/logrusorgru/svin/aurora/pool.go (100.0%)</option>
+				<option value="file2">github.com/logrusorgru/aurora/pool.go (100.0%)</option>
 				
-				<option value="file3">github.com/logrusorgru/svin/aurora/sprintf.go (100.0%)</option>
+				<option value="file3">github.com/logrusorgru/aurora/sprintf.go (100.0%)</option>
 				
-				<option value="file4">github.com/logrusorgru/svin/aurora/value.go (100.0%)</option>
+				<option value="file4">github.com/logrusorgru/aurora/value.go (100.0%)</option>
 				
-				<option value="file5">github.com/logrusorgru/svin/aurora/wrap.go (100.0%)</option>
+				<option value="file5">github.com/logrusorgru/aurora/wrap.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -131,6 +131,7 @@ type Aurora interface {
         BgGray(arg interface{}) Value
         Bold(arg interface{}) Value
         Inverse(arg interface{}) Value
+        Colorize(arg interface{}, color Color) Value
         Sprintf(format interface{}, args ...interface{}) string
 }
 
@@ -148,24 +149,28 @@ func NewAurora(enableColors bool) Aurora <span class="cov8" title="1">{
 
 type auroraClear struct{}
 
-func (auroraClear) Black(arg interface{}) Value     <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Red(arg interface{}) Value       <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Green(arg interface{}) Value     <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Brown(arg interface{}) Value     <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Blue(arg interface{}) Value      <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Magenta(arg interface{}) Value   <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Cyan(arg interface{}) Value      <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Gray(arg interface{}) Value      <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgBlack(arg interface{}) Value   <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgRed(arg interface{}) Value     <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgGreen(arg interface{}) Value   <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgBrown(arg interface{}) Value   <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgBlue(arg interface{}) Value    <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgMagenta(arg interface{}) Value <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgCyan(arg interface{}) Value    <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) BgGray(arg interface{}) Value    <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Bold(arg interface{}) Value      <span class="cov8" title="1">{ return Value{value: arg} }</span>
-func (auroraClear) Inverse(arg interface{}) Value   <span class="cov8" title="1">{ return Value{value: arg} }</span>
+func (auroraClear) Black(arg interface{}) Value     <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Red(arg interface{}) Value       <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Green(arg interface{}) Value     <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Brown(arg interface{}) Value     <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Blue(arg interface{}) Value      <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Magenta(arg interface{}) Value   <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Cyan(arg interface{}) Value      <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Gray(arg interface{}) Value      <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgBlack(arg interface{}) Value   <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgRed(arg interface{}) Value     <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgGreen(arg interface{}) Value   <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgBrown(arg interface{}) Value   <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgBlue(arg interface{}) Value    <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgMagenta(arg interface{}) Value <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgCyan(arg interface{}) Value    <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) BgGray(arg interface{}) Value    <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Bold(arg interface{}) Value      <span class="cov8" title="1">{ return valueClear{arg} }</span>
+func (auroraClear) Inverse(arg interface{}) Value   <span class="cov8" title="1">{ return valueClear{arg} }</span>
+
+func (auroraClear) Colorize(arg interface{}, color Color) Value <span class="cov8" title="1">{
+        return valueClear{arg}
+}</span>
 
 func (auroraClear) Sprintf(format interface{}, args ...interface{}) string <span class="cov8" title="1">{
         if str, ok := format.(string); ok </span><span class="cov8" title="1">{
@@ -196,6 +201,10 @@ func (aurora) BgCyan(arg interface{}) Value    <span class="cov8" title="1">{ re
 func (aurora) BgGray(arg interface{}) Value    <span class="cov8" title="1">{ return BgGray(arg) }</span>
 func (aurora) Bold(arg interface{}) Value      <span class="cov8" title="1">{ return Bold(arg) }</span>
 func (aurora) Inverse(arg interface{}) Value   <span class="cov8" title="1">{ return Inverse(arg) }</span>
+
+func (aurora) Colorize(arg interface{}, color Color) Value <span class="cov8" title="1">{
+        return Colorize(arg, color)
+}</span>
 
 func (aurora) Sprintf(format interface{}, args ...interface{}) string <span class="cov8" title="1">{
         return Sprintf(format, args...)
@@ -229,6 +238,9 @@ func (aurora) Sprintf(format interface{}, args ...interface{}) string <span clas
 
 package aurora
 
+// A Color type is a color. It can contains
+// boldness, "inverseness" one background color
+// and one foreground color
 type Color int
 
 // special formats
@@ -409,11 +421,10 @@ func Sprintf(format interface{}, args ...interface{}) string <span class="cov8" 
         <span class="cov8" title="1">case Value:
                 for i, v := range args </span><span class="cov8" title="1">{
                         if val, ok := v.(Value); ok </span><span class="cov8" title="1">{
-                                val.tail = ft.color
-                                args[i] = val
+                                args[i] = val.setTail(ft.Color())
                                 continue</span>
                         }
-                        <span class="cov8" title="1">args[i] = Value{v, 0, ft.color}</span>
+                        <span class="cov8" title="1">args[i] = value{v, 0, ft.Color()}</span>
                 }
                 <span class="cov8" title="1">return fmt.Sprintf(ft.String(), args...)</span>
         }
@@ -455,40 +466,139 @@ import (
         "unicode/utf8"
 )
 
-type Value struct {
-        value interface{}
-        color Color
-        tail  Color // format after the value
+// A Value represents any printable value
+// with it's color
+type Value interface {
+        // String returns string with colors. If there are any color
+        // or format the string will be terminated with \033[0m
+        fmt.Stringer
+        // Format implements fmt.Formater interface
+        fmt.Formatter
+        // Color returns value's color
+        Color() Color
+        // Value returns value's value (welcome to the tautology club)
+        Value() interface{}
+        // Bleach returns copy of orignal value without colors
+        Bleach() Value
+        //
+        tail() Color
+        setTail(Color) Value
+        //
+        Black() Value     // change foreground color to black
+        Red() Value       // change foreground color to red
+        Green() Value     // change foreground color to green
+        Brown() Value     // change foreground color to brown
+        Blue() Value      // change foreground color to blue
+        Magenta() Value   // change foreground color to magenta
+        Cyan() Value      // change foreground color to cyan
+        Gray() Value      // change foreground color to gray
+        BgBlack() Value   // change background color to black
+        BgRed() Value     // change background color to red
+        BgGreen() Value   // change background color to green
+        BgBrown() Value   // change background color to brown
+        BgBlue() Value    // change background color to blue
+        BgMagenta() Value // change background color to magenta
+        BgCyan() Value    // change background color to cyan
+        BgGray() Value    // change background color to gray
+        Bold() Value      // change format to bold
+        Inverse() Value   // change format to inversed
 }
 
-// String returns string with colors. If there are any color
-// or format the string will be terminated with \033[0m
-func (v Value) String() string <span class="cov8" title="1">{
+// Value without colors
+
+type valueClear struct {
+        value interface{}
+}
+
+func (v valueClear) String() string      <span class="cov8" title="1">{ return fmt.Sprint(v.value) }</span>
+func (v valueClear) Color() Color        <span class="cov8" title="1">{ return 0 }</span>
+func (v valueClear) Bleach() Value       <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Value() interface{}  <span class="cov8" title="1">{ return v.value }</span>
+func (v valueClear) tail() Color         <span class="cov8" title="1">{ return 0 }</span>
+func (v valueClear) setTail(Color) Value <span class="cov8" title="1">{ return v }</span>
+
+func (v valueClear) Black() Value     <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Red() Value       <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Green() Value     <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Brown() Value     <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Blue() Value      <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Magenta() Value   <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Cyan() Value      <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Gray() Value      <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgBlack() Value   <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgRed() Value     <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgGreen() Value   <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgBrown() Value   <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgBlue() Value    <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgMagenta() Value <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgCyan() Value    <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) BgGray() Value    <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Bold() Value      <span class="cov8" title="1">{ return v }</span>
+func (v valueClear) Inverse() Value   <span class="cov8" title="1">{ return v }</span>
+
+func (v valueClear) Format(s fmt.State, verb rune) <span class="cov8" title="1">{
+        var format = getFormat()
+        format = append(format, '%')
+        var f byte
+        for i := 0; i &lt; len(availFlags); i++ </span><span class="cov8" title="1">{
+                if f = availFlags[i]; s.Flag(int(f)) </span><span class="cov8" title="1">{
+                        format = append(format, f)
+                }</span>
+        }
+        <span class="cov8" title="1">var width, prec int
+        var ok bool
+        if width, ok = s.Width(); ok </span><span class="cov8" title="1">{
+                format = strconv.AppendInt(format, int64(width), 10)
+        }</span>
+        <span class="cov8" title="1">if prec, ok = s.Precision(); ok </span><span class="cov8" title="1">{
+                format = append(format, '.')
+                format = strconv.AppendInt(format, int64(prec), 10)
+        }</span>
+        <span class="cov8" title="1">if verb &gt; utf8.RuneSelf </span><span class="cov8" title="1">{
+                format = append(format, string(verb)...)
+        }</span><span class="cov8" title="1"> else {
+                format = append(format, byte(verb))
+        }</span>
+        <span class="cov8" title="1">fmt.Fprintf(s, string(format), v.value)
+        putFormat(format)</span>
+}
+
+// Value within colors
+
+type value struct {
+        value     interface{}
+        color     Color
+        tailColor Color
+}
+
+func (v value) String() string <span class="cov8" title="1">{
         if v.color != 0 &amp;&amp; v.color.IsValid() </span><span class="cov8" title="1">{
-                if v.tail != 0 &amp;&amp; v.tail.IsValid() </span><span class="cov8" title="1">{
+                if v.tailColor != 0 &amp;&amp; v.tailColor.IsValid() </span><span class="cov8" title="1">{
                         return esc + v.color.Nos() + "m" + fmt.Sprint(v.value) + clear +
-                                esc + v.tail.Nos() + "m"
+                                esc + v.tailColor.Nos() + "m"
                 }</span>
                 <span class="cov8" title="1">return esc + v.color.Nos() + "m" + fmt.Sprint(v.value) + clear</span>
         }
         <span class="cov8" title="1">return fmt.Sprint(v.value)</span>
 }
 
-// Color returns value's color
-func (v Value) Color() Color <span class="cov8" title="1">{ return v.color }</span>
+func (v value) Color() Color <span class="cov8" title="1">{ return v.color }</span>
 
-// Bleach returns copy of orignal value without colors
-func (v Value) Bleach() Value <span class="cov8" title="1">{
-        v.color, v.tail = 0, 0
+func (v value) Bleach() Value <span class="cov8" title="1">{
+        v.color, v.tailColor = 0, 0
         return v
 }</span>
 
-// Value returns value's value (welcome to the tautology club)
-func (v Value) Value() interface{} <span class="cov8" title="1">{ return v.value }</span>
+func (v value) tail() Color <span class="cov8" title="1">{ return v.tailColor }</span>
+func (v value) setTail(t Color) Value <span class="cov8" title="1">{
+        v.tailColor = t
+        return v
+}</span>
 
-// Format implements fmt.Formater interface
-func (v Value) Format(s fmt.State, verb rune) <span class="cov8" title="1">{
-        // \033[1;7;31;45m   - 12 (+tail)
+func (v value) Value() interface{} <span class="cov8" title="1">{ return v.value }</span>
+
+func (v value) Format(s fmt.State, verb rune) <span class="cov8" title="1">{
+        // \033[1;7;31;45m   - 12 (+tailColor)
         // %-+# 025.36s      - 12
         // \033[0m           - 4
         var format = getFormat()
@@ -522,15 +632,105 @@ func (v Value) Format(s fmt.State, verb rune) <span class="cov8" title="1">{
         }</span>
         <span class="cov8" title="1">if colors </span><span class="cov8" title="1">{
                 format = append(format, clear...)
-                if v.tail != 0 &amp;&amp; v.tail.IsValid() </span><span class="cov8" title="1">{ // next format
+                if v.tailColor != 0 &amp;&amp; v.tailColor.IsValid() </span><span class="cov8" title="1">{ // next format
                         format = append(format, esc...)
-                        format = append(format, v.tail.Nos()...)
+                        format = append(format, v.tailColor.Nos()...)
                         format = append(format, 'm')
                 }</span>
         }
         <span class="cov8" title="1">fmt.Fprintf(s, string(format), v.value)
         putFormat(format)</span>
 }
+
+func (v value) Black() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | BlackFg
+        return v
+}</span>
+
+func (v value) Red() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | RedFg
+        return v
+}</span>
+
+func (v value) Green() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | GreenFg
+        return v
+}</span>
+
+func (v value) Brown() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | BrownFg
+        return v
+}</span>
+
+func (v value) Blue() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | BlueFg
+        return v
+}</span>
+
+func (v value) Magenta() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | MagentaFg
+        return v
+}</span>
+
+func (v value) Cyan() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | CyanFg
+        return v
+}</span>
+
+func (v value) Gray() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskFg)) | GrayFg
+        return v
+}</span>
+
+func (v value) BgBlack() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | BlackBg
+        return v
+}</span>
+
+func (v value) BgRed() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | RedBg
+        return v
+}</span>
+
+func (v value) BgGreen() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | GreenBg
+        return v
+}</span>
+
+func (v value) BgBrown() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | BrownBg
+        return v
+}</span>
+
+func (v value) BgBlue() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | BlueBg
+        return v
+}</span>
+
+func (v value) BgMagenta() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | MagentaBg
+        return v
+}</span>
+
+func (v value) BgCyan() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | CyanBg
+        return v
+}</span>
+
+func (v value) BgGray() Value <span class="cov8" title="1">{
+        v.color = (v.color &amp; (^maskBg)) | GrayBg
+        return v
+}</span>
+
+func (v value) Bold() Value <span class="cov8" title="1">{
+        v.color |= BoldFm
+        return v
+}</span>
+
+func (v value) Inverse() Value <span class="cov8" title="1">{
+        v.color |= InverseFm
+        return v
+}</span>
 </pre>
 		
 		<pre class="file" id="file5" style="display: none">//
@@ -560,80 +760,101 @@ func (v Value) Format(s fmt.State, verb rune) <span class="cov8" title="1">{
 
 package aurora
 
+// Colorize wraps given value into Value with
+// given colors. For example
+//
+//    s := Colorize("some", BlueFg|GreenBg|BoldFm)
+//
+// returns a Value with blue foreground, green
+// background and bold. Unlike functions like
+// Red/BgBlue/Bold etc. This function clears
+// all previous colors. Thus
+//
+//    s := Colorize(Red("some"), BgBlue)
+//
+// clears red color from value
+func Colorize(arg interface{}, color Color) Value <span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
+                val.color = color
+                return val
+        }</span>
+        <span class="cov8" title="1">return value{arg, color, 0}</span>
+}
+
 //
 // Foreground colors
 //
 
 // Black convertes argument into formated/colorized value
 func Black(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | BlackFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BlackFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BlackFg, 0}</span>
 }
 
 // Red convertes argument into formated/colorized value
 func Red(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | RedFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, RedFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, RedFg, 0}</span>
 }
 
 // Green convertes argument into formated/colorized value
 func Green(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | GreenFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, GreenFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, GreenFg, 0}</span>
 }
 
 // Brown convertes argument into formated/colorized value
 func Brown(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | BrownFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BrownFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BrownFg, 0}</span>
 }
 
 // Blue convertes argument into formated/colorized value
 func Blue(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | BlueFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BlueFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BlueFg, 0}</span>
 }
 
 // Magenta convertes argument into formated/colorized value
 func Magenta(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | MagentaFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, MagentaFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, MagentaFg, 0}</span>
 }
 
 // Cyan convertes argument into formated/colorized value
 func Cyan(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | CyanFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, CyanFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, CyanFg, 0}</span>
 }
 
 // Gray convertes argument into formated/colorized value
 func Gray(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskFg)) | GrayFg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, GrayFg, 0}</span>
+        <span class="cov8" title="1">return value{arg, GrayFg, 0}</span>
 }
 
 //
@@ -642,92 +863,92 @@ func Gray(arg interface{}) Value <span class="cov8" title="1">{
 
 // BgBlack convertes argument into formated/colorized value
 func BgBlack(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | BlackBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BlackBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BlackBg, 0}</span>
 }
 
 // BgRed convertes argument into formated/colorized value
 func BgRed(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | RedBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, RedBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, RedBg, 0}</span>
 }
 
 // BgGreen convertes argument into formated/colorized value
 func BgGreen(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | GreenBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, GreenBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, GreenBg, 0}</span>
 }
 
 // BgBrown convertes argument into formated/colorized value
 func BgBrown(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | BrownBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BrownBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BrownBg, 0}</span>
 }
 
 // BgBlue convertes argument into formated/colorized value
 func BgBlue(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | BlueBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BlueBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, BlueBg, 0}</span>
 }
 
 // BgMagenta convertes argument into formated/colorized value
 func BgMagenta(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | MagentaBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, MagentaBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, MagentaBg, 0}</span>
 }
 
 // BgCyan convertes argument into formated/colorized value
 func BgCyan(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | CyanBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, CyanBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, CyanBg, 0}</span>
 }
 
 // BgGray convertes argument into formated/colorized value
 func BgGray(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color = (val.color &amp; (^maskBg)) | GrayBg
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, GrayBg, 0}</span>
+        <span class="cov8" title="1">return value{arg, GrayBg, 0}</span>
 }
 
 // Bold convertes argument into formated/colorized value
 func Bold(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color |= BoldFm
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, BoldFm, 0}</span>
+        <span class="cov8" title="1">return value{arg, BoldFm, 0}</span>
 }
 
 // Inverse convertes argument into formated/colorized value
 func Inverse(arg interface{}) Value <span class="cov8" title="1">{
-        if val, ok := arg.(Value); ok </span><span class="cov8" title="1">{
+        if val, ok := arg.(value); ok </span><span class="cov8" title="1">{
                 val.color |= InverseFm
                 return val
         }</span>
-        <span class="cov8" title="1">return Value{arg, InverseFm, 0}</span>
+        <span class="cov8" title="1">return value{arg, InverseFm, 0}</span>
 }
 </pre>
 		
