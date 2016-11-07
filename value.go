@@ -48,7 +48,7 @@ type Value interface {
 	//
 	tail() Color
 	setTail(Color) Value
-	//
+
 	Black() Value     // change foreground color to black
 	Red() Value       // change foreground color to red
 	Green() Value     // change foreground color to green

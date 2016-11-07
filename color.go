@@ -26,14 +26,14 @@
 package aurora
 
 // A Color type is a color. It can contains
-// boldness, "inverseness" one background color
+// boldness, "inverseness", one background color
 // and one foreground color
 type Color int
 
 // special formats
 const (
-	BoldFm    Color = 1 << iota // Bold
-	InverseFm                   // Inverse
+	BoldFm    Color = 1 << iota // bold
+	InverseFm                   // inverse
 )
 
 // foreground
