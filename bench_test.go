@@ -37,7 +37,7 @@ var (
 
 var (
 	short  = "x"
-	long   = "some long and complecated string to colorize"
+	long   = "some long and complicated string to colorize"
 	shortf = "%s"
 	longf  = long + " %s"
 	s18    = "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s"
