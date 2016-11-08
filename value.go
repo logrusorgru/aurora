@@ -102,8 +102,16 @@ func (v valueClear) Bold() Value      { return v }
 func (v valueClear) Inverse() Value   { return v }
 
 func (v valueClear) Format(s fmt.State, verb rune) {
-	var format = getFormat()
-	format = append(format, '%')
+	// it's enough for many cases (%-+020.10f)
+	// %          - 1
+	// availFlags - 3 (5)
+	// width      - 2
+	// prec       - 3 (.23)
+	// verb       - 1
+	// --------------
+	//             10
+	format := make([]byte, 1, 10)
+	format[0] = '%'
 	var f byte
 	for i := 0; i < len(availFlags); i++ {
 		if f = availFlags[i]; s.Flag(int(f)) {
@@ -125,7 +133,6 @@ func (v valueClear) Format(s fmt.State, verb rune) {
 		format = append(format, byte(verb))
 	}
 	fmt.Fprintf(s, string(format), v.value)
-	putFormat(format)
 }
 
 // Value within colors
@@ -163,15 +170,25 @@ func (v value) setTail(t Color) Value {
 func (v value) Value() interface{} { return v.value }
 
 func (v value) Format(s fmt.State, verb rune) {
-	// \033[1;7;31;45m   - 12 (+tailColor)
-	// %-+# 025.36s      - 12
+	// it's enough for many cases (%-+020.10f)
+	// %          - 1
+	// availFlags - 3 (5)
+	// width      - 2
+	// prec       - 3 (.23)
+	// verb       - 1
+	// --------------
+	//             10
+	// +
+	// \033[1;7;31;45m   - 12 x2 (+possible tailColor)
 	// \033[0m           - 4
-	var format = getFormat()
+	// --------------------------
+	//                    38
+	format := make([]byte, 0, 38)
 	var colors bool
 	if v.color != 0 && v.color.IsValid() {
 		colors = true
 		format = append(format, esc...)
-		format = append(format, v.color.Nos()...)
+		format = v.color.appendNos(format)
 		format = append(format, 'm')
 	}
 	format = append(format, '%')
@@ -199,12 +216,11 @@ func (v value) Format(s fmt.State, verb rune) {
 		format = append(format, clear...)
 		if v.tailColor != 0 && v.tailColor.IsValid() { // next format
 			format = append(format, esc...)
-			format = append(format, v.tailColor.Nos()...)
+			format = v.tailColor.appendNos(format)
 			format = append(format, 'm')
 		}
 	}
 	fmt.Fprintf(s, string(format), v.value)
-	putFormat(format)
 }
 
 func (v value) Black() Value {

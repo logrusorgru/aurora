@@ -27,3 +27,8 @@ _testmain.go
 # coverage
 
 cover.html
+
+# benchcmp
+
+*.cmp
+

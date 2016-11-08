@@ -81,30 +81,38 @@ const (
 // empty or invalid color
 func (c Color) Nos() string {
 	if c.IsValid() && c != 0 {
-		pb := [9]byte{}
-		bs := pb[:0]
-		if c&BoldFm != 0 {
-			bs = append(bs, '1')
-		}
-		if c&InverseFm != 0 {
-			if len(bs) > 0 {
-				bs = append(bs, ';')
-			}
-			bs = append(bs, '7')
-		}
-		if c&maskFg != 0 {
-			if len(bs) > 0 {
-				bs = append(bs, ';')
-			}
-			bs = append(bs, '3', '0'+byte((c>>8)&0xff)-1)
-		}
-		if c&maskBg != 0 {
-			if len(bs) > 0 {
-				bs = append(bs, ';')
-			}
-			bs = append(bs, '4', '0'+byte((c>>16)&0xff)-1)
-		}
-		return string(bs)
+		return string(c.appendNos(make([]byte, 0, 9)))
 	}
 	return ""
+}
+
+func (c Color) appendNos(bs []byte) []byte {
+	var semicolon bool
+	if c&BoldFm != 0 {
+		semicolon = true
+		bs = append(bs, '1')
+	}
+	if c&InverseFm != 0 {
+		if semicolon {
+			bs = append(bs, ';')
+		} else {
+			semicolon = true
+		}
+		bs = append(bs, '7')
+	}
+	if c&maskFg != 0 {
+		if semicolon {
+			bs = append(bs, ';')
+		} else {
+			semicolon = true
+		}
+		bs = append(bs, '3', '0'+byte((c>>8)&0xff)-1)
+	}
+	if c&maskBg != 0 {
+		if semicolon {
+			bs = append(bs, ';')
+		}
+		bs = append(bs, '4', '0'+byte((c>>16)&0xff)-1)
+	}
+	return bs
 }

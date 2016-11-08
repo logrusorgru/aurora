@@ -35,7 +35,12 @@ func TestColor_Nos(t *testing.T) {
 		t.Error("some Nos for 0 color")
 	}
 	c = BoldFm | InverseFm | RedFg | MagentaBg
-	const want = "1;7;31;45"
+	want := "1;7;31;45"
+	if nos := c.Nos(); nos != want {
+		t.Errorf("wrong Nos: want %q, got %q", want, nos)
+	}
+	c = InverseFm | BlackBg
+	want = "7;40"
 	if nos := c.Nos(); nos != want {
 		t.Errorf("wrong Nos: want %q, got %q", want, nos)
 	}
