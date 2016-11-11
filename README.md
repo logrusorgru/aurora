@@ -86,7 +86,7 @@ func main() {
 
 ![sprintf png](https://github.com/logrusorgru/aurora/blob/master/sprintf.png)
 
-### Enable/disabel colors
+### Enable/Disable colors
 
 ```go
 package main
