@@ -215,9 +215,10 @@ The obvious workaround is `Red(fmt.Sprintf("%T", some))`
 
 ### Licensing
 
-Copyright &copy; 2015 Konstantin Ivanov <ivanov.konstantin@logrus.org.ru>  
-This work is free. You can redistribute it and/or modify it under the
+Copyright &copy; 2016-2107 Konstantin Ivanov <kostyarin.ivanov@gmail.com>  
+This work is free. It comes without any warranty, to the extent permitted
+by applicable law.  You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
-as published by Sam Hocevar. See the LICENSE.md file for more details.
+as published by Sam Hocevar. See the LICENSE file for more details.
 
 
