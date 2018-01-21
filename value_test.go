@@ -97,7 +97,7 @@ func TestValue_Format(t *testing.T) {
 		t.Errorf("Format: want %q, got %q", want, got)
 	}
 	//
-	const utf8Verb = "%+1.3世" // verb that fit more then 1 byte
+	var utf8Verb = "%+1.3世" // verb that fit more then 1 byte
 	got = fmt.Sprintf(utf8Verb, v)
 	want = "\033[31m" + fmt.Sprintf(utf8Verb, 3.14) +
 		"\033[0m\033[44m"
