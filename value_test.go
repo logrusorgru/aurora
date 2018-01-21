@@ -97,8 +97,9 @@ func TestValue_Format(t *testing.T) {
 		t.Errorf("Format: want %q, got %q", want, got)
 	}
 	//
-	got = fmt.Sprintf("%+1.3世", v)
-	want = "\033[31m" + fmt.Sprintf("%+1.3世", 3.14) +
+	const utf8Verb = "%+1.3世" // verb that fit more then 1 byte
+	got = fmt.Sprintf(utf8Verb, v)
+	want = "\033[31m" + fmt.Sprintf(utf8Verb, 3.14) +
 		"\033[0m\033[44m"
 	if want != got {
 		t.Errorf("Format: want %q, got %q", want, got)
@@ -113,8 +114,8 @@ func TestValue_Format(t *testing.T) {
 		t.Errorf("Format: want %q, got %q", want, got)
 	}
 	//
-	got = fmt.Sprintf("%+1.3世", v)
-	want = fmt.Sprintf("%+1.3世", 3.14)
+	got = fmt.Sprintf(utf8Verb, v)
+	want = fmt.Sprintf(utf8Verb, 3.14)
 	if want != got {
 		t.Errorf("Format: want %q, got %q", want, got)
 	}
