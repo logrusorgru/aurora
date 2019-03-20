@@ -49,24 +49,41 @@ type Value interface {
 	tail() Color
 	setTail(Color) Value
 
-	Black() Value     // change foreground color to black
-	Red() Value       // change foreground color to red
-	Green() Value     // change foreground color to green
-	Brown() Value     // change foreground color to brown
-	Blue() Value      // change foreground color to blue
-	Magenta() Value   // change foreground color to magenta
-	Cyan() Value      // change foreground color to cyan
-	Gray() Value      // change foreground color to gray
-	BgBlack() Value   // change background color to black
-	BgRed() Value     // change background color to red
-	BgGreen() Value   // change background color to green
-	BgBrown() Value   // change background color to brown
-	BgBlue() Value    // change background color to blue
-	BgMagenta() Value // change background color to magenta
-	BgCyan() Value    // change background color to cyan
-	BgGray() Value    // change background color to gray
-	Bold() Value      // change format to bold
-	Inverse() Value   // change format to inversed
+	Black() Value          // change foreground color to black
+	Red() Value            // change foreground color to red
+	Green() Value          // change foreground color to green
+	Brown() Value          // change foreground color to brown
+	Blue() Value           // change foreground color to blue
+	Magenta() Value        // change foreground color to magenta
+	Cyan() Value           // change foreground color to cyan
+	LightGray() Value      // change foreground color to light gray
+	Gray() Value           // change foreground color to gray
+	LightRed() Value       // change foreground color to light red
+	LightGreen() Value     // change foreground color to light green
+	Yellow() Value         // change foreground color to yellow
+	LightBlue() Value      // change foreground color to light blue
+	LightMagenta() Value   // change foreground color to light magenta
+	LightCyan() Value      // change foreground color to light cyan
+	White() Value          // change foreground color to white
+	BgBlack() Value        // change background color to black
+	BgRed() Value          // change background color to red
+	BgGreen() Value        // change background color to green
+	BgBrown() Value        // change background color to brown
+	BgBlue() Value         // change background color to blue
+	BgMagenta() Value      // change background color to magenta
+	BgCyan() Value         // change background color to cyan
+	BgLightGray() Value    // change background color to light gray
+	BgGray() Value         // change background color to gray
+	BgLightRed() Value     // change background color to light red
+	BgLightGreen() Value   // change background color to light green
+	BgYellow() Value       // change background color to yellow
+	BgLightBlue() Value    // change background color to light blue
+	BgLightMagenta() Value // change background color to light magenta
+	BgLightCyan() Value    // change background color to light cyan
+	BgWhite() Value        // change background color to white
+	Bold() Value           // change format to bold
+	Inverse() Value        // change format to inversed
+	Bright() Value         // change format to bright
 }
 
 // Value without colors
@@ -82,24 +99,41 @@ func (v valueClear) Value() interface{}  { return v.value }
 func (v valueClear) tail() Color         { return 0 }
 func (v valueClear) setTail(Color) Value { return v }
 
-func (v valueClear) Black() Value     { return v }
-func (v valueClear) Red() Value       { return v }
-func (v valueClear) Green() Value     { return v }
-func (v valueClear) Brown() Value     { return v }
-func (v valueClear) Blue() Value      { return v }
-func (v valueClear) Magenta() Value   { return v }
-func (v valueClear) Cyan() Value      { return v }
-func (v valueClear) Gray() Value      { return v }
-func (v valueClear) BgBlack() Value   { return v }
-func (v valueClear) BgRed() Value     { return v }
-func (v valueClear) BgGreen() Value   { return v }
-func (v valueClear) BgBrown() Value   { return v }
-func (v valueClear) BgBlue() Value    { return v }
-func (v valueClear) BgMagenta() Value { return v }
-func (v valueClear) BgCyan() Value    { return v }
-func (v valueClear) BgGray() Value    { return v }
-func (v valueClear) Bold() Value      { return v }
-func (v valueClear) Inverse() Value   { return v }
+func (v valueClear) Black() Value          { return v }
+func (v valueClear) Red() Value            { return v }
+func (v valueClear) Green() Value          { return v }
+func (v valueClear) Brown() Value          { return v }
+func (v valueClear) Blue() Value           { return v }
+func (v valueClear) Magenta() Value        { return v }
+func (v valueClear) Cyan() Value           { return v }
+func (v valueClear) LightGray() Value      { return v }
+func (v valueClear) Gray() Value           { return v }
+func (v valueClear) LightRed() Value       { return v }
+func (v valueClear) LightGreen() Value     { return v }
+func (v valueClear) Yellow() Value         { return v }
+func (v valueClear) LightBlue() Value      { return v }
+func (v valueClear) LightMagenta() Value   { return v }
+func (v valueClear) LightCyan() Value      { return v }
+func (v valueClear) White() Value          { return v }
+func (v valueClear) BgBlack() Value        { return v }
+func (v valueClear) BgRed() Value          { return v }
+func (v valueClear) BgGreen() Value        { return v }
+func (v valueClear) BgBrown() Value        { return v }
+func (v valueClear) BgBlue() Value         { return v }
+func (v valueClear) BgMagenta() Value      { return v }
+func (v valueClear) BgCyan() Value         { return v }
+func (v valueClear) BgLightGray() Value    { return v }
+func (v valueClear) BgGray() Value         { return v }
+func (v valueClear) BgLightRed() Value     { return v }
+func (v valueClear) BgLightGreen() Value   { return v }
+func (v valueClear) BgYellow() Value       { return v }
+func (v valueClear) BgLightBlue() Value    { return v }
+func (v valueClear) BgLightMagenta() Value { return v }
+func (v valueClear) BgLightCyan() Value    { return v }
+func (v valueClear) BgWhite() Value        { return v }
+func (v valueClear) Bold() Value           { return v }
+func (v valueClear) Inverse() Value        { return v }
+func (v valueClear) Bright() Value         { return v }
 
 func (v valueClear) Format(s fmt.State, verb rune) {
 	// it's enough for many cases (%-+020.10f)
@@ -238,6 +272,7 @@ func (v value) Green() Value {
 	return v
 }
 
+//This is really dark yellow
 func (v value) Brown() Value {
 	v.color = (v.color & (^maskFg)) | BrownFg
 	return v
@@ -258,8 +293,50 @@ func (v value) Cyan() Value {
 	return v
 }
 
-func (v value) Gray() Value {
+//This is really dark white
+func (v value) LightGray() Value {
 	v.color = (v.color & (^maskFg)) | GrayFg
+	return v
+}
+
+//This is really bright black
+func (v value) Gray() Value {
+	v.color = (v.color & (^maskFg)) | BlackFg | BrightFm
+	return v
+}
+
+func (v value) LightRed() Value {
+	v.color = (v.color & (^maskFg)) | RedFg | BrightFm
+	return v
+}
+
+func (v value) LightGreen() Value {
+	v.color = (v.color & (^maskFg)) | GreenFg | BrightFm
+	return v
+}
+
+func (v value) Yellow() Value {
+	v.color = (v.color & (^maskFg)) | BrownFg | BrightFm
+	return v
+}
+
+func (v value) LightBlue() Value {
+	v.color = (v.color & (^maskFg)) | BlueFg | BrightFm
+	return v
+}
+
+func (v value) LightMagenta() Value {
+	v.color = (v.color & (^maskFg)) | MagentaFg | BrightFm
+	return v
+}
+
+func (v value) LightCyan() Value {
+	v.color = (v.color & (^maskFg)) | CyanFg | BrightFm
+	return v
+}
+
+func (v value) White() Value {
+	v.color = (v.color & (^maskFg)) | GrayFg | BrightFm
 	return v
 }
 
@@ -298,8 +375,50 @@ func (v value) BgCyan() Value {
 	return v
 }
 
-func (v value) BgGray() Value {
+//This is really dark white
+func (v value) BgLightGray() Value {
 	v.color = (v.color & (^maskBg)) | GrayBg
+	return v
+}
+
+//This is really light black
+func (v value) BgGray() Value {
+	v.color = (v.color & (^maskBg)) | BlackBg | BrightFm
+	return v
+}
+
+func (v value) BgLightRed() Value {
+	v.color = (v.color & (^maskBg)) | RedBg | BrightFm
+	return v
+}
+
+func (v value) BgLightGreen() Value {
+	v.color = (v.color & (^maskBg)) | GreenBg | BrightFm
+	return v
+}
+
+func (v value) BgYellow() Value {
+	v.color = (v.color & (^maskBg)) | BrownBg | BrightFm
+	return v
+}
+
+func (v value) BgLightBlue() Value {
+	v.color = (v.color & (^maskBg)) | BlueBg | BrightFm
+	return v
+}
+
+func (v value) BgLightMagenta() Value {
+	v.color = (v.color & (^maskBg)) | MagentaBg | BrightFm
+	return v
+}
+
+func (v value) BgLightCyan() Value {
+	v.color = (v.color & (^maskBg)) | CyanBg | BrightFm
+	return v
+}
+
+func (v value) BgWhite() Value {
+	v.color = (v.color & (^maskBg)) | GrayBg | BrightFm
 	return v
 }
 
@@ -310,5 +429,10 @@ func (v value) Bold() Value {
 
 func (v value) Inverse() Value {
 	v.color |= InverseFm
+	return v
+}
+
+func (v value) Bright() Value {
+	v.color |= BrightFm
 	return v
 }

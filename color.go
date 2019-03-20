@@ -34,6 +34,7 @@ type Color int
 const (
 	BoldFm    Color = 1 << iota // bold
 	InverseFm                   // inverse
+	BrightFm                    // bright
 )
 
 // foreground
@@ -68,7 +69,7 @@ const (
 
 // IsValid returns true if a color looks like valid
 func (c Color) IsValid() bool {
-	return c&(BoldFm|InverseFm|maskFg|maskBg) != 0 || c == 0
+	return c&(BrightFm|BoldFm|InverseFm|maskFg|maskBg) != 0 || c == 0
 }
 
 const (
@@ -106,13 +107,22 @@ func (c Color) appendNos(bs []byte) []byte {
 		} else {
 			semicolon = true
 		}
-		bs = append(bs, '3', '0'+byte((c>>8)&0xff)-1)
+		if c&BrightFm != 0 {
+			bs = append(bs, '9', '0'+byte((c>>8)&0xff)-1)
+		} else {
+			bs = append(bs, '3', '0'+byte((c>>8)&0xff)-1)
+		}
 	}
 	if c&maskBg != 0 {
 		if semicolon {
 			bs = append(bs, ';')
 		}
-		bs = append(bs, '4', '0'+byte((c>>16)&0xff)-1)
+		if c&BrightFm != 0 {
+			bs = append(bs, '1', '0', '0'+byte((c>>16)&0xff)-1)
+		} else {
+			bs = append(bs, '4', '0'+byte((c>>16)&0xff)-1)
+
+		}
 	}
 	return bs
 }
