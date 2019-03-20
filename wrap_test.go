@@ -91,9 +91,9 @@ func Test_Cyan(t *testing.T) {
 		CyanFg|CyanBg|BoldFm|InverseFm)
 }
 
-func Test_Gray(t *testing.T) {
-	testFunc(t, "Gray", Gray("x"), GrayFg)
-	testFunc(t, "Complex Gray", Inverse(Bold(BgGray(Gray("x")))),
+func Test_LightGray(t *testing.T) {
+	testFunc(t, "LightGray", LightGray("x"), GrayFg)
+	testFunc(t, "Complex LightGray", Inverse(Bold(BgLightGray(LightGray("x")))),
 		GrayFg|GrayBg|BoldFm|InverseFm)
 }
 
@@ -132,9 +132,9 @@ func Test_BgCyan(t *testing.T) {
 	testFunc(t, "Complex BgCyan", Cyan(BgCyan("x")), CyanBg|CyanFg)
 }
 
-func Test_BgGray(t *testing.T) {
-	testFunc(t, "BgGray", BgGray("x"), GrayBg)
-	testFunc(t, "Complex BgGray", Gray(BgGray("x")), GrayBg|GrayFg)
+func Test_BgLightGray(t *testing.T) {
+	testFunc(t, "BgLightGray", BgLightGray("x"), GrayBg)
+	testFunc(t, "Complex BgLightGray", LightGray(BgLightGray("x")), GrayBg|GrayFg)
 }
 
 func Test_Bold(t *testing.T) {
