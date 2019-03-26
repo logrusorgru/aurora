@@ -99,6 +99,7 @@ func Test_LightGray(t *testing.T) {
 
 func Test_Gray(t *testing.T) {
 	testFunc(t, "Gray", Gray("x"), BlackFg|BrightFm)
+	testFunc(t, "BrightBlack", Bright(Black("x")), BlackFg|BrightFm)
 	testFunc(t, "Complex Gray", Inverse(Bold(BgGray(Gray("x")))),
 		BlackFg|BlackBg|BoldFm|InverseFm|BrightFm)
 }

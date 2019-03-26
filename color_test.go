@@ -45,3 +45,20 @@ func TestColor_Nos(t *testing.T) {
 		t.Errorf("wrong Nos: want %q, got %q", want, nos)
 	}
 }
+
+func TestColor_Nos_Bright(t *testing.T) {
+	c := Color(0)
+	if c.Nos() != "" {
+		t.Error("some Nos for 0 color")
+	}
+	c = BoldFm | InverseFm | RedFg | MagentaBg | BrightFm
+	want := "1;7;91;105"
+	if nos := c.Nos(); nos != want {
+		t.Errorf("wrong Nos: want %q, got %q", want, nos)
+	}
+	c = InverseFm | BlackBg | BrightFm
+	want = "7;100"
+	if nos := c.Nos(); nos != want {
+		t.Errorf("wrong Nos: want %q, got %q", want, nos)
+	}
+}
