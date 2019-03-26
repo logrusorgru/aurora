@@ -97,6 +97,54 @@ func Test_LightGray(t *testing.T) {
 		GrayFg|GrayBg|BoldFm|InverseFm)
 }
 
+func Test_Gray(t *testing.T) {
+	testFunc(t, "Gray", Gray("x"), BlackFg|BrightFm)
+	testFunc(t, "Complex Gray", Inverse(Bold(BgGray(Gray("x")))),
+		BlackFg|BlackBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_LightRed(t *testing.T) {
+	testFunc(t, "LightRed", LightRed("x"), RedFg|BrightFm)
+	testFunc(t, "Complex Red", Inverse(Bold(BgLightRed(LightRed("x")))),
+		RedFg|RedBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_LightGreen(t *testing.T) {
+	testFunc(t, "LightGreen", LightGreen("x"), GreenFg|BrightFm)
+	testFunc(t, "Complex LightGreen", Inverse(Bold(BgLightGreen(LightGreen("x")))),
+		GreenFg|GreenBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_Yellow(t *testing.T) {
+	testFunc(t, "Yellow", Yellow("x"), BrownFg|BrightFm)
+	testFunc(t, "Complex Yellow", Inverse(Bold(BgYellow(Yellow("x")))),
+		BrownFg|BrownBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_LightBlue(t *testing.T) {
+	testFunc(t, "LightBlue", LightBlue("x"), BlueFg|BrightFm)
+	testFunc(t, "Complex LightBlue", Inverse(Bold(BgLightBlue(LightBlue("x")))),
+		BlueFg|BlueBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_LightMagenta(t *testing.T) {
+	testFunc(t, "LightMagenta", LightMagenta("x"), MagentaFg|BrightFm)
+	testFunc(t, "Complex LightMagenta", Inverse(Bold(BgLightMagenta(LightMagenta("x")))),
+		MagentaFg|MagentaBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_LightCyan(t *testing.T) {
+	testFunc(t, "LightCyan", LightCyan("x"), CyanFg|BrightFm)
+	testFunc(t, "Complex LightCyan", Inverse(Bold(BgLightCyan(LightCyan("x")))),
+		CyanFg|CyanBg|BoldFm|InverseFm|BrightFm)
+}
+
+func Test_White(t *testing.T) {
+	testFunc(t, "White", White("x"), GrayFg|BrightFm)
+	testFunc(t, "Complex White", Inverse(Bold(BgWhite(White("x")))),
+		GrayFg|GrayBg|BoldFm|InverseFm|BrightFm)
+}
+
 func Test_BgBlack(t *testing.T) {
 	testFunc(t, "BgBlack", BgBlack("x"), BlackBg)
 	testFunc(t, "Complex BgBlack", Black(BgBlack("x")), BlackBg|BlackFg)
@@ -137,10 +185,54 @@ func Test_BgLightGray(t *testing.T) {
 	testFunc(t, "Complex BgLightGray", LightGray(BgLightGray("x")), GrayBg|GrayFg)
 }
 
+func Test_BgGray(t *testing.T) {
+	testFunc(t, "BgGray", BgGray("x"), BlackBg|BrightFm)
+	testFunc(t, "Complex BgGray", Gray(BgGray("x")), BlackBg|BlackFg|BrightFm)
+}
+
+func Test_BgLightRed(t *testing.T) {
+	testFunc(t, "BgLightRed", BgLightRed("x"), RedBg|BrightFm)
+	testFunc(t, "Complex BgLightRed", LightRed(BgLightRed("x")), RedBg|RedFg|BrightFm)
+}
+
+func Test_BgLightGreen(t *testing.T) {
+	testFunc(t, "BgLightGreen", BgLightGreen("x"), GreenBg|BrightFm)
+	testFunc(t, "Complex BgLightGreen", LightGreen(BgLightGreen("x")), GreenBg|GreenFg|BrightFm)
+}
+
+func Test_BgYellow(t *testing.T) {
+	testFunc(t, "BgYellow", BgYellow("x"), BrownBg|BrightFm)
+	testFunc(t, "Complex BgYellow", Yellow(BgYellow("x")), BrownBg|BrownFg|BrightFm)
+}
+
+func Test_BgLightBlue(t *testing.T) {
+	testFunc(t, "BgLightBlue", BgLightBlue("x"), BlueBg|BrightFm)
+	testFunc(t, "Complex BgLightBlue", LightBlue(BgLightBlue("x")), BlueBg|BlueFg|BrightFm)
+}
+
+func Test_BgLightMagenta(t *testing.T) {
+	testFunc(t, "BgLightMagenta", BgLightMagenta("x"), MagentaBg|BrightFm)
+	testFunc(t, "Complex BgLightMagenta", LightMagenta(BgLightMagenta("x")), MagentaBg|MagentaFg|BrightFm)
+}
+
+func Test_BgLightCyan(t *testing.T) {
+	testFunc(t, "BgLightCyan", BgLightCyan("x"), CyanBg|BrightFm)
+	testFunc(t, "Complex BgLightCyan", LightCyan(BgLightCyan("x")), CyanBg|CyanFg|BrightFm)
+}
+
+func Test_BgWhite(t *testing.T) {
+	testFunc(t, "BgWhite", BgWhite("x"), GrayBg|BrightFm)
+	testFunc(t, "Complex BgWhite", White(BgWhite("x")), GrayBg|GrayFg|BrightFm)
+}
+
 func Test_Bold(t *testing.T) {
 	testFunc(t, "Bold", Bold("x"), BoldFm)
 }
 
 func Test_Inverse(t *testing.T) {
 	testFunc(t, "Inverse", Inverse("x"), InverseFm)
+}
+
+func Test_Bright(t *testing.T) {
+	testFunc(t, "Bright", Bright("x"), BrightFm)
 }
