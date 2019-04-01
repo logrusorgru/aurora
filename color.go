@@ -32,9 +32,10 @@ type Color int
 
 // special formats
 const (
-	BoldFm    Color = 1 << iota // bold
-	InverseFm                   // inverse
-	BrightFm                    // bright
+	BoldFm     Color = 1 << iota // bold
+	InverseFm                    // inverse
+	FgBrightFm                   // bright foreground
+	BgBrightFm                   // bright background
 )
 
 // foreground
@@ -69,7 +70,7 @@ const (
 
 // IsValid returns true if a color looks like valid
 func (c Color) IsValid() bool {
-	return c&(BrightFm|BoldFm|InverseFm|maskFg|maskBg) != 0 || c == 0
+	return c&(BgBrightFm|FgBrightFm|BoldFm|InverseFm|maskFg|maskBg) != 0 || c == 0
 }
 
 const (
@@ -107,7 +108,7 @@ func (c Color) appendNos(bs []byte) []byte {
 		} else {
 			semicolon = true
 		}
-		if c&BrightFm != 0 {
+		if c&FgBrightFm != 0 {
 			bs = append(bs, '9', '0'+byte((c>>8)&0xff)-1)
 		} else {
 			bs = append(bs, '3', '0'+byte((c>>8)&0xff)-1)
@@ -117,7 +118,7 @@ func (c Color) appendNos(bs []byte) []byte {
 		if semicolon {
 			bs = append(bs, ';')
 		}
-		if c&BrightFm != 0 {
+		if c&BgBrightFm != 0 {
 			bs = append(bs, '1', '0', '0'+byte((c>>16)&0xff)-1)
 		} else {
 			bs = append(bs, '4', '0'+byte((c>>16)&0xff)-1)

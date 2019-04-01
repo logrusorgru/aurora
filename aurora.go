@@ -67,7 +67,6 @@ type Aurora interface {
 	BgWhite(arg interface{}) Value
 	Bold(arg interface{}) Value
 	Inverse(arg interface{}) Value
-	Bright(arg interface{}) Value
 	Colorize(arg interface{}, color Color) Value
 	Sprintf(format interface{}, args ...interface{}) string
 }
@@ -120,7 +119,6 @@ func (auroraClear) BgLightCyan(arg interface{}) Value    { return valueClear{arg
 func (auroraClear) BgWhite(arg interface{}) Value        { return valueClear{arg} }
 func (auroraClear) Bold(arg interface{}) Value           { return valueClear{arg} }
 func (auroraClear) Inverse(arg interface{}) Value        { return valueClear{arg} }
-func (auroraClear) Bright(arg interface{}) Value         { return valueClear{arg} }
 
 func (auroraClear) Colorize(arg interface{}, color Color) Value {
 	return valueClear{arg}
@@ -171,7 +169,6 @@ func (aurora) BgLightCyan(arg interface{}) Value    { return BgLightCyan(arg) }
 func (aurora) BgWhite(arg interface{}) Value        { return BgWhite(arg) }
 func (aurora) Bold(arg interface{}) Value           { return Bold(arg) }
 func (aurora) Inverse(arg interface{}) Value        { return Inverse(arg) }
-func (aurora) Bright(arg interface{}) Value         { return Bright(arg) }
 
 func (aurora) Colorize(arg interface{}, color Color) Value {
 	return Colorize(arg, color)

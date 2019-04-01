@@ -125,73 +125,73 @@ func LightGray(arg interface{}) Value {
 // Gray converts argument into formated/colorized value
 func Gray(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlackFg | BrightFm
+		val.color = (val.color & (^maskFg)) | BlackFg | FgBrightFm
 		return val
 	}
-	return value{arg, BlackFg | BrightFm, 0}
+	return value{arg, BlackFg | FgBrightFm, 0}
 }
 
 // LightRed converts argument into formated/colorized value
 func LightRed(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | RedFg | BrightFm
+		val.color = (val.color & (^maskFg)) | RedFg | FgBrightFm
 		return val
 	}
-	return value{arg, RedFg | BrightFm, 0}
+	return value{arg, RedFg | FgBrightFm, 0}
 }
 
 // LightGreen converts argument into formated/colorized value
 func LightGreen(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GreenFg | BrightFm
+		val.color = (val.color & (^maskFg)) | GreenFg | FgBrightFm
 		return val
 	}
-	return value{arg, GreenFg | BrightFm, 0}
+	return value{arg, GreenFg | FgBrightFm, 0}
 }
 
 // Yellow converts argument into formated/colorized value
 func Yellow(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BrownFg | BrightFm
+		val.color = (val.color & (^maskFg)) | BrownFg | FgBrightFm
 		return val
 	}
-	return value{arg, BrownFg | BrightFm, 0}
+	return value{arg, BrownFg | FgBrightFm, 0}
 }
 
 // LightBlue converts argument into formated/colorized value
 func LightBlue(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlueFg | BrightFm
+		val.color = (val.color & (^maskFg)) | BlueFg | FgBrightFm
 		return val
 	}
-	return value{arg, BlueFg | BrightFm, 0}
+	return value{arg, BlueFg | FgBrightFm, 0}
 }
 
 // LightMagenta converts argument into formated/colorized value
 func LightMagenta(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | MagentaFg | BrightFm
+		val.color = (val.color & (^maskFg)) | MagentaFg | FgBrightFm
 		return val
 	}
-	return value{arg, MagentaFg | BrightFm, 0}
+	return value{arg, MagentaFg | FgBrightFm, 0}
 }
 
 // LightCyan converts argument into formated/colorized value
 func LightCyan(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | CyanFg | BrightFm
+		val.color = (val.color & (^maskFg)) | CyanFg | FgBrightFm
 		return val
 	}
-	return value{arg, CyanFg | BrightFm, 0}
+	return value{arg, CyanFg | FgBrightFm, 0}
 }
 
 // White converts argument into formated/colorized value
 func White(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GrayFg | BrightFm
+		val.color = (val.color & (^maskFg)) | GrayFg | FgBrightFm
 		return val
 	}
-	return value{arg, GrayFg | BrightFm, 0}
+	return value{arg, GrayFg | FgBrightFm, 0}
 }
 
 //
@@ -273,82 +273,73 @@ func BgLightGray(arg interface{}) Value {
 // BgGray converts argument into formated/colorized value
 func BgGray(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlackBg | BrightFm
+		val.color = (val.color & (^maskBg)) | BlackBg | BgBrightFm
 		return val
 	}
-	return value{arg, BlackBg | BrightFm, 0}
+	return value{arg, BlackBg | BgBrightFm, 0}
 }
 
 // BgLightRed converts argument into formated/colorized value
 func BgLightRed(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | RedBg | BrightFm
+		val.color = (val.color & (^maskBg)) | RedBg | BgBrightFm
 		return val
 	}
-	return value{arg, RedBg | BrightFm, 0}
+	return value{arg, RedBg | BgBrightFm, 0}
 }
 
 // BgLightGreen converts argument into formated/colorized value
 func BgLightGreen(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GreenBg | BrightFm
+		val.color = (val.color & (^maskBg)) | GreenBg | BgBrightFm
 		return val
 	}
-	return value{arg, GreenBg | BrightFm, 0}
+	return value{arg, GreenBg | BgBrightFm, 0}
 }
 
 // BgYellow converts argument into formated/colorized value
 func BgYellow(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BrownBg | BrightFm
+		val.color = (val.color & (^maskBg)) | BrownBg | BgBrightFm
 		return val
 	}
-	return value{arg, BrownBg | BrightFm, 0}
+	return value{arg, BrownBg | BgBrightFm, 0}
 }
 
 // BgLightBlue converts argument into formated/colorized value
 func BgLightBlue(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlueBg | BrightFm
+		val.color = (val.color & (^maskBg)) | BlueBg | BgBrightFm
 		return val
 	}
-	return value{arg, BlueBg | BrightFm, 0}
+	return value{arg, BlueBg | BgBrightFm, 0}
 }
 
 // BgLightMagenta converts argument into formated/colorized value
 func BgLightMagenta(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | MagentaBg | BrightFm
+		val.color = (val.color & (^maskBg)) | MagentaBg | BgBrightFm
 		return val
 	}
-	return value{arg, MagentaBg | BrightFm, 0}
+	return value{arg, MagentaBg | BgBrightFm, 0}
 }
 
 // BgLightCyan converts argument into formated/colorized value
 func BgLightCyan(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | CyanBg | BrightFm
+		val.color = (val.color & (^maskBg)) | CyanBg | BgBrightFm
 		return val
 	}
-	return value{arg, CyanBg | BrightFm, 0}
+	return value{arg, CyanBg | BgBrightFm, 0}
 }
 
 // BgWhtie converts argument into formated/colorized value
 func BgWhite(arg interface{}) Value {
 	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GrayBg | BrightFm
+		val.color = (val.color & (^maskBg)) | GrayBg | BgBrightFm
 		return val
 	}
-	return value{arg, GrayBg | BrightFm, 0}
-}
-
-// Bright converts argument into formated/colorized value
-func Bright(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color |= BrightFm
-		return val
-	}
-	return value{arg, BrightFm, 0}
+	return value{arg, GrayBg | BgBrightFm, 0}
 }
 
 // Bold converts argument into formated/colorized value

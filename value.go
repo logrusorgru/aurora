@@ -83,7 +83,6 @@ type Value interface {
 	BgWhite() Value        // change background color to white
 	Bold() Value           // change format to bold
 	Inverse() Value        // change format to inversed
-	Bright() Value         // change format to bright
 }
 
 // Value without colors
@@ -133,7 +132,6 @@ func (v valueClear) BgLightCyan() Value    { return v }
 func (v valueClear) BgWhite() Value        { return v }
 func (v valueClear) Bold() Value           { return v }
 func (v valueClear) Inverse() Value        { return v }
-func (v valueClear) Bright() Value         { return v }
 
 func (v valueClear) Format(s fmt.State, verb rune) {
 	// it's enough for many cases (%-+020.10f)
@@ -301,42 +299,42 @@ func (v value) LightGray() Value {
 
 //This is really bright black
 func (v value) Gray() Value {
-	v.color = (v.color & (^maskFg)) | BlackFg | BrightFm
+	v.color = (v.color & (^maskFg)) | BlackFg | FgBrightFm
 	return v
 }
 
 func (v value) LightRed() Value {
-	v.color = (v.color & (^maskFg)) | RedFg | BrightFm
+	v.color = (v.color & (^maskFg)) | RedFg | FgBrightFm
 	return v
 }
 
 func (v value) LightGreen() Value {
-	v.color = (v.color & (^maskFg)) | GreenFg | BrightFm
+	v.color = (v.color & (^maskFg)) | GreenFg | FgBrightFm
 	return v
 }
 
 func (v value) Yellow() Value {
-	v.color = (v.color & (^maskFg)) | BrownFg | BrightFm
+	v.color = (v.color & (^maskFg)) | BrownFg | FgBrightFm
 	return v
 }
 
 func (v value) LightBlue() Value {
-	v.color = (v.color & (^maskFg)) | BlueFg | BrightFm
+	v.color = (v.color & (^maskFg)) | BlueFg | FgBrightFm
 	return v
 }
 
 func (v value) LightMagenta() Value {
-	v.color = (v.color & (^maskFg)) | MagentaFg | BrightFm
+	v.color = (v.color & (^maskFg)) | MagentaFg | FgBrightFm
 	return v
 }
 
 func (v value) LightCyan() Value {
-	v.color = (v.color & (^maskFg)) | CyanFg | BrightFm
+	v.color = (v.color & (^maskFg)) | CyanFg | FgBrightFm
 	return v
 }
 
 func (v value) White() Value {
-	v.color = (v.color & (^maskFg)) | GrayFg | BrightFm
+	v.color = (v.color & (^maskFg)) | GrayFg | FgBrightFm
 	return v
 }
 
@@ -383,42 +381,42 @@ func (v value) BgLightGray() Value {
 
 //This is really light black
 func (v value) BgGray() Value {
-	v.color = (v.color & (^maskBg)) | BlackBg | BrightFm
+	v.color = (v.color & (^maskBg)) | BlackBg | BgBrightFm
 	return v
 }
 
 func (v value) BgLightRed() Value {
-	v.color = (v.color & (^maskBg)) | RedBg | BrightFm
+	v.color = (v.color & (^maskBg)) | RedBg | BgBrightFm
 	return v
 }
 
 func (v value) BgLightGreen() Value {
-	v.color = (v.color & (^maskBg)) | GreenBg | BrightFm
+	v.color = (v.color & (^maskBg)) | GreenBg | BgBrightFm
 	return v
 }
 
 func (v value) BgYellow() Value {
-	v.color = (v.color & (^maskBg)) | BrownBg | BrightFm
+	v.color = (v.color & (^maskBg)) | BrownBg | BgBrightFm
 	return v
 }
 
 func (v value) BgLightBlue() Value {
-	v.color = (v.color & (^maskBg)) | BlueBg | BrightFm
+	v.color = (v.color & (^maskBg)) | BlueBg | BgBrightFm
 	return v
 }
 
 func (v value) BgLightMagenta() Value {
-	v.color = (v.color & (^maskBg)) | MagentaBg | BrightFm
+	v.color = (v.color & (^maskBg)) | MagentaBg | BgBrightFm
 	return v
 }
 
 func (v value) BgLightCyan() Value {
-	v.color = (v.color & (^maskBg)) | CyanBg | BrightFm
+	v.color = (v.color & (^maskBg)) | CyanBg | BgBrightFm
 	return v
 }
 
 func (v value) BgWhite() Value {
-	v.color = (v.color & (^maskBg)) | GrayBg | BrightFm
+	v.color = (v.color & (^maskBg)) | GrayBg | BgBrightFm
 	return v
 }
 
@@ -429,10 +427,5 @@ func (v value) Bold() Value {
 
 func (v value) Inverse() Value {
 	v.color |= InverseFm
-	return v
-}
-
-func (v value) Bright() Value {
-	v.color |= BrightFm
 	return v
 }
