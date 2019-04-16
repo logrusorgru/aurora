@@ -50,7 +50,6 @@ func Sprintf(format interface{}, args ...interface{}) string {
 				args[i] = val.setTail(ft.Color())
 				continue
 			}
-			args[i] = value{v, 0, ft.Color()}
 		}
 		return fmt.Sprintf(ft.String(), args...)
 	}

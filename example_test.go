@@ -70,5 +70,5 @@ func ExampleSprintf() {
 		),
 	)
 
-	// Output: [34mwe've got [36m5[0m[34m cats, but want [1;35m25[0m[34m[0m
+	// Output: [34mwe've got [0;36m5[0;34m cats, but want [0;1;35m25[0;34m[0m
 }

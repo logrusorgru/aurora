@@ -33,7 +33,7 @@ package aurora
 // returns a Value with blue foreground, green
 // background and bold. Unlike functions like
 // Red/BgBlue/Bold etc. This function clears
-// all previous colors. Thus
+// all previous colors and formats. Thus
 //
 //    s := Colorize(Red("some"), BgBlue)
 //
@@ -46,316 +46,502 @@ func Colorize(arg interface{}, color Color) Value {
 	return value{arg, color, 0}
 }
 
+// Reset wraps given argument returning Value
+// without formats and colors.
+func Reset(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Reset()
+	}
+	return value{value: arg}
+}
+
+//
+// Formats
+//
+
+// Bold or increased intensity (1).
+func Bold(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Bold()
+	}
+	return value{value: arg, color: BoldFm}
+}
+
+// Faint, decreased intensity (2).
+// The Faint rejects the Bold.
+func Faint(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Faint()
+	}
+	return value{value: arg, color: FaintFm}
+}
+
+// DoublyUnderline or Bold off, double-underline
+// per ECMA-48 (21).
+func DoublyUnderline(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.DoublyUnderline()
+	}
+	return value{value: arg, color: DoublyUnderlineFm}
+}
+
+// Fraktur, rarely supported (20).
+func Fraktur(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Fraktur()
+	}
+	return value{value: arg, color: FrakturFm}
+}
+
+// Italic, not widely supported, sometimes
+// treated as inverse (3).
+func Italic(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Italic()
+	}
+	return value{value: arg, color: ItalicFm}
+}
+
+// Underline (4).
+func Underline(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Underline()
+	}
+	return value{value: arg, color: UnderlineFm}
+}
+
+// SlowBlink, blinking less than 150
+// per minute (5).
+func SlowBlink(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.SlowBlink()
+	}
+	return value{value: arg, color: SlowBlinkFm}
+}
+
+// RapidBlink, blinking 150+ per minute,
+// not widely supported (6).
+func RapidBlink(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.RapidBlink()
+	}
+	return value{value: arg, color: RapidBlinkFm}
+}
+
+// Blink is alias for the SlowBlink.
+func Blink(arg interface{}) Value {
+	return SlowBlink(arg)
+}
+
+// Reverse video, swap foreground and
+// background colors (7).
+func Reverse(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Reverse()
+	}
+	return value{value: arg, color: ReverseFm}
+}
+
+// Inverse is alias for the Reverse
+func Inverse(arg interface{}) Value {
+	return Reverse(arg)
+}
+
+// Conceal, hidden, not widely supported (8).
+func Conceal(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Conceal()
+	}
+	return value{value: arg, color: ConcealFm}
+}
+
+// Hidden is alias for the Conceal
+func Hidden(arg interface{}) Value {
+	return Conceal(arg)
+}
+
+// CrossedOut, characters legible, but
+// marked for deletion (9).
+func CrossedOut(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.CrossedOut()
+	}
+	return value{value: arg, color: CrossedOutFm}
+}
+
+// StrikeThrough is alias for the CrossedOut.
+func StrikeThrough(arg interface{}) Value {
+	return CrossedOut(arg)
+}
+
+// Framed (51).
+func Framed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Framed()
+	}
+	return value{value: arg, color: FramedFm}
+}
+
+// Encircled (52).
+func Encircled(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Encircled()
+	}
+	return value{value: arg, color: EncircledFm}
+}
+
+// Overlined (53).
+func Overlined(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Overlined()
+	}
+	return value{value: arg, color: OverlinedFm}
+}
+
 //
 // Foreground colors
 //
+//
 
-// Black converts argument into formated/colorized value
+// Black foreground color (30)
 func Black(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlackFg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.Black()
 	}
-	return value{arg, BlackFg, 0}
+	return value{value: arg, color: BlackFg}
 }
 
-// Red converts argument into formated/colorized value
+// Red foreground color (31)
 func Red(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | RedFg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.Red()
 	}
-	return value{arg, RedFg, 0}
+	return value{value: arg, color: RedFg}
 }
 
-// Green converts argument into formated/colorized value
+// Green foreground color (32)
 func Green(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GreenFg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.Green()
 	}
-	return value{arg, GreenFg, 0}
+	return value{value: arg, color: GreenFg}
 }
 
-// Brown converts argument into formated/colorized value
-func Brown(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BrownFg
-		return val
-	}
-	return value{arg, BrownFg, 0}
-}
-
-// Blue converts argument into formated/colorized value
-func Blue(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlueFg
-		return val
-	}
-	return value{arg, BlueFg, 0}
-}
-
-// Magenta converts argument into formated/colorized value
-func Magenta(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | MagentaFg
-		return val
-	}
-	return value{arg, MagentaFg, 0}
-}
-
-// Cyan converts argument into formated/colorized value
-func Cyan(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | CyanFg
-		return val
-	}
-	return value{arg, CyanFg, 0}
-}
-
-// LightGray converts argument into formated/colorized value
-func LightGray(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GrayFg
-		return val
-	}
-	return value{arg, GrayFg, 0}
-}
-
-// Gray converts argument into formated/colorized value
-func Gray(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlackFg | FgBrightFm
-		return val
-	}
-	return value{arg, BlackFg | FgBrightFm, 0}
-}
-
-// LightRed converts argument into formated/colorized value
-func LightRed(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | RedFg | FgBrightFm
-		return val
-	}
-	return value{arg, RedFg | FgBrightFm, 0}
-}
-
-// LightGreen converts argument into formated/colorized value
-func LightGreen(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GreenFg | FgBrightFm
-		return val
-	}
-	return value{arg, GreenFg | FgBrightFm, 0}
-}
-
-// Yellow converts argument into formated/colorized value
+// Yellow foreground color (33)
 func Yellow(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BrownFg | FgBrightFm
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.Yellow()
 	}
-	return value{arg, BrownFg | FgBrightFm, 0}
+	return value{value: arg, color: YellowFg}
 }
 
-// LightBlue converts argument into formated/colorized value
-func LightBlue(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | BlueFg | FgBrightFm
-		return val
-	}
-	return value{arg, BlueFg | FgBrightFm, 0}
+// Brown foreground color (33)
+//
+// Deprecated: use Yellow instead, following specification
+func Brown(arg interface{}) Value {
+	return Yellow(arg)
 }
 
-// LightMagenta converts argument into formated/colorized value
-func LightMagenta(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | MagentaFg | FgBrightFm
-		return val
+// Blue foreground color (34)
+func Blue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Blue()
 	}
-	return value{arg, MagentaFg | FgBrightFm, 0}
+	return value{value: arg, color: BlueFg}
 }
 
-// LightCyan converts argument into formated/colorized value
-func LightCyan(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | CyanFg | FgBrightFm
-		return val
+// Magenta foreground color (35)
+func Magenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Magenta()
 	}
-	return value{arg, CyanFg | FgBrightFm, 0}
+	return value{value: arg, color: MagentaFg}
 }
 
-// White converts argument into formated/colorized value
+// Cyan foreground color (36)
+func Cyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Cyan()
+	}
+	return value{value: arg, color: CyanFg}
+}
+
+// White foreground color (37)
 func White(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskFg)) | GrayFg | FgBrightFm
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.White()
 	}
-	return value{arg, GrayFg | FgBrightFm, 0}
+	return value{value: arg, color: WhiteFg}
+}
+
+//
+// Bright foreground colors
+//
+
+// BrightBlack foreground color (90)
+func BrightBlack(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightBlack()
+	}
+	return value{value: arg, color: BrightFg | BlackFg}
+}
+
+// BrightRed foreground color (91)
+func BrightRed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightRed()
+	}
+	return value{value: arg, color: BrightFg | RedFg}
+}
+
+// BrightGreen foreground color (92)
+func BrightGreen(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightGreen()
+	}
+	return value{value: arg, color: BrightFg | GreenFg}
+}
+
+// BrightYellow foreground color (93)
+func BrightYellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightYellow()
+	}
+	return value{value: arg, color: BrightFg | YellowFg}
+}
+
+// BrightBlue foreground color (94)
+func BrightBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightBlue()
+	}
+	return value{value: arg, color: BrightFg | BlueFg}
+}
+
+// BrightMagenta foreground color (95)
+func BrightMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightMagenta()
+	}
+	return value{value: arg, color: BrightFg | MagentaFg}
+}
+
+// BrightCyan foreground color (96)
+func BrightCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightCyan()
+	}
+	return value{value: arg, color: BrightFg | CyanFg}
+}
+
+// BrightWhite foreground color (97)
+func BrightWhite(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightWhite()
+	}
+	return value{value: arg, color: BrightFg | WhiteFg}
+}
+
+//
+// Other
+//
+
+// Index of pre-defined 8-bit foreground color
+// from 0 to 255 (38;5;n).
+//
+//       0-  7:  standard colors (as in ESC [ 30–37 m)
+//       8- 15:  high intensity colors (as in ESC [ 90–97 m)
+//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//     232-255:  grayscale from black to white in 24 steps
+//
+func Index(n uint8, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Index(n)
+	}
+	return value{value: arg, color: (Color(n) << shiftFg) | flagFg}
+}
+
+// Gray from 0 to 24.
+func Gray(n uint8, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Gray(n)
+	}
+	if n > 23 {
+		n = 23
+	}
+	return value{value: arg, color: (Color(232+n) << shiftFg) | flagFg}
 }
 
 //
 // Background colors
 //
+//
 
-// BgBlack converts argument into formated/colorized value
+// BgBlack background color (40)
 func BgBlack(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlackBg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.BgBlack()
 	}
-	return value{arg, BlackBg, 0}
+	return value{value: arg, color: BlackBg}
 }
 
-// BgRed converts argument into formated/colorized value
+// BgRed background color (41)
 func BgRed(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | RedBg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.BgRed()
 	}
-	return value{arg, RedBg, 0}
+	return value{value: arg, color: RedBg}
 }
 
-// BgGreen converts argument into formated/colorized value
+// BgGreen background color (42)
 func BgGreen(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GreenBg
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.BgGreen()
 	}
-	return value{arg, GreenBg, 0}
+	return value{value: arg, color: GreenBg}
 }
 
-// BgBrown converts argument into formated/colorized value
-func BgBrown(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BrownBg
-		return val
-	}
-	return value{arg, BrownBg, 0}
-}
-
-// BgBlue converts argument into formated/colorized value
-func BgBlue(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlueBg
-		return val
-	}
-	return value{arg, BlueBg, 0}
-}
-
-// BgMagenta converts argument into formated/colorized value
-func BgMagenta(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | MagentaBg
-		return val
-	}
-	return value{arg, MagentaBg, 0}
-}
-
-// BgCyan converts argument into formated/colorized value
-func BgCyan(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | CyanBg
-		return val
-	}
-	return value{arg, CyanBg, 0}
-}
-
-// BgLightGray converts argument into formated/colorized value
-func BgLightGray(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GrayBg
-		return val
-	}
-	return value{arg, GrayBg, 0}
-}
-
-// BgGray converts argument into formated/colorized value
-func BgGray(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlackBg | BgBrightFm
-		return val
-	}
-	return value{arg, BlackBg | BgBrightFm, 0}
-}
-
-// BgLightRed converts argument into formated/colorized value
-func BgLightRed(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | RedBg | BgBrightFm
-		return val
-	}
-	return value{arg, RedBg | BgBrightFm, 0}
-}
-
-// BgLightGreen converts argument into formated/colorized value
-func BgLightGreen(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GreenBg | BgBrightFm
-		return val
-	}
-	return value{arg, GreenBg | BgBrightFm, 0}
-}
-
-// BgYellow converts argument into formated/colorized value
+// BgYellow background color (43)
 func BgYellow(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BrownBg | BgBrightFm
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.BgYellow()
 	}
-	return value{arg, BrownBg | BgBrightFm, 0}
+	return value{value: arg, color: YellowBg}
 }
 
-// BgLightBlue converts argument into formated/colorized value
-func BgLightBlue(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | BlueBg | BgBrightFm
-		return val
-	}
-	return value{arg, BlueBg | BgBrightFm, 0}
+// BgBrown background color (43)
+//
+// Deprecated: use BgYellow instead, following specification
+func BgBrown(arg interface{}) Value {
+	return BgYellow(arg)
 }
 
-// BgLightMagenta converts argument into formated/colorized value
-func BgLightMagenta(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | MagentaBg | BgBrightFm
-		return val
+// BgBlue background color (44)
+func BgBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBlue()
 	}
-	return value{arg, MagentaBg | BgBrightFm, 0}
+	return value{value: arg, color: BlueBg}
 }
 
-// BgLightCyan converts argument into formated/colorized value
-func BgLightCyan(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | CyanBg | BgBrightFm
-		return val
+// BgMagenta background color (45)
+func BgMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgMagenta()
 	}
-	return value{arg, CyanBg | BgBrightFm, 0}
+	return value{value: arg, color: MagentaBg}
 }
 
-// BgWhtie converts argument into formated/colorized value
+// BgCyan background color (46)
+func BgCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgCyan()
+	}
+	return value{value: arg, color: CyanBg}
+}
+
+// BgWhite background color (47)
 func BgWhite(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color = (val.color & (^maskBg)) | GrayBg | BgBrightFm
-		return val
+	if val, ok := arg.(Value); ok {
+		return val.BgWhite()
 	}
-	return value{arg, GrayBg | BgBrightFm, 0}
+	return value{value: arg, color: WhiteBg}
 }
 
-// Bold converts argument into formated/colorized value
-func Bold(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color |= BoldFm
-		return val
+//
+// Bright background colors
+//
+
+// BgBrightBlack background color (100)
+func BgBrightBlack(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightBlack()
 	}
-	return value{arg, BoldFm, 0}
+	return value{value: arg, color: BrightBg | BlackBg}
 }
 
-// Inverse converts argument into formated/colorized value
-func Inverse(arg interface{}) Value {
-	if val, ok := arg.(value); ok {
-		val.color |= InverseFm
-		return val
+// BgBrightRed background color (101)
+func BgBrightRed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightRed()
 	}
-	return value{arg, InverseFm, 0}
+	return value{value: arg, color: BrightBg | RedBg}
+}
+
+// BgBrightGreen background color (102)
+func BgBrightGreen(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightGreen()
+	}
+	return value{value: arg, color: BrightBg | GreenBg}
+}
+
+// BgBrightYellow background color (103)
+func BgBrightYellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightYellow()
+	}
+	return value{value: arg, color: BrightBg | YellowBg}
+}
+
+// BgBrightBlue background color (104)
+func BgBrightBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightBlue()
+	}
+	return value{value: arg, color: BrightBg | BlueBg}
+}
+
+// BgBrightMagenta background color (105)
+func BgBrightMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightMagenta()
+	}
+	return value{value: arg, color: BrightBg | MagentaBg}
+}
+
+// BgBrightCyan background color (106)
+func BgBrightCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightCyan()
+	}
+	return value{value: arg, color: BrightBg | CyanBg}
+}
+
+// BgBrightWhite background color (107)
+func BgBrightWhite(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightWhite()
+	}
+	return value{value: arg, color: BrightBg | WhiteBg}
+}
+
+//
+// Other
+//
+
+// BgIndex of 8-bit pre-defined background color
+// from 0 to 255 (48;5;n).
+//
+//       0-  7:  standard colors (as in ESC [ 40–47 m)
+//       8- 15:  high intensity colors (as in ESC [100–107 m)
+//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//     232-255:  grayscale from black to white in 24 steps
+//
+func BgIndex(n uint8, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgIndex(n)
+	}
+	return value{value: arg, color: (Color(n) << shiftBg) | flagBg}
+}
+
+// BgGray from 0 to 24.
+func BgGray(n uint8, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgGray(n)
+	}
+	if n > 23 {
+		n = 23
+	}
+	return value{value: arg, color: (Color(n+232) << shiftBg) | flagBg}
 }
