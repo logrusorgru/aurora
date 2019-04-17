@@ -21,7 +21,7 @@ go get -u github.com/logrusorgru/aurora
 ```
 Test
 ```
-go test github.com/logrusorgru/aurora
+go test -cover github.com/logrusorgru/aurora
 ```
 
 # Usage
@@ -164,24 +164,80 @@ a `Colorize` clears previous colors
 x := Red("x").Colorize(BgGreen) // will be with green background only
 ```
 
+# Grayscale
+
+```go
+fmt.Println("  ",
+	Gray(1-1, " 00-23 ").BgGray(24-1),
+	Gray(4-1, " 03-19 ").BgGray(20-1),
+	Gray(8-1, " 07-15 ").BgGray(16-1),
+	Gray(12-1, " 11-11 ").BgGray(12-1),
+	Gray(16-1, " 15-07 ").BgGray(8-1),
+	Gray(20-1, " 19-03 ").BgGray(4-1),
+	Gray(24-1, " 23-00 ").BgGray(1-1),
+)
+```
+
+![grayscale png](https://github.com/logrusorgru/aurora/blob/master/aurora_grayscale.png)  
+
+# 8-bit colors
+
+Methods `Index` and `BgIndex` implements 8-bit colors.
+
+| Index/BgIndex  |    Meaning      | Foreground | Background |
+| -------------- | --------------- | ---------- | ---------- |
+|      0-  7     | standard colors |   30- 37   |   40- 47   |
+|      8- 15     | bright colors   |   90- 97   |  100-107   |
+|     16-231     | 216 colors      |   38;5;n   |   48;5;n   |
+|    232-255     | 24 grayscale    |   38;5;n   |   48;5;n   |
+
 
 # Supported colors & formats
 
-- background and foreground colors
+- formats
+  + bold (1)
+  + faint (2)
+  + doubly-underline (21)
+  + fraktur (20)
+  + italic (3)
+  + underline (4)
+  + slow blink (5)
+  + rapid blink (6)
+  + reverse video (7)
+  + conceal (8)
+  + crossed out (9)
+  + framed (51)
+  + encircled (52)
+  + overlined (53)
+- background and foreground colors, including bright
   + black
   + red
   + green
-  + brown
-  + blue
+  + yellow (brown)
+  +  blue
   + magenta
   + cyan
-  + gray
-- formats
-  + bold
-  + inversed
+  + white
+  + 24 grayscale colors
+  + 216 8-bit colors
 
-![linux png](https://github.com/logrusorgru/aurora/blob/master/linux_colors.png)  
-![white png](https://github.com/logrusorgru/aurora/blob/master/white.png)
+### All colors
+
+![linux png](https://github.com/logrusorgru/aurora/blob/master/aurora_colors_black.png)  
+![white png](https://github.com/logrusorgru/aurora/blob/master/aurora_colors_white.png)  
+
+### Standard colors
+
+![linux black standard png](https://github.com/logrusorgru/aurora/blob/master/aurora_black_standard.png)
+![linux white standard png](https://github.com/logrusorgru/aurora/blob/master/aurora_white_standard.png)
+
+### Formats are likely supported
+
+![formats supported gif](https://github.com/logrusorgru/aurora/blob/master/aurora_formats.gif)
+
+### Formats are likely unsupported
+
+![formats rarely supported png](https://github.com/logrusorgru/aurora/blob/master/aurora_rarely_supported.png)
 
 # Limitations
 

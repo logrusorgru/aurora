@@ -28,6 +28,8 @@ Wednesday, April 17, 2019
   + `Encircled`
   + `Overlined`
 - Add AUTHORS.md file and change all copyright notices.
+- `Reset` method to create clear value. `Reset` method that replaces
+  `Bleach` method. The `Bleach` method was marked as deprecated.
 
 ---
 
