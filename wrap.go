@@ -67,7 +67,7 @@ func Bold(arg interface{}) Value {
 	return value{value: arg, color: BoldFm}
 }
 
-// Faint, decreased intensity (2).
+// Faint decreases intensity (2).
 // The Faint rejects the Bold.
 func Faint(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
@@ -85,7 +85,7 @@ func DoublyUnderline(arg interface{}) Value {
 	return value{value: arg, color: DoublyUnderlineFm}
 }
 
-// Fraktur, rarely supported (20).
+// Fraktur is rarely supported (20).
 func Fraktur(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Fraktur()
@@ -93,7 +93,7 @@ func Fraktur(arg interface{}) Value {
 	return value{value: arg, color: FrakturFm}
 }
 
-// Italic, not widely supported, sometimes
+// Italic is not widely supported, sometimes
 // treated as inverse (3).
 func Italic(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
@@ -110,8 +110,8 @@ func Underline(arg interface{}) Value {
 	return value{value: arg, color: UnderlineFm}
 }
 
-// SlowBlink, blinking less than 150
-// per minute (5).
+// SlowBlink makes text blink less than
+// 150 per minute (5).
 func SlowBlink(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.SlowBlink()
@@ -119,8 +119,8 @@ func SlowBlink(arg interface{}) Value {
 	return value{value: arg, color: SlowBlinkFm}
 }
 
-// RapidBlink, blinking 150+ per minute,
-// not widely supported (6).
+// RapidBlink makes text blink 150+ per
+// minute. It is not widely supported (6).
 func RapidBlink(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.RapidBlink()
@@ -147,7 +147,8 @@ func Inverse(arg interface{}) Value {
 	return Reverse(arg)
 }
 
-// Conceal, hidden, not widely supported (8).
+// Conceal hides text, preserving an ability to select
+// the text and copy it. It is not widely supported (8).
 func Conceal(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Conceal()
@@ -160,7 +161,7 @@ func Hidden(arg interface{}) Value {
 	return Conceal(arg)
 }
 
-// CrossedOut, characters legible, but
+// CrossedOut makes characters legible, but
 // marked for deletion (9).
 func CrossedOut(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {

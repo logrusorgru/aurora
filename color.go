@@ -216,6 +216,92 @@ func itoa(t byte) string {
 	return string(a[j:])
 }
 
+func (c Color) appendFg(bs []byte, zero bool) []byte {
+
+	if zero || c&maskFm != 0 {
+		bs = append(bs, ';')
+	}
+
+	// 0- 7 :  30-37
+	// 8-15 :  90-97
+	// > 15 : 38;5;val
+
+	switch fg := (c & maskFg) >> shiftFg; {
+	case fg <= 7:
+		// '3' and the value itself
+		bs = append(bs, '3', '0'+byte(fg))
+	case fg <= 15:
+		// '9' and the value itself
+		bs = append(bs, '9', '0'+byte(fg&^0x08)) // clear bright flag
+	default:
+		bs = append(bs, '3', '8', ';', '5', ';')
+		bs = append(bs, itoa(byte(fg))...)
+	}
+	return bs
+}
+
+func (c Color) appendBg(bs []byte, zero bool) []byte {
+
+	if zero || c&(maskFm|maskFg) != 0 {
+		bs = append(bs, ';')
+	}
+
+	// 0- 7 :  40- 47
+	// 8-15 : 100-107
+	// > 15 : 48;5;val
+
+	switch fg := (c & maskBg) >> shiftBg; {
+	case fg <= 7:
+		// '3' and the value itself
+		bs = append(bs, '4', '0'+byte(fg))
+	case fg <= 15:
+		// '1', '0' and the value itself
+		bs = append(bs, '1', '0', '0'+byte(fg&^0x08)) // clear bright flag
+	default:
+		bs = append(bs, '4', '8', ';', '5', ';')
+		bs = append(bs, itoa(byte(fg))...)
+	}
+	return bs
+}
+
+func (c Color) appendFm9(bs []byte, zero bool) []byte {
+
+	bs = appendCond(bs, c&ItalicFm != 0,
+		zero || c&(BoldFm|FaintFm) != 0,
+		'3')
+	bs = appendCond(bs, c&UnderlineFm != 0,
+		zero || c&(BoldFm|FaintFm|ItalicFm) != 0,
+		'4')
+	// don't combine slow and rapid blink using only
+	// on of them, preferring slow blink
+	if c&SlowBlinkFm != 0 {
+		bs = appendSemi(bs,
+			zero || c&(BoldFm|FaintFm|ItalicFm|UnderlineFm) != 0,
+			'5')
+	} else if c&RapidBlinkFm != 0 {
+		bs = appendSemi(bs,
+			zero || c&(BoldFm|FaintFm|ItalicFm|UnderlineFm) != 0,
+			'6')
+	}
+
+	// including 1-2
+	const mask6i = BoldFm | FaintFm |
+		ItalicFm | UnderlineFm |
+		SlowBlinkFm | RapidBlinkFm
+
+	bs = appendCond(bs, c&ReverseFm != 0,
+		zero || c&(mask6i) != 0,
+		'7')
+	bs = appendCond(bs, c&ConcealFm != 0,
+		zero || c&(mask6i|ReverseFm) != 0,
+		'8')
+	bs = appendCond(bs, c&CrossedOutFm != 0,
+		zero || c&(mask6i|ReverseFm|ConcealFm) != 0,
+		'9')
+
+	return bs
+}
+
 // append 1;3;38;5;216 like string that represents ANSI
 // color of the Color; the zero argument requires
 // appending of '0' before to reset previous format
@@ -248,38 +334,7 @@ func (c Color) appendNos(bs []byte, zero bool) []byte {
 			ReverseFm | ConcealFm | CrossedOutFm
 
 		if c&mask9 != 0 {
-			bs = appendCond(bs, c&ItalicFm != 0,
-				zero || c&(BoldFm|FaintFm) != 0,
-				'3')
-			bs = appendCond(bs, c&UnderlineFm != 0,
-				zero || c&(BoldFm|FaintFm|ItalicFm) != 0,
-				'4')
-			// don't combine slow and rapid blink using only
-			// on of them, preferring slow blink
-			if c&SlowBlinkFm != 0 {
-				bs = appendSemi(bs,
-					zero || c&(BoldFm|FaintFm|ItalicFm|UnderlineFm) != 0,
-					'5')
-			} else if c&RapidBlinkFm != 0 {
-				bs = appendSemi(bs,
-					zero || c&(BoldFm|FaintFm|ItalicFm|UnderlineFm) != 0,
-					'6')
-			}
-
-			// including 1-2
-			const mask6i = BoldFm | FaintFm |
-				ItalicFm | UnderlineFm |
-				SlowBlinkFm | RapidBlinkFm
-
-			bs = appendCond(bs, c&ReverseFm != 0,
-				zero || c&(mask6i) != 0,
-				'7')
-			bs = appendCond(bs, c&ConcealFm != 0,
-				zero || c&(mask6i|ReverseFm) != 0,
-				'8')
-			bs = appendCond(bs, c&CrossedOutFm != 0,
-				zero || c&(mask6i|ReverseFm|ConcealFm) != 0,
-				'9')
+			bs = c.appendFm9(bs, zero)
 		}
 
 		// 20-21
@@ -320,56 +375,13 @@ func (c Color) appendNos(bs []byte, zero bool) []byte {
 	}
 
 	// foreground
-
 	if c&maskFg != 0 {
-
-		if zero || c&maskFm != 0 {
-			bs = append(bs, ';')
-		}
-
-		// 0- 7 :  30-37
-		// 8-15 :  90-97
-		// > 15 : 38;5;val
-
-		switch fg := (c & maskFg) >> shiftFg; {
-		case fg <= 7:
-			// '3' and the value itself
-			bs = append(bs, '3', '0'+byte(fg))
-		case fg <= 15:
-			// '9' and the value itself
-			bs = append(bs, '9', '0'+byte(fg&^0x08)) // clear bright flag
-		default:
-			bs = append(bs, '3', '8', ';', '5', ';')
-			bs = append(bs, itoa(byte(fg))...)
-		}
-
+		bs = c.appendFg(bs, zero)
 	}
 
 	// background
-
 	if c&maskBg != 0 {
-
-		// excluding foreground bright flag
-		if zero || c&(maskFm|maskFg) != 0 {
-			bs = append(bs, ';')
-		}
-
-		// 0- 7 :  40- 47
-		// 8-15 : 100-107
-		// > 15 : 48;5;val
-
-		switch fg := (c & maskBg) >> shiftBg; {
-		case fg <= 7:
-			// '3' and the value itself
-			bs = append(bs, '4', '0'+byte(fg))
-		case fg <= 15:
-			// '1', '0' and the value itself
-			bs = append(bs, '1', '0', '0'+byte(fg&^0x08)) // clear bright flag
-		default:
-			bs = append(bs, '4', '8', ';', '5', ';')
-			bs = append(bs, itoa(byte(fg))...)
-		}
-
+		bs = c.appendBg(bs, zero)
 	}
 
 	return bs

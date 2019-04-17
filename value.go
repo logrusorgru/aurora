@@ -311,7 +311,7 @@ func (vc valueClear) BgIndex(uint8) Value    { return vc }
 func (vc valueClear) BgGray(uint8) Value     { return vc }
 func (vc valueClear) Colorize(Color) Value   { return vc }
 
-func (v valueClear) Format(s fmt.State, verb rune) {
+func (vc valueClear) Format(s fmt.State, verb rune) {
 	// it's enough for many cases (%-+020.10f)
 	// %          - 1
 	// availFlags - 3 (5)
@@ -342,7 +342,7 @@ func (v valueClear) Format(s fmt.State, verb rune) {
 	} else {
 		format = append(format, byte(verb))
 	}
-	fmt.Fprintf(s, string(format), v.value)
+	fmt.Fprintf(s, string(format), vc.value)
 }
 
 // Value within colors
