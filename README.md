@@ -226,7 +226,7 @@ Methods `Index` and `BgIndex` implements 8-bit colors.
 ![linux png](https://github.com/logrusorgru/aurora/blob/master/aurora_colors_black.png)  
 ![white png](https://github.com/logrusorgru/aurora/blob/master/aurora_colors_white.png)  
 
-### Standard colors
+### Standard and bright colors
 
 ![linux black standard png](https://github.com/logrusorgru/aurora/blob/master/aurora_black_standard.png)
 ![linux white standard png](https://github.com/logrusorgru/aurora/blob/master/aurora_white_standard.png)
