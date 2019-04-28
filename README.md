@@ -270,7 +270,7 @@ The obvious workaround is `Red(fmt.Sprintf("%T", some))`
 
 ### Licensing
 
-Copyright &copy; 2016-2109 The Aurora Authors. This work is free.
+Copyright &copy; 2016-2019 The Aurora Authors. This work is free.
 It comes without any warranty, to the extent permitted by applicable
 law. You can redistribute it and/or modify it under the terms of the
 Do What The Fuck You Want To Public License, Version 2, as published
