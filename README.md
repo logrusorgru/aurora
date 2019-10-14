@@ -292,8 +292,9 @@ The obvious workaround is `Red(fmt.Sprintf("%T", some))`
 
 ### Windows
 
-The Aurora provides ANSI colors only. So, there are not supports and workarounds for OS Windows.
-Check out this commetns to find a way
+The Aurora provides ANSI colors only, so there is no support or workarounds for Windows.
+Check out these comments to learn why:
+
 - [Using go-colrable](https://github.com/logrusorgru/aurora/issues/2#issuecomment-299014211).
 - [Using registry for Windows 10](https://github.com/logrusorgru/aurora/issues/10#issue-476361247).
 
