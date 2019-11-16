@@ -15,7 +15,7 @@ Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
 
 # TOC
 
-- [Insallation](#installation)
+- [Installation](#installation)
 - [Usage](#usage)
   + [Simple](#simple)
   + [Printf](#printf)
