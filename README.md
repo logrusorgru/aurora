@@ -1,7 +1,7 @@
 Aurora
 ======
 
-[![GoDoc](https://godoc.org/github.com/logrusorgru/aurora?status.svg)](https://godoc.org/github.com/logrusorgru/aurora)
+[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/logrusorgru/aurora?tab=doc)
 [![Unlicense](https://img.shields.io/badge/license-unlicense-blue.svg)](http://unlicense.org/)
 [![Build Status](https://travis-ci.org/logrusorgru/aurora.svg)](https://travis-ci.org/logrusorgru/aurora)
 [![Coverage Status](https://coveralls.io/repos/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/r/logrusorgru/aurora?branch=master)
