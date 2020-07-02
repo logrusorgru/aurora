@@ -2,7 +2,7 @@ Aurora
 ======
 
 [![GoDoc](https://godoc.org/github.com/logrusorgru/aurora?status.svg)](https://godoc.org/github.com/logrusorgru/aurora)
-[![WTFPL License](https://img.shields.io/badge/license-wtfpl-blue.svg)](http://www.wtfpl.net/about/)
+[![Unlicense](https://img.shields.io/badge/license-unlicense-blue.svg)](http://unlicense.org/)
 [![Build Status](https://travis-ci.org/logrusorgru/aurora.svg)](https://travis-ci.org/logrusorgru/aurora)
 [![Coverage Status](https://coveralls.io/repos/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/r/logrusorgru/aurora?branch=master)
 [![GoReportCard](https://goreportcard.com/badge/logrusorgru/aurora)](https://goreportcard.com/report/logrusorgru/aurora)
@@ -309,7 +309,6 @@ on colors for a terminal only, and turn them off for a file.
 Copyright &copy; 2016-2019 The Aurora Authors. This work is free.
 It comes without any warranty, to the extent permitted by applicable
 law. You can redistribute it and/or modify it under the terms of the
-Do What The Fuck You Want To Public License, Version 2, as published
-by Sam Hocevar. See the LICENSE file for more details.
+the Unlicense. See the LICENSE file for more details.
 
 
