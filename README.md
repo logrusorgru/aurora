@@ -1,7 +1,7 @@
 Aurora
 ======
 
-[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/logrusorgru/aurora?tab=doc)
+[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/logrusorgru/aurora/v3?tab=doc)
 [![Unlicense](https://img.shields.io/badge/license-unlicense-blue.svg)](http://unlicense.org/)
 [![Build Status](https://travis-ci.org/logrusorgru/aurora.svg)](https://travis-ci.org/logrusorgru/aurora)
 [![Coverage Status](https://coveralls.io/repos/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/r/logrusorgru/aurora?branch=master)
@@ -37,14 +37,37 @@ Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
 
 # Installation
 
-Get
+### Version 1.x
+
+Using gopkg.in.
+
+```
+go get -u gopkg.in/logrusorgru/aurora.v1
+```
+
+### Version 2.x
+
 ```
 go get -u github.com/logrusorgru/aurora
 ```
-Test
+
+### Go modules support, version v3+
+
+Get
 ```
-go test -cover github.com/logrusorgru/aurora
+go get -u github.com/logrusorgru/aurora/v3
 ```
+
+The v3 was introduced to support `go.mod` and leave previous import paths as is.
+Currently, there is no changes between them (excluding the importpath's /v3 tail).
+
+# Test
+
+```
+go test -cover github.com/logrusorgru/aurora/v3
+```
+
+Replace the import path with your, if it's different.
 
 # Usage
 
