@@ -158,9 +158,9 @@ func main() {
 }
 
 ```
-Without flags: 
+Without flags:
 ![disable png](https://github.com/logrusorgru/aurora/blob/master/disable.png)
-  
+
 With `-colors` flag:
 ![enable png](https://github.com/logrusorgru/aurora/blob/master/enable.png)
 
@@ -236,6 +236,22 @@ Methods `Index` and `BgIndex` implements 8-bit colors.
 |     16-231     | 216 colors      |   38;5;n   |   48;5;n   |
 |    232-255     | 24 grayscale    |   38;5;n   |   48;5;n   |
 
+Example
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/logrusorgru/aurora"
+)
+
+func main() {
+	for i := uint8(16); i <= 231; i++ {
+		fmt.Println(i, aurora.Index(i, "pew-pew"), aurora.BgIndex(i, "pew-pew"))
+	}
+}
+```
 
 # Supported colors & formats
 
@@ -315,7 +331,7 @@ The obvious workaround is `Red(fmt.Sprintf("%T", some))`
 
 ### Windows
 
-The Aurora provides ANSI colors only, so there is no support for Windows. That said, there are workarounds available. 
+The Aurora provides ANSI colors only, so there is no support for Windows. That said, there are workarounds available.
 Check out these comments to learn more:
 
 - [Using go-colorable](https://github.com/logrusorgru/aurora/issues/2#issuecomment-299014211).
@@ -333,5 +349,3 @@ Copyright &copy; 2016-2020 The Aurora Authors. This work is free.
 It comes without any warranty, to the extent permitted by applicable
 law. You can redistribute it and/or modify it under the terms of the
 the Unlicense. See the LICENSE file for more details.
-
-
