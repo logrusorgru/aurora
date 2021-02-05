@@ -43,11 +43,11 @@ import (
 func TestValue_String(t *testing.T) {
 	var v Value
 	// colorized
-	v = value{"x", 0, 0}
+	v = value{"x", 0, 0, ""}
 	if x := v.String(); x != "x" {
 		t.Errorf("(value).String: want %q, got %q", "x", x)
 	}
-	v = value{"x", BlackFg, RedBg}
+	v = value{"x", BlackFg, RedBg, ""}
 	want := "\033[0;30mx\033[0;41m"
 	if got := v.String(); want != got {
 		t.Errorf("(value).String: want %q, got %q", want, got)
@@ -62,7 +62,7 @@ func TestValue_String(t *testing.T) {
 
 func TestValue_Color(t *testing.T) {
 	// colorized
-	if (value{"", RedFg, 0}).Color() != RedFg {
+	if (value{"", RedFg, 0, ""}).Color() != RedFg {
 		t.Error("wrong color")
 	}
 	// clear
@@ -73,7 +73,7 @@ func TestValue_Color(t *testing.T) {
 
 func TestValue_Value(t *testing.T) {
 	// colorized
-	if (value{"x", RedFg, BlueBg}).Value() != "x" {
+	if (value{"x", RedFg, BlueBg, ""}).Value() != "x" {
 		t.Error("wrong value")
 	}
 	// clear
@@ -84,7 +84,7 @@ func TestValue_Value(t *testing.T) {
 
 func TestValue_Bleach(t *testing.T) {
 	// colorized
-	if (value{"x", RedFg, BlueBg}).Bleach() != (value{value: "x"}) {
+	if (value{"x", RedFg, BlueBg, ""}).Bleach() != (value{value: "x"}) {
 		t.Error("wrong bleached")
 	}
 	// clear
@@ -99,7 +99,7 @@ func TestValue_Format(t *testing.T) {
 	//
 	// colorized
 	//
-	v = value{3.14, RedFg, BlueBg}
+	v = value{3.14, RedFg, BlueBg, ""}
 	got = fmt.Sprintf("%+1.3g", v)
 	want = "\033[0;31m" + fmt.Sprintf("%+1.3g", 3.14) + "\033[0;44m"
 	if want != got {
@@ -129,9 +129,42 @@ func TestValue_Format(t *testing.T) {
 	}
 }
 
+// As documented at https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+func TestValue_Link(t *testing.T) {
+	var v Value
+	var want, got string
+	//
+	// linked
+	//
+	v = value{"example site", 0, 0, "http://example.com"}
+	got = fmt.Sprintf("%s", v)
+	want = "\033]8;;" + "http://example.com" + "\033\\" + "example site" + "\033]8;;\033\\"
+	if want != got {
+		t.Errorf("Format: want %q, got %q", want, got)
+	}
+	//
+	// reset
+	//
+	v = value{"example site", 0, 0, "http://example.com"}
+	got = fmt.Sprintf("%s", v.Reset())
+	want = "example site"
+	if want != got {
+		t.Errorf("Format: want %q, got %q", want, got)
+	}
+	//
+	// linked & coloured
+	//
+	v = value{"example site", RedFg, BlueBg, "http://example.com"}
+	got = fmt.Sprintf("%s", v)
+	want = "\033[0;31m" + "\033]8;;" + "http://example.com" + "\033\\" + "example site" + "\033]8;;\033\\" + "\033[0;44m"
+	if want != got {
+		t.Errorf("Format: want %q, got %q", want, got)
+	}
+}
+
 func Test_tail(t *testing.T) {
 	// colorized
-	if (value{"x", 0, BlueBg}).tail() != BlueBg {
+	if (value{"x", 0, BlueBg, ""}).tail() != BlueBg {
 		t.Error("wrong tail color")
 	}
 	// clear
@@ -142,7 +175,7 @@ func Test_tail(t *testing.T) {
 
 func Test_setTail(t *testing.T) {
 	// colorized
-	if (value{"x", 0, 0}).setTail(RedFg) != (value{"x", 0, RedFg}) {
+	if (value{"x", 0, 0, ""}).setTail(RedFg) != (value{"x", 0, RedFg, ""}) {
 		t.Error("wrong setTail behavior")
 	}
 	// clear

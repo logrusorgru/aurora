@@ -53,7 +53,7 @@ func Colorize(arg interface{}, color Color) Value {
 		val.color = color
 		return val
 	}
-	return value{arg, color, 0}
+	return value{arg, color, 0, ""}
 }
 
 // Reset wraps given argument returning Value
@@ -555,4 +555,11 @@ func BgGray(n uint8, arg interface{}) Value {
 		n = 23
 	}
 	return value{value: arg, color: (Color(n+232) << shiftBg) | flagBg}
+}
+
+func Link(arg interface{}, url string) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Link(url)
+	}
+	return value{value: arg, linkURL: url}
 }

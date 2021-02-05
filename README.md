@@ -253,6 +253,24 @@ func main() {
 }
 ```
 
+# Hyperlinks
+
+Many modern terminal emulators support [hyperlinking arbitrary text](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda#supporting-apps)
+in a backward-compatible fashion. Aurora provides an interface for printing them:
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/logrusorgru/aurora"
+)
+
+func main() {
+  fmt.Println("Now with ", aurora.Link("links", "https://github.com/logrusorgru/aurora"))
+}
+```
+
 # Supported colors & formats
 
 - formats
@@ -281,6 +299,8 @@ func main() {
   + white
   + 24 grayscale colors
   + 216 8-bit colors
+- special formatting
+  + hyperlinks
 
 ### All colors
 

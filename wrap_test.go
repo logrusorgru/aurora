@@ -408,3 +408,11 @@ func Test_bigGray(t *testing.T) {
 	testFunc(t, "Gray", Gray(115, "x"), Color(232+23)<<shiftFg|flagFg)
 	testFunc(t, "BgGray", BgGray(215, "x"), Color(232+23)<<shiftBg|flagBg)
 }
+
+func Test_Link(t *testing.T) {
+	got := Link("text", "http://example.com")
+	want := value{value: "text", linkURL: "http://example.com"}
+	if got != want {
+		t.Errorf("want = %+v got = %+v", want, got)
+	}
+}

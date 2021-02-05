@@ -180,6 +180,8 @@ const (
 	availFlags = "-+# 0"
 	esc        = "\033["
 	clear      = esc + "0m"
+	oscURL     = "\033]8;;"
+	st         = "\033\\"
 )
 
 // IsValid returns true always
