@@ -143,6 +143,24 @@ func TestValue_Link(t *testing.T) {
 		t.Errorf("Format: want %q, got %q", want, got)
 	}
 	//
+	// applying link
+	//
+	v = value{"example site", 0, 0, ""}.Link("http://example.com")
+	got = fmt.Sprintf("%s", v)
+	want = "\033]8;;" + "http://example.com" + "\033\\" + "example site" + "\033]8;;\033\\"
+	if want != got {
+		t.Errorf("Format: want %q, got %q", want, got)
+	}
+	//
+	// clear
+	//
+	v = valueClear{"example site"}.Link("http://example.com")
+	got = fmt.Sprintf("%s", v)
+	want = "example site"
+	if want != got {
+		t.Errorf("Format: want %q, got %q", want, got)
+	}
+	//
 	// reset
 	//
 	v = value{"example site", 0, 0, "http://example.com"}

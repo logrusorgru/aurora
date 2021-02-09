@@ -415,4 +415,9 @@ func Test_Link(t *testing.T) {
 	if got != want {
 		t.Errorf("want = %+v got = %+v", want, got)
 	}
+
+	got = Link(value{value: "text"}, "http://example.com")
+	if got != want {
+		t.Errorf("want = %+v got = %+v", want, got)
+	}
 }
