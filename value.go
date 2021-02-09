@@ -242,6 +242,10 @@ type Value interface {
 	// Colorize removes existing colors and
 	// formats of the argument and applies given.
 	Colorize(color Color) Value
+
+	// Link adds a hyperlink according to the spec
+	// at https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+	Link(url string) Value
 }
 
 // Value without colors
@@ -320,6 +324,7 @@ func (vc valueClear) BgBrightWhite() Value   { return vc }
 func (vc valueClear) BgIndex(uint8) Value    { return vc }
 func (vc valueClear) BgGray(uint8) Value     { return vc }
 func (vc valueClear) Colorize(Color) Value   { return vc }
+func (vc valueClear) Link(string) Value      { return vc }
 
 func (vc valueClear) Format(s fmt.State, verb rune) {
 	// it's enough for many cases (%-+020.10f)
@@ -361,6 +366,7 @@ type value struct {
 	value     interface{} // value as it
 	color     Color       // this color
 	tailColor Color       // tail color
+	linkURL   string
 }
 
 func (v value) String() string {
@@ -384,6 +390,7 @@ func (v value) Bleach() Value {
 
 func (v value) Reset() Value {
 	v.color, v.tailColor = 0, 0
+	v.linkURL = ""
 	return v
 }
 
@@ -419,11 +426,16 @@ func (v value) Format(s fmt.State, verb rune) {
 	//
 	// 10 + 59 * 2 = 128
 
-	format := make([]byte, 0, 128)
+	format := make([]byte, 0, 128+len(v.linkURL))
 	if v.color != 0 {
 		format = append(format, esc...)
 		format = v.color.appendNos(format, v.tailColor != 0)
 		format = append(format, 'm')
+	}
+	if v.linkURL != "" {
+		format = append(format, oscURL...)
+		format = append(format, v.linkURL...)
+		format = append(format, st...)
 	}
 	format = append(format, '%')
 	var f byte
@@ -445,6 +457,10 @@ func (v value) Format(s fmt.State, verb rune) {
 		format = append(format, string(verb)...)
 	} else {
 		format = append(format, byte(verb))
+	}
+	if v.linkURL != "" {
+		format = append(format, oscURL...)
+		format = append(format, st...)
 	}
 	if v.color != 0 {
 		if v.tailColor != 0 {
@@ -741,5 +757,10 @@ func (v value) BgGray(n uint8) Value {
 
 func (v value) Colorize(color Color) Value {
 	v.color = color
+	return v
+}
+
+func (v value) Link(url string) Value {
+	v.linkURL = url
 	return v
 }
