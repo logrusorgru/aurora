@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -395,4 +395,363 @@ func (c Color) appendNos(bs []byte, zero bool) []byte {
 	}
 
 	return bs
+}
+
+// ColorIndex is index of pre-defined 8-bit foreground or
+// background colors from 0 to 255 (38;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 30–37 m)
+//	  8- 15:  high intensity colors (as in ESC [ 90–97 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+type ColorIndex uint8
+
+// GrayIndex from 0 to 23.
+type GrayIndex uint8
+
+// GreyIndex is alias for the GrayIndex type.
+type GreyIndex = GrayIndex
+
+// The Colored interface represents a value with a Color.
+type Colored interface {
+	Color() Color // color of the value
+}
+
+// Reset returns Color without a color and formats.
+func (c Color) Reset() Color {
+	return Color(0)
+}
+
+//
+// Formats
+//
+
+// Bold or increased intensity (1).
+func (c Color) Bold() Color {
+	return (c &^ FaintFm) | BoldFm
+}
+
+// Faint, decreased intensity (2).
+func (c Color) Faint() Color {
+	return (c &^ BoldFm) | FaintFm
+}
+
+// DoublyUnderline or Bold off, double-underline
+// per ECMA-48 (21).
+func (c Color) DoublyUnderline() Color {
+	return (c &^ UnderlineFm) | DoublyUnderlineFm
+}
+
+// Fraktur, rarely supported (20).
+func (c Color) Fraktur() Color {
+	return c | FrakturFm
+}
+
+// Italic, not widely supported, sometimes
+// treated as inverse (3).
+func (c Color) Italic() Color {
+	return c | ItalicFm
+}
+
+// Underline (4).
+func (c Color) Underline() Color {
+	return (c &^ DoublyUnderlineFm) | UnderlineFm
+}
+
+// SlowBlink, blinking less than 150
+// per minute (5).
+func (c Color) SlowBlink() Color {
+	return (c &^ RapidBlinkFm) | SlowBlinkFm
+}
+
+// RapidBlink, blinking 150+ per minute,
+// not widely supported (6).
+func (c Color) RapidBlink() Color {
+	return (c &^ SlowBlinkFm) | RapidBlinkFm
+}
+
+// Blink is alias for the SlowBlink.
+func (c Color) Blink() Color {
+	return c.SlowBlink()
+}
+
+// Reverse video, swap foreground and
+// background colors (7).
+func (c Color) Reverse() Color {
+	return c | ReverseFm
+}
+
+// Inverse is alias for the Reverse
+func (c Color) Inverse() Color {
+	return c.Reverse()
+}
+
+// Conceal, hidden, not widely supported (8).
+func (c Color) Conceal() Color {
+	return c | ConcealFm
+}
+
+// Hidden is alias for the Conceal
+func (c Color) Hidden() Color {
+	return c.Conceal()
+}
+
+// CrossedOut, characters legible, but
+// marked for deletion (9).
+func (c Color) CrossedOut() Color {
+	return c | CrossedOutFm
+}
+
+// StrikeThrough is alias for the CrossedOut.
+func (c Color) StrikeThrough() Color {
+	return c.CrossedOut()
+}
+
+// Framed (51).
+func (c Color) Framed() Color {
+	return c | FramedFm
+}
+
+// Encircled (52).
+func (c Color) Encircled() Color {
+	return c | EncircledFm
+}
+
+// Overlined (53).
+func (c Color) Overlined() Color {
+	return c | OverlinedFm
+}
+
+// Foreground colors
+//
+// Black foreground color (30)
+func (c Color) Black() Color {
+	return (c &^ maskFg) | BlackFg
+}
+
+// Red foreground color (31)
+func (c Color) Red() Color {
+	return (c &^ maskFg) | RedFg
+}
+
+// Green foreground color (32)
+func (c Color) Green() Color {
+	return (c &^ maskFg) | GreenFg
+}
+
+// Yellow foreground color (33)
+func (c Color) Yellow() Color {
+	return (c &^ maskFg) | YellowFg
+}
+
+// Brown foreground color (33)
+//
+// Deprecated: use Yellow instead, following specification
+func (c Color) Brown() Color {
+	return c.Yellow()
+}
+
+// Blue foreground color (34)
+func (c Color) Blue() Color {
+	return (c &^ maskFg) | BlueFg
+}
+
+// Magenta foreground color (35)
+func (c Color) Magenta() Color {
+	return (c &^ maskFg) | MagentaFg
+}
+
+// Cyan foreground color (36)
+func (c Color) Cyan() Color {
+	return (c &^ maskFg) | CyanFg
+}
+
+// White foreground color (37)
+func (c Color) White() Color {
+	return (c &^ maskFg) | WhiteFg
+}
+
+// Bright foreground colors
+//
+// BrightBlack foreground color (90)
+func (c Color) BrightBlack() Color {
+	return (c &^ maskFg) | BrightFg | BlackFg
+}
+
+// BrightRed foreground color (91)
+func (c Color) BrightRed() Color {
+	return (c &^ maskFg) | BrightFg | RedFg
+}
+
+// BrightGreen foreground color (92)
+func (c Color) BrightGreen() Color {
+	return (c &^ maskFg) | BrightFg | GreenFg
+}
+
+// BrightYellow foreground color (93)
+func (c Color) BrightYellow() Color {
+	return (c &^ maskFg) | BrightFg | YellowFg
+}
+
+// BrightBlue foreground color (94)
+func (c Color) BrightBlue() Color {
+	return (c &^ maskFg) | BrightFg | BlueFg
+}
+
+// BrightMagenta foreground color (95)
+func (c Color) BrightMagenta() Color {
+	return (c &^ maskFg) | BrightFg | MagentaFg
+}
+
+// BrightCyan foreground color (96)
+func (c Color) BrightCyan() Color {
+	return (c &^ maskFg) | BrightFg | CyanFg
+}
+
+// BrightWhite foreground color (97)
+func (c Color) BrightWhite() Color {
+	return (c &^ maskFg) | BrightFg | WhiteFg
+}
+
+// Other
+//
+// Index of pre-defined 8-bit foreground color
+// from 0 to 255 (38;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 30–37 m)
+//	  8- 15:  high intensity colors (as in ESC [ 90–97 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (c Color) Index(ci ColorIndex) Color {
+	return (c &^ maskFg) | (Color(ci) << shiftFg) | flagFg
+}
+
+// Gray from 0 to 23.
+func (c Color) Gray(n GrayIndex) Color {
+	return c | 0
+}
+
+// Grey is alias to Gray.
+func (c Color) Grey(n GreyIndex) Color {
+	if n > 23 {
+		n = 23
+	}
+	return (c &^ maskFg) | (Color(232+n) << shiftFg) | flagFg
+}
+
+// Background colors
+//
+// BgBlack background color (40)
+func (c Color) BgBlack() Color {
+	return (c &^ maskBg) | BlackBg
+}
+
+// BgRed background color (41)
+func (c Color) BgRed() Color {
+	return (c &^ maskBg) | RedBg
+}
+
+// BgGreen background color (42)
+func (c Color) BgGreen() Color {
+	return (c &^ maskBg) | GreenBg
+}
+
+// BgYellow background color (43)
+func (c Color) BgYellow() Color {
+	return (c &^ maskBg) | YellowBg
+}
+
+// BgBrown background color (43)
+//
+// Deprecated: use BgYellow instead, following specification
+func (c Color) BgBrown() Color {
+	return c.BgYellow()
+}
+
+// BgBlue background color (44)
+func (c Color) BgBlue() Color {
+	return (c &^ maskBg) | BlueBg
+}
+
+// BgMagenta background color (45)
+func (c Color) BgMagenta() Color {
+	return (c &^ maskBg) | MagentaBg
+}
+
+// BgCyan background color (46)
+func (c Color) BgCyan() Color {
+	return (c &^ maskBg) | CyanBg
+}
+
+// BgWhite background color (47)
+func (c Color) BgWhite() Color {
+	return (c &^ maskBg) | WhiteBg
+}
+
+// Bright background colors
+//
+// BgBrightBlack background color (100)
+func (c Color) BgBrightBlack() Color {
+	return (c &^ maskBg) | BrightBg | BlackBg
+}
+
+// BgBrightRed background color (101)
+func (c Color) BgBrightRed() Color {
+	return (c &^ maskBg) | BrightBg | RedBg
+}
+
+// BgBrightGreen background color (102)
+func (c Color) BgBrightGreen() Color {
+	return (c &^ maskBg) | BrightBg | GreenBg
+}
+
+// BgBrightYellow background color (103)
+func (c Color) BgBrightYellow() Color {
+	return (c &^ maskBg) | BrightBg | YellowBg
+}
+
+// BgBrightBlue background color (104)
+func (c Color) BgBrightBlue() Color {
+	return (c &^ maskBg) | BrightBg | BlueBg
+}
+
+// BgBrightMagenta background color (105)
+func (c Color) BgBrightMagenta() Color {
+	return (c &^ maskBg) | BrightBg | MagentaBg
+}
+
+// BgBrightCyan background color (106)
+func (c Color) BgBrightCyan() Color {
+	return (c &^ maskBg) | BrightBg | CyanBg
+}
+
+// BgBrightWhite background color (107)
+func (c Color) BgBrightWhite() Color {
+	return (c &^ maskBg) | BrightBg | WhiteBg
+}
+
+// Other
+//
+// BgIndex of 8-bit pre-defined background color
+// from 0 to 255 (48;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 40–47 m)
+//	  8- 15:  high intensity colors (as in ESC [100–107 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (c Color) BgIndex(n ColorIndex) Color {
+	return (c &^ maskBg) | (Color(n) << shiftBg) | flagBg
+}
+
+// BgGray from 0 to 23.
+func (c Color) BgGray(n GrayIndex) Color {
+	if n > 23 {
+		n = 23
+	}
+	return (c &^ maskBg) | (Color(232+n) << shiftBg) | flagBg
+}
+
+// BgGrey is alias to BgGray.
+func (c Color) BgGrey(n GreyIndex) Color {
+	return c.BgGray(n)
 }
