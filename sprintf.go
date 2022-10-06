@@ -37,16 +37,103 @@ package aurora
 
 import (
 	"fmt"
+	"strconv"
+	"unicode/utf8"
 )
+
+type valueAlias = Value // used to resolve Value field / Value() method conflict
+
+type tailedValue struct {
+	valueAlias
+	tail Color
+}
+
+func (v tailedValue) String() string {
+	var color = v.Color()
+	if color != 0 {
+		if v.tail != 0 {
+			return esc + color.Nos(true) + "m" + fmt.Sprint(v.Value()) + esc +
+				v.tail.Nos(true) + "m"
+		}
+		return esc + color.Nos(false) + "m" + fmt.Sprint(v.Value()) + clear
+	}
+	return fmt.Sprint(v.Value())
+}
+
+func (v tailedValue) Format(s fmt.State, verb rune) {
+
+	// it's enough for many cases (%-+020.10f)
+	// %          - 1
+	// availFlags - 3 (5)
+	// width      - 2
+	// prec       - 3 (.23)
+	// verb       - 1
+	// --------------
+	//             10
+	// +
+	// \033[                            5
+	// 0;1;3;4;5;7;8;9;20;21;51;52;53  30
+	// 38;5;216                         8
+	// 48;5;216                         8
+	// m                                1
+	// +
+	// \033[0m                          7
+	//
+	// x2 (possible tail color)
+	//
+	// 10 + 59 * 2 = 128
+
+	var (
+		format = make([]byte, 0, 128)
+		color  = v.Color()
+	)
+	if color != 0 {
+		format = append(format, esc...)
+		format = color.appendNos(format, v.tail != 0)
+		format = append(format, 'm')
+	}
+	format = append(format, '%')
+	var f byte
+	for i := 0; i < len(availFlags); i++ {
+		if f = availFlags[i]; s.Flag(int(f)) {
+			format = append(format, f)
+		}
+	}
+	var width, prec int
+	var ok bool
+	if width, ok = s.Width(); ok {
+		format = strconv.AppendInt(format, int64(width), 10)
+	}
+	if prec, ok = s.Precision(); ok {
+		format = append(format, '.')
+		format = strconv.AppendInt(format, int64(prec), 10)
+	}
+	if verb > utf8.RuneSelf {
+		format = append(format, string(verb)...)
+	} else {
+		format = append(format, byte(verb))
+	}
+	if color != 0 {
+		if v.tail != 0 {
+			// set next (previous) format clearing current one
+			format = append(format, esc...)
+			format = v.tail.appendNos(format, true)
+			format = append(format, 'm')
+		} else {
+			format = append(format, clear...) // just clear
+		}
+	}
+	fmt.Fprintf(s, string(format), v.Value())
+}
 
 // Sprintf allows to use Value as format. For example
 //
-//    v := Sprintf(Red("total: +3.5f points"), Blue(3.14))
+//	v := Sprintf(Red("total: +3.5f points"), Blue(3.14))
 //
 // In this case "total:" and "points" will be red, but
 // 3.14 will be blue. But, in another example
 //
-//    v := Sprintf(Red("total: +3.5f points"), 3.14)
+//	v := Sprintf(Red("total: +3.5f points"), 3.14)
 //
 // full string will be red. And no way to clear 3.14 to
 // default format and color
@@ -57,7 +144,7 @@ func Sprintf(format interface{}, args ...interface{}) string {
 	case Value:
 		for i, v := range args {
 			if val, ok := v.(Value); ok {
-				args[i] = val.setTail(ft.Color())
+				args[i] = tailedValue{valueAlias: val, tail: ft.Color()}
 				continue
 			}
 		}

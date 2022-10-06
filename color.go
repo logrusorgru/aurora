@@ -45,7 +45,7 @@ type Color uint
 
 	Developer note.
 
-	The int type is architecture depended and can be
+	The uint type is architecture depended and can be
 	represented as int32 or int64.
 
 	Thus, we can use 32-bits only to be fast and
@@ -112,7 +112,7 @@ const (
 	// 8 bits
 
 	// [  0;   7] - 30-37
-	// [  8;  15] - 90-97
+	// [  8;  15] - 90-97 bright
 	// [ 16; 231] - RGB
 	// [232; 255] - grayscale
 
@@ -147,7 +147,7 @@ const (
 	// 8 bits
 
 	// [  0;   7] - 40-47
-	// [  8;  15] - 100-107
+	// [  8;  15] - 100-107 bright
 	// [ 16; 231] - RGB
 	// [232; 255] - grayscale
 
@@ -409,9 +409,6 @@ type ColorIndex uint8
 // GrayIndex from 0 to 23.
 type GrayIndex uint8
 
-// GreyIndex is alias for the GrayIndex type.
-type GreyIndex = GrayIndex
-
 // The Colored interface represents a value with a Color.
 type Colored interface {
 	Color() Color // color of the value
@@ -628,11 +625,6 @@ func (c Color) Index(ci ColorIndex) Color {
 
 // Gray from 0 to 23.
 func (c Color) Gray(n GrayIndex) Color {
-	return c | 0
-}
-
-// Grey is alias to Gray.
-func (c Color) Grey(n GreyIndex) Color {
 	if n > 23 {
 		n = 23
 	}
@@ -749,9 +741,4 @@ func (c Color) BgGray(n GrayIndex) Color {
 		n = 23
 	}
 	return (c &^ maskBg) | (Color(232+n) << shiftBg) | flagBg
-}
-
-// BgGrey is alias to BgGray.
-func (c Color) BgGrey(n GreyIndex) Color {
-	return c.BgGray(n)
 }

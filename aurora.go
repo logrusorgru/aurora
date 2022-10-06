@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -36,690 +36,592 @@
 // Package aurora implements ANSI-colors
 package aurora
 
-import (
-	"fmt"
-)
-
-// An Aurora implements colorizer interface.
-// It also can be a non-colorizer
-type Aurora interface {
-
-	// Reset wraps given argument returning Value
-	// without formats and colors.
-	Reset(arg interface{}) Value
-
-	//
-	// Formats
-	//
-	//
-	// Bold or increased intensity (1).
-	Bold(arg interface{}) Value
-	// Faint, decreased intensity (2).
-	Faint(arg interface{}) Value
-	//
-	// DoublyUnderline or Bold off, double-underline
-	// per ECMA-48 (21).
-	DoublyUnderline(arg interface{}) Value
-	// Fraktur, rarely supported (20).
-	Fraktur(arg interface{}) Value
-	//
-	// Italic, not widely supported, sometimes
-	// treated as inverse (3).
-	Italic(arg interface{}) Value
-	// Underline (4).
-	Underline(arg interface{}) Value
-	//
-	// SlowBlink, blinking less than 150
-	// per minute (5).
-	SlowBlink(arg interface{}) Value
-	// RapidBlink, blinking 150+ per minute,
-	// not widely supported (6).
-	RapidBlink(arg interface{}) Value
-	// Blink is alias for the SlowBlink.
-	Blink(arg interface{}) Value
-	//
-	// Reverse video, swap foreground and
-	// background colors (7).
-	Reverse(arg interface{}) Value
-	// Inverse is alias for the Reverse
-	Inverse(arg interface{}) Value
-	//
-	// Conceal, hidden, not widely supported (8).
-	Conceal(arg interface{}) Value
-	// Hidden is alias for the Conceal
-	Hidden(arg interface{}) Value
-	//
-	// CrossedOut, characters legible, but
-	// marked for deletion (9).
-	CrossedOut(arg interface{}) Value
-	// StrikeThrough is alias for the CrossedOut.
-	StrikeThrough(arg interface{}) Value
-	//
-	// Framed (51).
-	Framed(arg interface{}) Value
-	// Encircled (52).
-	Encircled(arg interface{}) Value
-	//
-	// Overlined (53).
-	Overlined(arg interface{}) Value
-
-	//
-	// Foreground colors
-	//
-	//
-	// Black foreground color (30)
-	Black(arg interface{}) Value
-	// Red foreground color (31)
-	Red(arg interface{}) Value
-	// Green foreground color (32)
-	Green(arg interface{}) Value
-	// Yellow foreground color (33)
-	Yellow(arg interface{}) Value
-	// Brown foreground color (33)
-	//
-	// Deprecated: use Yellow instead, following specification
-	Brown(arg interface{}) Value
-	// Blue foreground color (34)
-	Blue(arg interface{}) Value
-	// Magenta foreground color (35)
-	Magenta(arg interface{}) Value
-	// Cyan foreground color (36)
-	Cyan(arg interface{}) Value
-	// White foreground color (37)
-	White(arg interface{}) Value
-	//
-	// Bright foreground colors
-	//
-	// BrightBlack foreground color (90)
-	BrightBlack(arg interface{}) Value
-	// BrightRed foreground color (91)
-	BrightRed(arg interface{}) Value
-	// BrightGreen foreground color (92)
-	BrightGreen(arg interface{}) Value
-	// BrightYellow foreground color (93)
-	BrightYellow(arg interface{}) Value
-	// BrightBlue foreground color (94)
-	BrightBlue(arg interface{}) Value
-	// BrightMagenta foreground color (95)
-	BrightMagenta(arg interface{}) Value
-	// BrightCyan foreground color (96)
-	BrightCyan(arg interface{}) Value
-	// BrightWhite foreground color (97)
-	BrightWhite(arg interface{}) Value
-	//
-	// Other
-	//
-	// Index of pre-defined 8-bit foreground color
-	// from 0 to 255 (38;5;n).
-	//
-	//       0-  7:  standard colors (as in ESC [ 30–37 m)
-	//       8- 15:  high intensity colors (as in ESC [ 90–97 m)
-	//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
-	//     232-255:  grayscale from black to white in 24 steps
-	//
-	Index(n uint8, arg interface{}) Value
-	// Gray from 0 to 23.
-	Gray(n uint8, arg interface{}) Value
-
-	//
-	// Background colors
-	//
-	//
-	// BgBlack background color (40)
-	BgBlack(arg interface{}) Value
-	// BgRed background color (41)
-	BgRed(arg interface{}) Value
-	// BgGreen background color (42)
-	BgGreen(arg interface{}) Value
-	// BgYellow background color (43)
-	BgYellow(arg interface{}) Value
-	// BgBrown background color (43)
-	//
-	// Deprecated: use BgYellow instead, following specification
-	BgBrown(arg interface{}) Value
-	// BgBlue background color (44)
-	BgBlue(arg interface{}) Value
-	// BgMagenta background color (45)
-	BgMagenta(arg interface{}) Value
-	// BgCyan background color (46)
-	BgCyan(arg interface{}) Value
-	// BgWhite background color (47)
-	BgWhite(arg interface{}) Value
-	//
-	// Bright background colors
-	//
-	// BgBrightBlack background color (100)
-	BgBrightBlack(arg interface{}) Value
-	// BgBrightRed background color (101)
-	BgBrightRed(arg interface{}) Value
-	// BgBrightGreen background color (102)
-	BgBrightGreen(arg interface{}) Value
-	// BgBrightYellow background color (103)
-	BgBrightYellow(arg interface{}) Value
-	// BgBrightBlue background color (104)
-	BgBrightBlue(arg interface{}) Value
-	// BgBrightMagenta background color (105)
-	BgBrightMagenta(arg interface{}) Value
-	// BgBrightCyan background color (106)
-	BgBrightCyan(arg interface{}) Value
-	// BgBrightWhite background color (107)
-	BgBrightWhite(arg interface{}) Value
-	//
-	// Other
-	//
-	// BgIndex of 8-bit pre-defined background color
-	// from 0 to 255 (48;5;n).
-	//
-	//       0-  7:  standard colors (as in ESC [ 40–47 m)
-	//       8- 15:  high intensity colors (as in ESC [100–107 m)
-	//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
-	//     232-255:  grayscale from black to white in 24 steps
-	//
-	BgIndex(n uint8, arg interface{}) Value
-	// BgGray from 0 to 23.
-	BgGray(n uint8, arg interface{}) Value
-
-	//
-	// Special
-	//
-	// Colorize removes existing colors and
-	// formats of the argument and applies given.
-	Colorize(arg interface{}, color Color) Value
-
-	//
-	// Support methods
-	//
-	// Sprintf allows to use colored format.
-	Sprintf(format interface{}, args ...interface{}) string
+type Aurora struct {
+	conf Config
 }
 
-// NewAurora returns a new Aurora interface that
-// will support or not support colors depending
-// the enableColors argument
-func NewAurora(enableColors bool) Aurora {
-	if enableColors {
-		return aurora{}
+// New returns new colorizer by given Options.
+func New(opts ...Option) (a Aurora) {
+	a.conf.Apply(opts...)
+	return
+}
+
+// Reset wraps given argument returning Value without formats, colors and links.
+func (a Aurora) Reset(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Reset()
 	}
-	return auroraClear{}
+	return Value{conf: &a.conf, value: arg}
 }
 
-// no colors
-
-type auroraClear struct{}
-
-func (auroraClear) Reset(arg interface{}) Value { return valueClear{arg} }
-
-func (auroraClear) Bold(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Faint(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) DoublyUnderline(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Fraktur(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Italic(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Underline(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) SlowBlink(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) RapidBlink(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Blink(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Reverse(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Inverse(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Conceal(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Hidden(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) CrossedOut(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) StrikeThrough(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Framed(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Encircled(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Overlined(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Black(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Red(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Green(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Yellow(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Brown(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Blue(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Magenta(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Cyan(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) White(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightBlack(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightRed(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightGreen(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightYellow(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightBlue(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightMagenta(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightCyan(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BrightWhite(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Index(_ uint8, arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Gray(_ uint8, arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBlack(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgRed(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgGreen(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgYellow(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrown(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBlue(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgMagenta(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgCyan(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgWhite(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightBlack(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightRed(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightGreen(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightYellow(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightBlue(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightMagenta(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightCyan(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgBrightWhite(arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgIndex(_ uint8, arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) BgGray(_ uint8, arg interface{}) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Colorize(arg interface{}, _ Color) Value {
-	return valueClear{arg}
-}
-
-func (auroraClear) Sprintf(format interface{}, args ...interface{}) string {
-	if str, ok := format.(string); ok {
-		return fmt.Sprintf(str, args...)
+// Clear wraps given argument returning Value without formats and colors. But
+// preserving links.
+func (a Aurora) Clear(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Reset()
 	}
-	return fmt.Sprintf(fmt.Sprint(format), args...)
+	return Value{conf: &a.conf, value: arg}
 }
 
-// colorized
-
-type aurora struct{}
-
-func (aurora) Reset(arg interface{}) Value {
-	return Reset(arg)
+// Formats
+//
+// Bold or increased intensity (1).
+func (a Aurora) Bold(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Bold()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Bold()}
 }
 
-func (aurora) Bold(arg interface{}) Value {
-	return Bold(arg)
+// Faint, decreased intensity (2).
+func (a Aurora) Faint(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Faint()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Faint()}
 }
 
-func (aurora) Faint(arg interface{}) Value {
-	return Faint(arg)
+// DoublyUnderline or Bold off, double-underline per ECMA-48 (21).
+func (a Aurora) DoublyUnderline(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.DoublyUnderline()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).DoublyUnderline()}
 }
 
-func (aurora) DoublyUnderline(arg interface{}) Value {
-	return DoublyUnderline(arg)
+// Fraktur, rarely supported (20).
+func (a Aurora) Fraktur(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Fraktur()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Fraktur()}
 }
 
-func (aurora) Fraktur(arg interface{}) Value {
-	return Fraktur(arg)
+// Italic, not widely supported, sometimes treated as inverse (3).
+func (a Aurora) Italic(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Italic()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Italic()}
 }
 
-func (aurora) Italic(arg interface{}) Value {
-	return Italic(arg)
+// Underline (4).
+func (a Aurora) Underline(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Underline()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Underline()}
 }
 
-func (aurora) Underline(arg interface{}) Value {
-	return Underline(arg)
+// SlowBlink, blinking less than 150 per minute (5).
+func (a Aurora) SlowBlink(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.SlowBlink()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).SlowBlink()}
 }
 
-func (aurora) SlowBlink(arg interface{}) Value {
-	return SlowBlink(arg)
+// RapidBlink, blinking 150+ per minute, not widely supported (6).
+func (a Aurora) RapidBlink(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.RapidBlink()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).RapidBlink()}
 }
 
-func (aurora) RapidBlink(arg interface{}) Value {
-	return RapidBlink(arg)
+// Blink is alias for the SlowBlink.
+func (a Aurora) Blink(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Blink()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Blink()}
 }
 
-func (aurora) Blink(arg interface{}) Value {
-	return Blink(arg)
+// Reverse video, swap foreground and background colors (7).
+func (a Aurora) Reverse(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Reverse()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Reverse()}
 }
 
-func (aurora) Reverse(arg interface{}) Value {
-	return Reverse(arg)
+// Inverse is alias for the Reverse
+func (a Aurora) Inverse(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Inverse()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Inverse()}
 }
 
-func (aurora) Inverse(arg interface{}) Value {
-	return Inverse(arg)
+// Conceal, hidden, not widely supported (8).
+func (a Aurora) Conceal(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Conceal()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Conceal()}
 }
 
-func (aurora) Conceal(arg interface{}) Value {
-	return Conceal(arg)
+// Hidden is alias for the Conceal.
+func (a Aurora) Hidden(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Hidden()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Hidden()}
 }
 
-func (aurora) Hidden(arg interface{}) Value {
-	return Hidden(arg)
+// CrossedOut, characters legible, but marked for deletion (9).
+func (a Aurora) CrossedOut(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.CrossedOut()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).CrossedOut()}
 }
 
-func (aurora) CrossedOut(arg interface{}) Value {
-	return CrossedOut(arg)
+// StrikeThrough is alias for the CrossedOut.
+func (a Aurora) StrikeThrough(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.StrikeThrough()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).StrikeThrough()}
 }
 
-func (aurora) StrikeThrough(arg interface{}) Value {
-	return StrikeThrough(arg)
+// Framed (51).
+func (a Aurora) Framed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Framed()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Framed()}
 }
 
-func (aurora) Framed(arg interface{}) Value {
-	return Framed(arg)
+// Encircled (52).
+func (a Aurora) Encircled(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Encircled()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Encircled()}
 }
 
-func (aurora) Encircled(arg interface{}) Value {
-	return Encircled(arg)
+// Overlined (53).
+func (a Aurora) Overlined(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Overlined()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Overlined()}
 }
 
-func (aurora) Overlined(arg interface{}) Value {
-	return Overlined(arg)
+// Foreground colors
+//
+// Black foreground color (30).
+func (a Aurora) Black(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Black()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Black()}
 }
 
-func (aurora) Black(arg interface{}) Value {
-	return Black(arg)
+// Red foreground color (31).
+func (a Aurora) Red(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Red()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Red()}
 }
 
-func (aurora) Red(arg interface{}) Value {
-	return Red(arg)
+// Green foreground color (32).
+func (a Aurora) Green(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Green()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Green()}
 }
 
-func (aurora) Green(arg interface{}) Value {
-	return Green(arg)
+// Yellow foreground color (33).
+func (a Aurora) Yellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Yellow()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Yellow()}
 }
 
-func (aurora) Yellow(arg interface{}) Value {
-	return Yellow(arg)
+// Brown foreground color (33).
+//
+// Deprecated: use Yellow instead, following specification.
+func (a Aurora) Brown(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Brown()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Brown()}
 }
 
-func (aurora) Brown(arg interface{}) Value {
-	return Brown(arg)
+// Blue foreground color (34).
+func (a Aurora) Blue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Blue()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Blue()}
 }
 
-func (aurora) Blue(arg interface{}) Value {
-	return Blue(arg)
+// Magenta foreground color (35).
+func (a Aurora) Magenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Magenta()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Magenta()}
 }
 
-func (aurora) Magenta(arg interface{}) Value {
-	return Magenta(arg)
+// Cyan foreground color (36).
+func (a Aurora) Cyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Cyan()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Cyan()}
 }
 
-func (aurora) Cyan(arg interface{}) Value {
-	return Cyan(arg)
+// White foreground color (37).
+func (a Aurora) White(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.White()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).White()}
 }
 
-func (aurora) White(arg interface{}) Value {
-	return White(arg)
+// Bright foreground colors.
+//
+// BrightBlack foreground color (90).
+func (a Aurora) BrightBlack(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightBlack()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightBlack()}
 }
 
-func (aurora) BrightBlack(arg interface{}) Value {
-	return BrightBlack(arg)
+// BrightRed foreground color (91).
+func (a Aurora) BrightRed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightRed()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightRed()}
 }
 
-func (aurora) BrightRed(arg interface{}) Value {
-	return BrightRed(arg)
+// BrightGreen foreground color (92).
+func (a Aurora) BrightGreen(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightGreen()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightGreen()}
 }
 
-func (aurora) BrightGreen(arg interface{}) Value {
-	return BrightGreen(arg)
+// BrightYellow foreground color (93).
+func (a Aurora) BrightYellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightYellow()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightYellow()}
 }
 
-func (aurora) BrightYellow(arg interface{}) Value {
-	return BrightYellow(arg)
+// BrightBlue foreground color (94).
+func (a Aurora) BrightBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightBlue()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightBlue()}
 }
 
-func (aurora) BrightBlue(arg interface{}) Value {
-	return BrightBlue(arg)
+// BrightMagenta foreground color (95).
+func (a Aurora) BrightMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightMagenta()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightMagenta()}
 }
 
-func (aurora) BrightMagenta(arg interface{}) Value {
-	return BrightMagenta(arg)
+// BrightCyan foreground color (96).
+func (a Aurora) BrightCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightCyan()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightCyan()}
 }
 
-func (aurora) BrightCyan(arg interface{}) Value {
-	return BrightCyan(arg)
+// BrightWhite foreground color (97).
+func (a Aurora) BrightWhite(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BrightWhite()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BrightWhite()}
 }
 
-func (aurora) BrightWhite(arg interface{}) Value {
-	return BrightWhite(arg)
+// Other colors.
+//
+// Index of pre-defined 8-bit foreground color from 0 to 255 (38;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 30–37 m)
+//	  8- 15:  high intensity colors (as in ESC [ 90–97 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (a Aurora) Index(n ColorIndex, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Index(n)
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Index(n)}
 }
 
-func (aurora) Index(index uint8, arg interface{}) Value {
-	return Index(index, arg)
+// Gray from 0 to 23.
+func (a Aurora) Gray(n GrayIndex, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Gray(n)
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).Gray(n)}
 }
 
-func (aurora) Gray(n uint8, arg interface{}) Value {
-	return Gray(n, arg)
+// Background colors.
+//
+// BgBlack background color (40).
+func (a Aurora) BgBlack(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBlack()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBlack()}
 }
 
-func (aurora) BgBlack(arg interface{}) Value {
-	return BgBlack(arg)
+// BgRed background color (41).
+func (a Aurora) BgRed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgRed()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgRed()}
 }
 
-func (aurora) BgRed(arg interface{}) Value {
-	return BgRed(arg)
+// BgGreen background color (42).
+func (a Aurora) BgGreen(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgGreen()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgGreen()}
 }
 
-func (aurora) BgGreen(arg interface{}) Value {
-	return BgGreen(arg)
+// BgYellow background color (43).
+func (a Aurora) BgYellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgYellow()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgYellow()}
 }
 
-func (aurora) BgYellow(arg interface{}) Value {
-	return BgYellow(arg)
+// BgBrown background color (43).
+//
+// Deprecated: use BgYellow instead, following specification.
+func (a Aurora) BgBrown(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrown()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrown()}
 }
 
-func (aurora) BgBrown(arg interface{}) Value {
-	return BgBrown(arg)
+// BgBlue background color (44).
+func (a Aurora) BgBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBlue()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBlue()}
 }
 
-func (aurora) BgBlue(arg interface{}) Value {
-	return BgBlue(arg)
+// BgMagenta background color (45).
+func (a Aurora) BgMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgMagenta()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgMagenta()}
 }
 
-func (aurora) BgMagenta(arg interface{}) Value {
-	return BgMagenta(arg)
+// BgCyan background color (46).
+func (a Aurora) BgCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgCyan()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgCyan()}
 }
 
-func (aurora) BgCyan(arg interface{}) Value {
-	return BgCyan(arg)
+// BgWhite background color (47).
+func (a Aurora) BgWhite(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgWhite()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgWhite()}
 }
 
-func (aurora) BgWhite(arg interface{}) Value {
-	return BgWhite(arg)
+// Bright background colors.
+//
+// BgBrightBlack background color (100).
+func (a Aurora) BgBrightBlack(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightBlack()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightBlack()}
 }
 
-func (aurora) BgBrightBlack(arg interface{}) Value {
-	return BgBrightBlack(arg)
+// BgBrightRed background color (101).
+func (a Aurora) BgBrightRed(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightRed()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightRed()}
 }
 
-func (aurora) BgBrightRed(arg interface{}) Value {
-	return BgBrightRed(arg)
+// BgBrightGreen background color (102).
+func (a Aurora) BgBrightGreen(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightGreen()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightGreen()}
 }
 
-func (aurora) BgBrightGreen(arg interface{}) Value {
-	return BgBrightGreen(arg)
+// BgBrightYellow background color (103).
+func (a Aurora) BgBrightYellow(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightYellow()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightYellow()}
 }
 
-func (aurora) BgBrightYellow(arg interface{}) Value {
-	return BgBrightYellow(arg)
+// BgBrightBlue background color (104).
+func (a Aurora) BgBrightBlue(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightBlue()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightBlue()}
 }
 
-func (aurora) BgBrightBlue(arg interface{}) Value {
-	return BgBrightBlue(arg)
+// BgBrightMagenta background color (105).
+func (a Aurora) BgBrightMagenta(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightMagenta()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightMagenta()}
 }
 
-func (aurora) BgBrightMagenta(arg interface{}) Value {
-	return BgBrightMagenta(arg)
+// BgBrightCyan background color (106).
+func (a Aurora) BgBrightCyan(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightCyan()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightCyan()}
 }
 
-func (aurora) BgBrightCyan(arg interface{}) Value {
-	return BgBrightCyan(arg)
+// BgBrightWhite background color (107).
+func (a Aurora) BgBrightWhite(arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgBrightWhite()
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgBrightWhite()}
 }
 
-func (aurora) BgBrightWhite(arg interface{}) Value {
-	return BgBrightWhite(arg)
+// Other background colors.
+//
+// BgIndex of 8-bit pre-defined background color from 0 to 255 (48;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 40–47 m)
+//	  8- 15:  high intensity colors (as in ESC [100–107 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (a Aurora) BgIndex(n ColorIndex, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgIndex(n)
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgIndex(n)}
 }
 
-func (aurora) BgIndex(n uint8, arg interface{}) Value {
-	return BgIndex(n, arg)
+// BgGray from 0 to 23.
+func (a Aurora) BgGray(n GrayIndex, arg interface{}) Value {
+	if val, ok := arg.(Value); ok {
+		return val.BgGray(n)
+	}
+	return Value{conf: &a.conf, value: arg, color: Color(0).BgGray(n)}
 }
 
-func (aurora) BgGray(n uint8, arg interface{}) Value {
-	return BgGray(n, arg)
+// Special color functions.
+//
+// Colorize removes existing colors and
+// formats of the argument and applies given.
+func (a Aurora) Colorize(arg interface{}, color Color) Value {
+	if val, ok := arg.(Value); ok {
+		return val.Colorize(color)
+	}
+	return Value{conf: &a.conf, value: arg, color: color}
 }
 
-func (aurora) Colorize(arg interface{}, color Color) Value {
-	return Colorize(arg, color)
+// Hyperlinks feature
+//
+// Hyperlink with given target and parameters. If hyperlinks feature is
+// disabled, then the 'arg' argument dropped and the 'target' used instead
+// inheriting all colors and format from the 'arg' (if it's a Colored).
+//
+// See https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+// for details about the hyperlinks feature.
+//
+// The Hyperlink doesn't escape the target and the params. They should be
+// checked and escaped before.
+//
+// See also HyperlinkID function.
+//
+// For a simple example
+//
+//	au.Hyperlink("Example", "http://example.com")
+//
+// and an example with ID
+//
+//	au.Hyperlink("Example", "http://example.com", aurora.HyperlinkID("10"))
+func (a Aurora) Hyperlink(arg interface{}, target string,
+	params ...HyperlinkParam) Value {
+
+	if val, ok := arg.(Value); ok {
+		return val.Hyperlink(target, params...)
+	}
+	return Value{conf: &a.conf, value: arg}.Hyperlink(target, params...)
 }
 
-func (aurora) Sprintf(format interface{}, args ...interface{}) string {
+// HyperlinkTarget of the argument if it's a Value.
+func (a Aurora) HyperlinkTarget(arg interface{}) (target string) {
+	if val, ok := arg.(Value); ok {
+		return val.HyperlinkTarget()
+	}
+	return // no target
+}
+
+// HyperlinkParams of the argument if it's a Value.
+func (a Aurora) HyperlinkParams(arg interface{}) (params []HyperlinkParam) {
+	if val, ok := arg.(Value); ok {
+		return val.HyperlinkParams()
+	}
+	return // no target
+}
+
+func (a Aurora) transform(arg interface{}) (val Value, ok bool) {
+	var ai Value
+	ai, ok = arg.(Value)
+	if ok {
+		return // Value{}, false
+	}
+	val = Value{conf: &a.conf, value: ai.value, color: ai.color}
+	if a.conf.Hyperlinks {
+		val.hyperlink = ai.hyperlink
+	}
+	return // transformed value, true
+}
+
+// Support methods.
+//
+// Sprintf allows to use colored format. It allies own configurations to
+// all given values (if there is a Value).
+func (a Aurora) Sprintf(format interface{}, args ...interface{}) string {
+	// clear colors & links as configured by the a
+	if f, ok := a.transform(format); ok {
+		format = f
+	}
+	for i := range args {
+		if ax, ok := a.transform(args[i]); ok {
+			args[i] = ax
+		}
+	}
 	return Sprintf(format, args...)
 }

@@ -51,15 +51,15 @@ func ExampleBold() {
 	// Output: value: [1;32m99[0m
 }
 
-func ExampleNewAurora_no_colors() {
-	a := NewAurora(false)
+func ExampleNew_no_colors() {
+	var a = New(WithColors(false), WithHyperlinks(false))
 	fmt.Println(a.Red("Not red"))
 
 	// Output: Not red
 }
 
-func ExampleNewAurora_colors() {
-	a := NewAurora(true)
+func ExampleNew_colors() {
+	var a = New()
 	fmt.Println(a.Red("Red"))
 
 	// Output: [31mRed[0m
