@@ -185,13 +185,6 @@ func Yellow(arg interface{}) Value {
 	return DefaultColorizer.Yellow(arg)
 }
 
-// Brown foreground color (33)
-//
-// Deprecated: use Yellow instead, following specification
-func Brown(arg interface{}) Value {
-	return DefaultColorizer.Brown(arg)
-}
-
 // Blue foreground color (34)
 func Blue(arg interface{}) Value {
 	return DefaultColorizer.Blue(arg)
@@ -298,13 +291,6 @@ func BgGreen(arg interface{}) Value {
 // BgYellow background color (43)
 func BgYellow(arg interface{}) Value {
 	return DefaultColorizer.BgYellow(arg)
-}
-
-// BgBrown background color (43)
-//
-// Deprecated: use BgYellow instead, following specification
-func BgBrown(arg interface{}) Value {
-	return DefaultColorizer.BgBrown(arg)
 }
 
 // BgBlue background color (44)
@@ -425,4 +411,21 @@ func HyperlinkTarget(arg interface{}) (target string) {
 // HyperlinkParams of the argument if it's a Value.
 func HyperlinkParams(arg interface{}) (params []HyperlinkParam) {
 	return DefaultColorizer.HyperlinkParams(arg)
+}
+
+// Sprintf allows to use Value as format. For example
+//
+//	var v = Sprintf(Red("total: +3.5f points"), Blue(3.14))
+//
+// In this case "total:" and "points" will be red, but
+// 3.14 will be blue. But, in another example
+//
+//	var v = Sprintf(Red("total: +3.5f points"), 3.14)
+//
+// full string will be red. And no way to clear 3.14 to default format and
+// color.
+//
+// It applies own configurations to all given Values.
+func Sprintf(format interface{}, args ...interface{}) string {
+	return DefaultColorizer.Sprintf(format, args...)
 }

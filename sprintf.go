@@ -41,26 +41,12 @@ import (
 	"unicode/utf8"
 )
 
-type valueAlias = Value // used to resolve Value field / Value() method conflict
-
 type tailedValue struct {
-	valueAlias
+	Value
 	tail Color
 }
 
-func (v tailedValue) String() string {
-	var color = v.Color()
-	if color != 0 {
-		if v.tail != 0 {
-			return esc + color.Nos(true) + "m" + fmt.Sprint(v.Value()) + esc +
-				v.tail.Nos(true) + "m"
-		}
-		return esc + color.Nos(false) + "m" + fmt.Sprint(v.Value()) + clear
-	}
-	return fmt.Sprint(v.Value())
-}
-
-func (v tailedValue) Format(s fmt.State, verb rune) {
+func (v *tailedValue) Format(s fmt.State, verb rune) {
 
 	// it's enough for many cases (%-+020.10f)
 	// %          - 1
@@ -123,28 +109,17 @@ func (v tailedValue) Format(s fmt.State, verb rune) {
 			format = append(format, clear...) // just clear
 		}
 	}
-	fmt.Fprintf(s, string(format), v.Value())
+	fmt.Fprintf(s, string(format), v.Value.Value())
 }
 
-// Sprintf allows to use Value as format. For example
-//
-//	v := Sprintf(Red("total: +3.5f points"), Blue(3.14))
-//
-// In this case "total:" and "points" will be red, but
-// 3.14 will be blue. But, in another example
-//
-//	v := Sprintf(Red("total: +3.5f points"), 3.14)
-//
-// full string will be red. And no way to clear 3.14 to
-// default format and color
-func Sprintf(format interface{}, args ...interface{}) string {
+func sprintf(format interface{}, args ...interface{}) string {
 	switch ft := format.(type) {
 	case string:
 		return fmt.Sprintf(ft, args...)
 	case Value:
 		for i, v := range args {
 			if val, ok := v.(Value); ok {
-				args[i] = tailedValue{valueAlias: val, tail: ft.Color()}
+				args[i] = &tailedValue{Value: val, tail: ft.Color()}
 				continue
 			}
 		}

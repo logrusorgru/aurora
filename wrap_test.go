@@ -197,12 +197,6 @@ func Test_Yellow(t *testing.T) {
 		YellowFg|BoldFm|BrightBg|MagentaBg)
 }
 
-func Test_Brown(t *testing.T) {
-	testFunc(t, "Brown", Brown("x"), BrownFg)
-	testFunc(t, "Complex Brown", Brown(BgBrightBlue("x").Bold()),
-		BrownFg|BrightBg|BlueBg|BoldFm)
-}
-
 func Test_Blue(t *testing.T) {
 	testFunc(t, "Blue", Blue("x"), BlueFg)
 	testFunc(t, "Complex Blue", Blue(Fraktur("x").Underline()),
@@ -309,12 +303,6 @@ func Test_BgYellow(t *testing.T) {
 	testFunc(t, "BgYellow", BgYellow("x"), YellowBg)
 	testFunc(t, "Complex BgYellow", BgYellow(Blink("x")),
 		YellowBg|BlinkFm)
-}
-
-func Test_BgBrown(t *testing.T) {
-	testFunc(t, "BgBrown", BgBrown("x"), BrownBg)
-	testFunc(t, "Complex BgBrown", BgBrown(Hidden("x")),
-		BrownBg|HiddenFm)
 }
 
 func Test_BgBlue(t *testing.T) {

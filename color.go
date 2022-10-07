@@ -132,11 +132,6 @@ const (
 
 	// 5 bits
 
-	// BrownFg represents brown foreground color.
-	//
-	// Deprecated: use YellowFg instead, following specifications
-	BrownFg = YellowFg
-
 	//
 	maskFg = (0xff << shiftFg) | flagFg
 )
@@ -166,11 +161,6 @@ const (
 	// a color, thus it has not flagBg
 
 	// 5 bits
-
-	// BrownBg represents brown foreground color.
-	//
-	// Deprecated: use YellowBg instead, following specifications
-	BrownBg = YellowBg
 
 	//
 	maskBg = (0xff << shiftBg) | flagBg
@@ -534,13 +524,6 @@ func (c Color) Yellow() Color {
 	return (c &^ maskFg) | YellowFg
 }
 
-// Brown foreground color (33)
-//
-// Deprecated: use Yellow instead, following specification
-func (c Color) Brown() Color {
-	return c.Yellow()
-}
-
 // Blue foreground color (34)
 func (c Color) Blue() Color {
 	return (c &^ maskFg) | BlueFg
@@ -644,13 +627,6 @@ func (c Color) BgGreen() Color {
 // BgYellow background color (43)
 func (c Color) BgYellow() Color {
 	return (c &^ maskBg) | YellowBg
-}
-
-// BgBrown background color (43)
-//
-// Deprecated: use BgYellow instead, following specification
-func (c Color) BgBrown() Color {
-	return c.BgYellow()
 }
 
 // BgBlue background color (44)

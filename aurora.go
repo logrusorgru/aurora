@@ -324,19 +324,6 @@ func (a *Aurora) Yellow(arg interface{}) Value {
 	}
 }
 
-// Brown foreground color (33).
-//
-// Deprecated: use Yellow instead, following specification.
-func (a *Aurora) Brown(arg interface{}) Value {
-	if val, ok := arg.(Value); ok {
-		return val.Brown()
-	}
-	return Value{
-		cc:    a.cc | colorConfig(Color(0).Brown()),
-		value: arg,
-	}
-}
-
 // Blue foreground color (34).
 func (a *Aurora) Blue(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
@@ -542,19 +529,6 @@ func (a *Aurora) BgYellow(arg interface{}) Value {
 	}
 	return Value{
 		cc:    a.cc | colorConfig(Color(0).BgYellow()),
-		value: arg,
-	}
-}
-
-// BgBrown background color (43).
-//
-// Deprecated: use BgYellow instead, following specification.
-func (a *Aurora) BgBrown(arg interface{}) Value {
-	if val, ok := arg.(Value); ok {
-		return val.BgBrown()
-	}
-	return Value{
-		cc:    a.cc | colorConfig(Color(0).BgBrown()),
 		value: arg,
 	}
 }
@@ -801,10 +775,19 @@ func (a *Aurora) transform(arg interface{}) (val Value, ok bool) {
 	return val, true // transformed value, true
 }
 
-// Support methods.
+// Sprintf allows to use Value as format. For example
 //
-// Sprintf allows to use colored format. It allies own configurations to
-// all given values (if there is a Value).
+//	var v = Sprintf(Red("total: +3.5f points"), Blue(3.14))
+//
+// In this case "total:" and "points" will be red, but
+// 3.14 will be blue. But, in another example
+//
+//	var v = Sprintf(Red("total: +3.5f points"), 3.14)
+//
+// full string will be red. And no way to clear 3.14 to default format and
+// color.
+//
+// It applies own configurations to all given Values.
 func (a *Aurora) Sprintf(format interface{}, args ...interface{}) string {
 	// // clear colors & links as configured by the a
 	if f, ok := a.transform(format); ok {
@@ -815,5 +798,5 @@ func (a *Aurora) Sprintf(format interface{}, args ...interface{}) string {
 			args[i] = ax
 		}
 	}
-	return Sprintf(format, args...)
+	return sprintf(format, args...)
 }

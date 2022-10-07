@@ -345,7 +345,7 @@ on colors for a terminal only, and turn them off for a file.
 
 ### Licensing
 
-Copyright &copy; 2016-2020 The Aurora Authors. This work is free.
+Copyright &copy; 2016-2022 The Aurora Authors. This work is free.
 It comes without any warranty, to the extent permitted by applicable
 law. You can redistribute it and/or modify it under the terms of the
 the Unlicense. See the LICENSE file for more details.

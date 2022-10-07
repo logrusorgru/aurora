@@ -262,11 +262,6 @@ func TestColor_Yellow(t *testing.T) {
 	assert.True(t, Color(BlackFg).Yellow()&BlackFg == flagFg, "contains black")
 }
 
-func TestColor_Brown(t *testing.T) {
-	assert.True(t, Color(0).Brown()&BrownFg != 0, "not a brown")
-	assert.True(t, Color(BlackFg).Brown()&BlackFg == flagFg, "contains black")
-}
-
 func TestColor_Blue(t *testing.T) {
 	assert.True(t, Color(0).Blue()&BlueFg != 0, "not a blue")
 	assert.True(t, Color(BlackFg).Blue()&BlackFg == flagFg, "contains black")
@@ -382,12 +377,6 @@ func TestColor_BgGreen(t *testing.T) {
 func TestColor_BgYellow(t *testing.T) {
 	assert.True(t, Color(0).BgYellow()&YellowBg != 0, "not a yellow background")
 	assert.True(t, Color(BlackBg).BgYellow()&BlackBg == flagBg,
-		"contains black background")
-}
-
-func TestColor_BgBrown(t *testing.T) {
-	assert.True(t, Color(0).BgBrown()&BrownBg != 0, "not a brown background")
-	assert.True(t, Color(BlackBg).BgBrown()&BlackBg == flagBg,
 		"contains black background")
 }
 

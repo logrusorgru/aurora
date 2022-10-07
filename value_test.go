@@ -47,16 +47,23 @@ func q(s string) string {
 	return strconv.Quote(s)
 }
 
-func isEqual(t testing.TB, want, got string) {
-	assert.Equal(t, q(want), q(got))
-}
-
 func TestValue_String(t *testing.T) {
+	var au *Aurora
 	// colorized
-	assert.Equal(t, "x", New().Clear("x").String())
-	isEqual(t, "\033[30;41mx\033[0m", New().Black("x").BgRed().String())
+	au = New()
+	assert.Equal(t, "x", au.Clear("x").String())
+	assert.Equal(t, "\033[30;41mx\033[0m", au.Black("x").BgRed().String())
 	// clear
-	isEqual(t, "x", New(WithColors(false)).Black("x").BgRed().String())
+	au = New(WithColors(false))
+	assert.Equal(t, "x", au.Black("x").BgRed().String())
+	// colorized hyperlink
+	au = New()
+	assert.Equal(t, `]8;;http://example.com`+
+		`\[31mx[0m]8;;\`,
+		au.Red("x").Hyperlink("http://example.com").String())
+	// clear hyperlink
+	assert.Equal(t, `]8;;http://example.com\x]8;;\`,
+		au.Clear("x").Hyperlink("http://example.com").String())
 }
 
 func TestValue_Color(t *testing.T) {
@@ -133,16 +140,16 @@ func TestValue_Clear(t *testing.T) {
 func TestValue_Format(t *testing.T) {
 	// colorized
 	var au = New()
-	isEqual(t, "\033[31;44m"+fmt.Sprintf("%+1.3g", 3.14)+"\033[0m",
+	assert.Equal(t, "\033[31;44m"+fmt.Sprintf("%+1.3g", 3.14)+"\033[0m",
 		fmt.Sprintf("%+1.3g", au.Red(3.14).BgBlue()))
 	const utf8Verb = "%+1.3世" // verb that fit more then 1 byte
-	isEqual(t, "\033[31;44m"+"%!世(float64=+3.14)"+"\033[0m",
+	assert.Equal(t, "\033[31;44m"+"%!世(float64=+3.14)"+"\033[0m",
 		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue()))
 	// clear
 	au = New(WithColors(false))
-	isEqual(t, fmt.Sprintf("%+1.3g", 3.14),
+	assert.Equal(t, fmt.Sprintf("%+1.3g", 3.14),
 		fmt.Sprintf("%+1.3g", au.Red(3.14).BgBlue()))
-	isEqual(t, "%!世(float64=+3.14)",
+	assert.Equal(t, "%!世(float64=+3.14)",
 		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue()))
 }
 
@@ -177,7 +184,6 @@ func TestValue_colors(t *testing.T) {
 	test("Red", au.Red("x"), RedFg)
 	test("Green", au.Green("x"), GreenFg)
 	test("Yellow", au.Yellow("x"), YellowFg)
-	test("Brown", au.Brown("x"), BrownFg)
 	test("Blue", au.Blue("x"), BlueFg)
 	test("Magenta", au.Magenta("x"), MagentaFg)
 	test("Cyan", au.Cyan("x"), CyanFg)
@@ -196,7 +202,6 @@ func TestValue_colors(t *testing.T) {
 	test("BgRed", au.BgRed("x"), RedBg)
 	test("BgGreen", au.BgGreen("x"), GreenBg)
 	test("BgYellow", au.BgYellow("x"), YellowBg)
-	test("BgBrown", au.BgBrown("x"), BrownBg)
 	test("BgBlue", au.BgBlue("x"), BlueBg)
 	test("BgMagenta", au.BgMagenta("x"), MagentaBg)
 	test("BgCyan", au.BgCyan("x"), CyanBg)
@@ -239,7 +244,6 @@ func TestValue_colors(t *testing.T) {
 	test("Red", au.Clear("x").Red(), 0)
 	test("Green", au.Clear("x").Green(), 0)
 	test("Yellow", au.Clear("x").Yellow(), 0)
-	test("Brown", au.Clear("x").Brown(), 0)
 	test("Blue", au.Clear("x").Blue(), 0)
 	test("Magenta", au.Clear("x").Magenta(), 0)
 	test("Cyan", au.Clear("x").Cyan(), 0)
@@ -258,7 +262,6 @@ func TestValue_colors(t *testing.T) {
 	test("BgRed", au.Clear("x").BgRed(), 0)
 	test("BgGreen", au.Clear("x").BgGreen(), 0)
 	test("BgYellow", au.Clear("x").BgYellow(), 0)
-	test("BgBrown", au.Clear("x").BgBrown(), 0)
 	test("BgBlue", au.Clear("x").BgBlue(), 0)
 	test("BgMagenta", au.Clear("x").BgMagenta(), 0)
 	test("BgCyan", au.Clear("x").BgCyan(), 0)
@@ -277,6 +280,7 @@ func TestValue_colors(t *testing.T) {
 	// change
 	au = New()
 	test("Reset", au.Bold("x").Reset(), 0)
+	test("Clear", au.Bold("x").Clear(), 0)
 	test("Bold", au.Faint("x").Bold(), BoldFm)
 	test("Faint", au.Bold("x").Faint(), FaintFm)
 	test("DoublyUnderline", au.Reset("x").DoublyUnderline(), DoublyUnderlineFm)
@@ -299,7 +303,6 @@ func TestValue_colors(t *testing.T) {
 	test("Red", au.Reset("x").Red(), RedFg)
 	test("Green", au.Reset("x").Green(), GreenFg)
 	test("Yellow", au.Reset("x").Yellow(), YellowFg)
-	test("Brown", au.Reset("x").Brown(), BrownFg)
 	test("Blue", au.Reset("x").Blue(), BlueFg)
 	test("Magenta", au.Reset("x").Magenta(), MagentaFg)
 	test("Cyan", au.Reset("x").Cyan(), CyanFg)
@@ -318,7 +321,6 @@ func TestValue_colors(t *testing.T) {
 	test("BgRed", au.Reset("x").BgRed(), RedBg)
 	test("BgGreen", au.Reset("x").BgGreen(), GreenBg)
 	test("BgYellow", au.Reset("x").BgYellow(), YellowBg)
-	test("BgBrown", au.Reset("x").BgBrown(), BrownBg)
 	test("BgBlue", au.Reset("x").BgBlue(), BlueBg)
 	test("BgMagenta", au.Reset("x").BgMagenta(), MagentaBg)
 	test("BgCyan", au.Reset("x").BgCyan(), CyanBg)
@@ -354,13 +356,27 @@ func TestValue_hyperlinks(t *testing.T) {
 				Value: "custom",
 			},
 		}
-		val Value
+		val  Value
+		want string
 	)
 	val = au.Red("x").Hyperlink(target, HyperlinkID("10"),
 		HyperlinkParam{"another", "custom"})
 	assert.Equal(t, target, val.HyperlinkTarget())
 	assert.EqualValues(t, params, val.HyperlinkParams())
-	const want = `]8;id=10:another=custom;http://example.com/path?` +
+	want = `]8;id=10:another=custom;http://example.com/path?` +
 		`query=value\[31mx[0m]8;;\`
 	assert.Equal(t, want, val.String())
+
+	// wrap a hyperlink
+	au = New(WithHyperlinks(false))
+	want = `[31mhttp://example.com[0m`
+	val = au.Red("x").Hyperlink("http://example.com")
+	assert.Equal(t, want, val.String())
+	assert.Equal(t, "http://example.com", val.HyperlinkTarget())
+	assert.Equal(t, "http://example.com", val.Value())
+
+	// no target, no parameters
+	val = au.Clear("x")
+	assert.Equal(t, "", val.HyperlinkTarget())
+	assert.Nil(t, val.HyperlinkParams())
 }

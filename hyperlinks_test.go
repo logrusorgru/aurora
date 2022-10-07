@@ -79,19 +79,6 @@ func TestHyperlinkID(t *testing.T) {
 	}, HyperlinkID("value"))
 }
 
-// TODO
-//
-// func (h *hyperlink) isExists() (ok bool)
-// func (h *hyperlink) stringParamsLen() (ln int)
-// func (h *hyperlink) headLen() int
-// func (h *hyperlink) headBytes() (t []byte)
-// func (h *hyperlink) head() string
-// func (h *hyperlink) tailLen() int
-// func (h *hyperlink) tailBytes() []byte
-// func (h *hyperlink) tail() string
-// func (h *hyperlink) writeHead(w io.Writer)
-// func (h *hyperlink) writeTail(w io.Writer)
-
 func Test_unhex(t *testing.T) {
 	assert.Zero(t, unhex(0))
 }

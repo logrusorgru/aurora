@@ -156,7 +156,7 @@ func (v Value) String() string {
 		color = v.cc.color()
 	)
 
-	if v.hyperlink.isExists() {
+	if v.cc.hyperlinksEnbaled() && v.hyperlink.isExists() {
 		var (
 			ln  = len(val)
 			nos string
@@ -200,13 +200,6 @@ func (v Value) Color() Color {
 	return v.cc.color()
 }
 
-// Bleach returns copy of original value without colors
-//
-// Deprecated: use Reset instead.
-func (v Value) Bleach() Value {
-	return v.Reset()
-}
-
 // Reset colors, formats and links.
 func (v Value) Reset() Value {
 	v.cc, v.hyperlink = v.cc.resetColor(), nil
@@ -226,6 +219,10 @@ func (v Value) Value() interface{} {
 
 // Format implements standard fmt.Formatter interface.
 func (v Value) Format(s fmt.State, verb rune) {
+	if !v.cc.hyperlinksEnbaled() {
+		fmt.Fprintf(s, coloredFormat(v.Color(), s, verb), v.value)
+		return
+	}
 	v.hyperlink.writeHead(s)
 	fmt.Fprintf(s, coloredFormat(v.Color(), s, verb), v.value)
 	v.hyperlink.writeTail(s)
@@ -363,13 +360,6 @@ func (v Value) Yellow() Value {
 	return v
 }
 
-// Brown foreground color (33)
-//
-// Deprecated: use Yellow instead, following specification.
-func (v Value) Brown() Value {
-	return v.Yellow()
-}
-
 // Blue foreground color (34).
 func (v Value) Blue() Value {
 	v.cc = colorConfig(v.cc.color().Blue()) | v.cc.resetColor()
@@ -487,13 +477,6 @@ func (v Value) BgGreen() Value {
 func (v Value) BgYellow() Value {
 	v.cc = colorConfig(v.cc.color().BgYellow()) | v.cc.resetColor()
 	return v
-}
-
-// BgBrown background color (43).
-//
-// Deprecated: use BgYellow instead, following specification.
-func (v Value) BgBrown() Value {
-	return v.BgYellow()
 }
 
 // BgBlue background color (44).
