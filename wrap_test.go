@@ -46,9 +46,6 @@ func testFunc(t *testing.T, name string, v Value, clr Color) {
 	} else if str != "x" {
 		t.Errorf("%s wrong value: '%v', expected 'x'", name, v.Value())
 	}
-	if !isTail(v, 0) {
-		t.Errorf("%s wrong tail: %d", name, v.tail())
-	}
 	if !isColor(v, clr) {
 		t.Errorf("%s wrong color: %d, want: %d", name, v.Color(), clr)
 	}

@@ -365,15 +365,6 @@ func TestColor_Gray(t *testing.T) {
 	}
 }
 
-func TestColor_Grey(t *testing.T) {
-	for i := GrayIndex(0); i <= 25; i++ {
-		assert.Truef(t, Color(0).Grey(i)&flagFg != 0,
-			"missing indexed grey color, grey index", i)
-		assert.Truef(t, Color(BlackFg).Grey(i)&BlackFg == flagFg,
-			"contains black, grey index %d", i)
-	}
-}
-
 func TestColor_BgBlack(t *testing.T) {
 	assert.True(t, Color(0).BgBlack()&BlackBg != 0, "not a black background")
 	assert.True(t, Color(RedBg).BgBlack()&RedBg == flagBg,
@@ -501,14 +492,5 @@ func TestColor_BgGray(t *testing.T) {
 			"missing indexed gray background color, gray index %d", i)
 		assert.Truef(t, Color(BlackBg).BgGray(i)&BlackBg == flagBg,
 			"contains black background, gray index %d", i)
-	}
-}
-
-func TestColor_BgGrey(t *testing.T) {
-	for i := GreyIndex(0); i <= 25; i++ {
-		assert.Truef(t, Color(0).BgGrey(i)&(flagBg) != 0,
-			"missing indexed grey background color, grey index %d", i)
-		assert.True(t, Color(BlackBg).BgGrey(i)&BlackBg == flagBg,
-			"contains black background, grey index %d", i)
 	}
 }

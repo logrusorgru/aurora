@@ -49,6 +49,7 @@ var (
 )
 
 func coloredFormat(color Color, s fmt.State, verb rune) string {
+
 	// it's enough for many cases (%-+020.10f)
 	// %          - 1
 	// availFlags - 3 (5)
@@ -116,7 +117,7 @@ func coloredFormat(color Color, s fmt.State, verb rune) string {
 // A Value represents any printable value
 // with or without colors, formats and a link.
 type Value struct {
-	conf      *Config     // back reference to configurations
+	conf      Config      // back reference to configurations
 	value     interface{} // value as is
 	color     Color       // color of the value
 	hyperlink             // hyperlink target and parameters
@@ -124,7 +125,6 @@ type Value struct {
 
 // String implements standard fmt.Stringer interface.
 func (v Value) String() string {
-
 	var (
 		t   []byte
 		val = fmt.Sprint(v.value)
@@ -140,7 +140,8 @@ func (v Value) String() string {
 		if v.conf.Colors && v.color != 0 {
 			ln += len(esc)
 			nos = v.color.Nos(false)
-			ln += len(nos) + len("m") + len(clear)
+			ln += len(nos) + len("m")
+			ln += len(clear)
 		}
 		ln += v.hyperlink.tailLen()
 		// fill
@@ -170,7 +171,10 @@ func (v Value) String() string {
 
 // Color returns colors and formats of the Value.
 func (v Value) Color() Color {
-	return v.color
+	if v.conf.Colors {
+		return v.color
+	}
+	return 0
 }
 
 // Bleach returns copy of original value without colors
@@ -200,7 +204,7 @@ func (v Value) Value() interface{} {
 // Format implements standard fmt.Formatter interface.
 func (v Value) Format(s fmt.State, verb rune) {
 	v.hyperlink.writeHead(s)
-	fmt.Fprintf(s, coloredFormat(v.color, s, verb), v.value)
+	fmt.Fprintf(s, coloredFormat(v.Color(), s, verb), v.value)
 	v.hyperlink.writeTail(s)
 }
 

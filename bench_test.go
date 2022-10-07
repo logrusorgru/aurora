@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -54,7 +54,7 @@ var (
 )
 
 // 18 values
-func simpleValues(a Aurora, x string) []Value {
+func simpleValues(a *Aurora, x string) []Value {
 	return []Value{
 		a.Reset("x"),
 
@@ -120,7 +120,7 @@ func simpleValues(a Aurora, x string) []Value {
 }
 
 // 18 values
-func complexValues(a Aurora, x string) []Value {
+func complexValues(a *Aurora, x string) []Value {
 
 	var allFormats = func(val Value) Value {
 		return val.Bold().DoublyUnderline().Fraktur().Blink().Italic().
@@ -193,7 +193,7 @@ func complexValues(a Aurora, x string) []Value {
 	}
 }
 
-func benchSimpleValue(b *testing.B, a Aurora, x string) {
+func benchSimpleValue(b *testing.B, a *Aurora, x string) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		gVals = simpleValues(a, x)
@@ -201,7 +201,7 @@ func benchSimpleValue(b *testing.B, a Aurora, x string) {
 	b.ReportAllocs()
 }
 
-func benchComplexValue(b *testing.B, a Aurora, x string) {
+func benchComplexValue(b *testing.B, a *Aurora, x string) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		gVals = complexValues(a, x)
@@ -212,14 +212,14 @@ func benchComplexValue(b *testing.B, a Aurora, x string) {
 func benchValueString(b *testing.B, vals []Value) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < len(vals); j++ { // TODO: range and allocs ?
+		for j := 0; j < len(vals); j++ {
 			gStr = vals[j].String()
 		}
 	}
 	b.ReportAllocs()
 }
 
-func benchSprintf(b *testing.B, a Aurora, format interface{},
+func benchSprintf(b *testing.B, a *Aurora, format interface{},
 	args ...interface{}) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -236,7 +236,7 @@ func toInterfaces(vals []Value) []interface{} {
 	return r
 }
 
-func auroraBench(a Aurora, b *testing.B) {
+func auroraBench(a *Aurora, b *testing.B) {
 	// a.Red("...")
 	b.Run("simple value", func(b *testing.B) {
 		b.Run("short", func(b *testing.B) { benchSimpleValue(b, a, short) })
@@ -377,13 +377,13 @@ func auroraBench(a Aurora, b *testing.B) {
 }
 
 func Benchmark_auroraClear(b *testing.B) {
-	a := NewAurora(false)
+	var a = New(WithColors(false), WithHyperlinks(false))
 	auroraBench(a, b)
 }
 
 // create a value
 func Benchmark_aurora(b *testing.B) {
-	a := NewAurora(true)
+	var a = New()
 	auroraBench(a, b)
 }
 
