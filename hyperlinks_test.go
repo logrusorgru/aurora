@@ -34,3 +34,99 @@
 //
 
 package aurora
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestHyperlinkParam_stringLen(t *testing.T) {
+	var param HyperlinkParam
+	assert.Equal(t, 1, param.stringLen())
+	param.Key, param.Value = "some", "thing"
+	assert.Equal(t, 1+len("some")+len("thing"), param.stringLen())
+}
+
+func TestHyperlinkParam_String(t *testing.T) {
+	var param HyperlinkParam
+	assert.Equal(t, "=", param.String())
+	param.Key, param.Value = "some", "thing"
+	assert.Equal(t, "some=thing", param.String())
+}
+
+func TestIsValidHyperlinkTarget(t *testing.T) {
+	assert.True(t, IsValidHyperlinkTarget("http://example.com/path?query=true"))
+	assert.True(t, IsValidHyperlinkTarget("mailto:user@example.com"))
+	assert.False(t, IsValidHyperlinkTarget("http://пример.тест/путь?запрос=да"))
+	assert.False(t, IsValidHyperlinkTarget("mailto:пользователь@пример.тест"))
+}
+
+func TestIsValidHyperlinkParam(t *testing.T) {
+	assert.True(t, IsValidHyperlinkParam("id"))
+	assert.True(t, IsValidHyperlinkParam("a_param-key"))
+	assert.False(t, IsValidHyperlinkParam("value:true"))
+	assert.False(t, IsValidHyperlinkParam("value=true"))
+	assert.False(t, IsValidHyperlinkParam("v1;v2"))
+}
+
+func TestHyperlinkID(t *testing.T) {
+	assert.Equal(t, HyperlinkParam{
+		Key:   HyperlinkIDKey,
+		Value: "value",
+	}, HyperlinkID("value"))
+}
+
+// TODO
+//
+// func (h *hyperlink) isExists() (ok bool)
+// func (h *hyperlink) stringParamsLen() (ln int)
+// func (h *hyperlink) headLen() int
+// func (h *hyperlink) headBytes() (t []byte)
+// func (h *hyperlink) head() string
+// func (h *hyperlink) tailLen() int
+// func (h *hyperlink) tailBytes() []byte
+// func (h *hyperlink) tail() string
+// func (h *hyperlink) writeHead(w io.Writer)
+// func (h *hyperlink) writeTail(w io.Writer)
+
+func Test_unhex(t *testing.T) {
+	assert.Zero(t, unhex(0))
+}
+
+func TestHyperlinkEscape(t *testing.T) {
+	var val = "http://example.com/path?query=true"
+	assert.Equal(t, val, HyperlinkEscape(val))
+	val = "mailto:user@example.com"
+	assert.Equal(t, val, HyperlinkEscape(val))
+	val = "http://пример.тест/путь?запрос=да"
+	assert.True(t, IsValidHyperlinkTarget(HyperlinkEscape(val)))
+	val = "mailto:пользователь@пример.тест"
+	assert.True(t, IsValidHyperlinkTarget(HyperlinkEscape(val)))
+}
+
+func TestHyperlinkUnescape(t *testing.T) {
+	for _, val := range []string{
+		"http://example.com/path?query=true",
+		"mailto:user@example.com",
+		"http://пример.тест/путь?запрос=да",
+		"mailto:пользователь@пример.тест",
+	} {
+		var got, err = HyperlinkUnescape(HyperlinkEscape(val))
+		require.NoError(t, err)
+		assert.Equal(t, val, got)
+	}
+	var _, err = HyperlinkUnescape("%%%%")
+	assert.Error(t, err)
+	var (
+		val     = "значение"
+		escaped = HyperlinkEscape(val)
+		back    string
+	)
+	escaped = strings.ToLower(escaped)
+	back, err = HyperlinkUnescape(escaped)
+	assert.NoError(t, err)
+	assert.Equal(t, val, back)
+}

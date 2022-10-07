@@ -154,20 +154,12 @@ func (h *hyperlink) headBytes() (t []byte) {
 	return
 }
 
-func (h *hyperlink) head() string {
-	return string(h.headBytes())
-}
-
 func (h *hyperlink) tailLen() int {
 	return len(linkEndEsc)
 }
 
 func (h *hyperlink) tailBytes() []byte {
 	return []byte(linkEndEsc)
-}
-
-func (h *hyperlink) tail() string {
-	return string(h.tailBytes())
 }
 
 func (h *hyperlink) writeHead(w io.Writer) {

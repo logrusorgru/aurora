@@ -86,6 +86,48 @@ func TestValue_Reset(t *testing.T) {
 		cc:    au.cc,
 		value: "x",
 	}, au.Red("x").BgBlack().Reset())
+	// a hyperlink
+	au = New()
+	assert.Equal(t,
+		Value{
+			cc:    au.cc,
+			value: "x",
+		}, au.Red("x").
+			BgBlack().
+			Hyperlink("http://example.com/path", HyperlinkID("10")).
+			Reset())
+}
+
+func TestValue_Clear(t *testing.T) {
+	// colorized
+	var au = New()
+	assert.Equal(t, Value{
+		cc:    au.cc,
+		value: "x",
+	}, au.Red("x").BgBlack().Clear())
+	// clear
+	au = New(WithColors(false))
+	assert.Equal(t, Value{
+		cc:    au.cc,
+		value: "x",
+	}, au.Red("x").BgBlack().Clear())
+	// a hyperlink
+	au = New()
+	assert.EqualValues(t,
+		Value{
+			cc:    au.cc,
+			value: "x",
+			hyperlink: &hyperlink{
+				target: "http://example.com/path",
+				params: []HyperlinkParam{{
+					Key:   HyperlinkIDKey,
+					Value: "10",
+				}},
+			},
+		}, au.Red("x").
+			BgBlack().
+			Hyperlink("http://example.com/path", HyperlinkID("10")).
+			Clear())
 }
 
 func TestValue_Format(t *testing.T) {
@@ -296,4 +338,29 @@ func TestValue_colors(t *testing.T) {
 	// overflow
 	test("Gray", au.Reset("x").Gray(151), Color(232+23)<<shiftFg|flagFg)
 	test("BgGray", au.Reset("x").BgGray(115), Color(232+23)<<shiftBg|flagBg)
+}
+
+func TestValue_hyperlinks(t *testing.T) {
+	const target = "http://example.com/path?query=value"
+	var (
+		au     = New()
+		params = []HyperlinkParam{
+			{
+				Key:   HyperlinkIDKey,
+				Value: "10",
+			},
+			{
+				Key:   "another",
+				Value: "custom",
+			},
+		}
+		val Value
+	)
+	val = au.Red("x").Hyperlink(target, HyperlinkID("10"),
+		HyperlinkParam{"another", "custom"})
+	assert.Equal(t, target, val.HyperlinkTarget())
+	assert.EqualValues(t, params, val.HyperlinkParams())
+	const want = `]8;id=10:another=custom;http://example.com/path?` +
+		`query=value\[31mx[0m]8;;\`
+	assert.Equal(t, want, val.String())
 }
