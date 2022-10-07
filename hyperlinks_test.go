@@ -34,19 +34,3 @@
 //
 
 package aurora
-
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-)
-
-type noString string
-
-func Test_Sprintf(t *testing.T) {
-	var v = Sprintf(noString("delta: +%d"), 3)
-	assert.Equal(t, "delta: +3", v, "Sprintf: wrong result")
-	v = Sprintf(Red("deltas: +%d, %d, %d points"), 3, 5, 9)
-	const want = "\033[31mdeltas: +3, 5, 9 points\033[0m"
-	assert.Equalf(t, want, v, "Sprintf: want: %q, got %q", want, v)
-}

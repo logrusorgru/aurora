@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -111,7 +111,7 @@ func RapidBlink(arg interface{}) Value {
 
 // Blink is alias for the SlowBlink.
 func Blink(arg interface{}) Value {
-	return SlowBlink(arg)
+	return DefaultColorizer.Blink(arg)
 }
 
 // Reverse video, swap foreground and background colors (7).
@@ -121,7 +121,7 @@ func Reverse(arg interface{}) Value {
 
 // Inverse is alias for the Reverse
 func Inverse(arg interface{}) Value {
-	return Reverse(arg)
+	return DefaultColorizer.Inverse(arg)
 }
 
 // Conceal hides text, preserving an ability to select the text and copy it. It
@@ -132,7 +132,7 @@ func Conceal(arg interface{}) Value {
 
 // Hidden is alias for the Conceal
 func Hidden(arg interface{}) Value {
-	return Conceal(arg)
+	return DefaultColorizer.Hidden(arg)
 }
 
 // CrossedOut makes characters legible, but marked for deletion (9).
@@ -142,7 +142,7 @@ func CrossedOut(arg interface{}) Value {
 
 // StrikeThrough is alias for the CrossedOut.
 func StrikeThrough(arg interface{}) Value {
-	return CrossedOut(arg)
+	return DefaultColorizer.StrikeThrough(arg)
 }
 
 // Framed (51).
@@ -189,7 +189,7 @@ func Yellow(arg interface{}) Value {
 //
 // Deprecated: use Yellow instead, following specification
 func Brown(arg interface{}) Value {
-	return Yellow(arg)
+	return DefaultColorizer.Brown(arg)
 }
 
 // Blue foreground color (34)
@@ -304,7 +304,7 @@ func BgYellow(arg interface{}) Value {
 //
 // Deprecated: use BgYellow instead, following specification
 func BgBrown(arg interface{}) Value {
-	return BgYellow(arg)
+	return DefaultColorizer.BgBrown(arg)
 }
 
 // BgBlue background color (44)
@@ -419,16 +419,10 @@ func Hyperlink(arg interface{}, target string, params ...HyperlinkParam) Value {
 
 // HyperlinkTarget of the argument if it's a Value.
 func HyperlinkTarget(arg interface{}) (target string) {
-	if val, ok := arg.(Value); ok {
-		return val.HyperlinkTarget()
-	}
-	return // nothing
+	return DefaultColorizer.HyperlinkTarget(arg)
 }
 
 // HyperlinkParams of the argument if it's a Value.
 func HyperlinkParams(arg interface{}) (params []HyperlinkParam) {
-	if val, ok := arg.(Value); ok {
-		return val.HyperlinkParams()
-	}
-	return // nil
+	return DefaultColorizer.HyperlinkParams(arg)
 }

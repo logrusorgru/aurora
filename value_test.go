@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -112,6 +112,7 @@ func TestValue_colors(t *testing.T) {
 	// colorized
 	var au = New()
 	test("Reset", au.Reset("x"), 0)
+	test("Clear", au.Clear("x"), 0)
 	test("Bold", au.Bold("x"), BoldFm)
 	test("Faint", au.Faint("x"), FaintFm)
 	test("DoublyUnderline", au.DoublyUnderline("x"), DoublyUnderlineFm)
@@ -173,6 +174,7 @@ func TestValue_colors(t *testing.T) {
 	// clear
 	au = New(WithColors(false))
 	test("Reset", au.Clear("x").Reset(), 0)
+	test("Clear", au.Bold("x").Clear(), 0)
 	test("Bold", au.Clear("x").Bold(), 0)
 	test("Faint", au.Clear("x").Faint(), 0)
 	test("DoublyUnderline", au.Clear("x").DoublyUnderline(), 0)

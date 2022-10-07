@@ -70,7 +70,7 @@ func (a *Aurora) Reset(arg interface{}) Value {
 // preserving links.
 func (a *Aurora) Clear(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
-		return val.Reset()
+		return val.Clear()
 	}
 	return Value{
 		cc:    a.cc,

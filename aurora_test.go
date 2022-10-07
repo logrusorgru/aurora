@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -69,6 +69,10 @@ func Test_New(t *testing.T) {
 	assert.False(t, a.conf.Colors)
 	assert.False(t, a.conf.Hyperlinks)
 
+}
+
+func TestAurora_Config(t *testing.T) {
+	assert.Equal(t, NewConfig(), New().Config())
 }
 
 func TestAurora_no_colors(t *testing.T) {
