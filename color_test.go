@@ -151,10 +151,6 @@ func TestColor_Nos(t *testing.T) {
 	}
 }
 
-func TestColor_IsValid(t *testing.T) {
-	assert.True(t, Color(0).IsValid(), "invalid")
-}
-
 func Test_itoa(t *testing.T) {
 	for i := 0; i < 256; i++ {
 		var a = itoa(byte(i))

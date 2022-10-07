@@ -114,32 +114,58 @@ func coloredFormat(color Color, s fmt.State, verb rune) string {
 	return string(format)
 }
 
+type colorConfig uint64
+
+const (
+	colorPin      colorConfig = 1 << 32
+	hyperlinksPin colorConfig = 1 << 33
+)
+
+func (cc colorConfig) colorsEnabled() bool {
+	return cc&colorPin != 0
+}
+
+func (cc colorConfig) hyperlinksEnbaled() bool {
+	return cc&hyperlinksPin != 0
+}
+
+func (cc colorConfig) color() Color {
+	if cc.colorsEnabled() {
+		return Color(uint32(cc)) // lower 32 bits only
+	}
+	return 0 // even if a color set
+}
+
+func (cc colorConfig) resetColor() colorConfig {
+	return cc & (colorPin | hyperlinksPin)
+}
+
 // A Value represents any printable value
 // with or without colors, formats and a link.
 type Value struct {
-	conf      Config      // back reference to configurations
 	value     interface{} // value as is
-	color     Color       // color of the value
-	hyperlink             // hyperlink target and parameters
+	cc        colorConfig // color & config
+	hyperlink *hyperlink  // hyperlink target and parameters
 }
 
 // String implements standard fmt.Stringer interface.
 func (v Value) String() string {
 	var (
-		t   []byte
-		val = fmt.Sprint(v.value)
+		t     []byte
+		val   = fmt.Sprint(v.value)
+		color = v.cc.color()
 	)
 
-	if v.target != "" {
+	if v.hyperlink.isExists() {
 		var (
 			ln  = len(val)
 			nos string
 		)
 		// calculate length
 		ln += v.hyperlink.headLen()
-		if v.conf.Colors && v.color != 0 {
+		if color != 0 {
 			ln += len(esc)
-			nos = v.color.Nos(false)
+			nos = color.Nos(false)
 			ln += len(nos) + len("m")
 			ln += len(clear)
 		}
@@ -147,7 +173,7 @@ func (v Value) String() string {
 		// fill
 		t = make([]byte, 0, ln)
 		t = append(t, v.hyperlink.headBytes()...)
-		if v.conf.Colors && v.color != 0 {
+		if color != 0 {
 			t = append(t, esc...)
 			t = append(t, nos...)
 			t = append(t, 'm')
@@ -161,8 +187,8 @@ func (v Value) String() string {
 	}
 
 	// no links, only colors & formats
-	if v.conf.Colors && v.color != 0 {
-		return esc + v.color.Nos(false) + "m" + val + clear
+	if color != 0 {
+		return esc + color.Nos(false) + "m" + val + clear
 	}
 
 	// no links, no colors, no formats, just the value
@@ -171,10 +197,7 @@ func (v Value) String() string {
 
 // Color returns colors and formats of the Value.
 func (v Value) Color() Color {
-	if v.conf.Colors {
-		return v.color
-	}
-	return 0
+	return v.cc.color()
 }
 
 // Bleach returns copy of original value without colors
@@ -186,13 +209,13 @@ func (v Value) Bleach() Value {
 
 // Reset colors, formats and links.
 func (v Value) Reset() Value {
-	v.color, v.hyperlink = 0, hyperlink{}
+	v.cc, v.hyperlink = v.cc.resetColor(), nil
 	return v
 }
 
 // Clear colors and formats, preserving links.
 func (v Value) Clear() Value {
-	v.color = 0
+	v.cc = v.cc.resetColor()
 	return v
 }
 
@@ -212,49 +235,49 @@ func (v Value) Format(s fmt.State, verb rune) {
 //
 // Bold or increased intensity (1).
 func (v Value) Bold() Value {
-	v.color = v.color.Bold()
+	v.cc = colorConfig(v.cc.color().Bold()) | v.cc.resetColor()
 	return v
 }
 
 // Faint, decreased intensity, reset the Bold (2).
 func (v Value) Faint() Value {
-	v.color = v.color.Faint()
+	v.cc = colorConfig(v.cc.color().Faint()) | v.cc.resetColor()
 	return v
 }
 
 // DoublyUnderline or Bold off, double-underline per ECMA-48 (21). It depends.
 func (v Value) DoublyUnderline() Value {
-	v.color = v.color.DoublyUnderline()
+	v.cc = colorConfig(v.cc.color().DoublyUnderline()) | v.cc.resetColor()
 	return v
 }
 
 // Fraktur, rarely supported (20).
 func (v Value) Fraktur() Value {
-	v.color = v.color.Fraktur()
+	v.cc = colorConfig(v.cc.color().Fraktur()) | v.cc.resetColor()
 	return v
 }
 
 // Italic, not widely supported, sometimes treated as inverse (3).
 func (v Value) Italic() Value {
-	v.color = v.color.Italic()
+	v.cc = colorConfig(v.cc.color().Italic()) | v.cc.resetColor()
 	return v
 }
 
 // Underline (4).
 func (v Value) Underline() Value {
-	v.color = v.color.Underline()
+	v.cc = colorConfig(v.cc.color().Underline()) | v.cc.resetColor()
 	return v
 }
 
 // SlowBlink, blinking less than 150 per minute (5).
 func (v Value) SlowBlink() Value {
-	v.color = v.color.SlowBlink()
+	v.cc = colorConfig(v.cc.color().SlowBlink()) | v.cc.resetColor()
 	return v
 }
 
 // RapidBlink, blinking 150+ per minute, not widely supported (6).
 func (v Value) RapidBlink() Value {
-	v.color = v.color.RapidBlink()
+	v.cc = colorConfig(v.cc.color().RapidBlink()) | v.cc.resetColor()
 	return v
 }
 
@@ -265,7 +288,7 @@ func (v Value) Blink() Value {
 
 // Reverse video, swap foreground and background colors (7).
 func (v Value) Reverse() Value {
-	v.color = v.color.Reverse()
+	v.cc = colorConfig(v.cc.color().Reverse()) | v.cc.resetColor()
 	return v
 }
 
@@ -276,7 +299,7 @@ func (v Value) Inverse() Value {
 
 // Conceal, hidden, not widely supported (8).
 func (v Value) Conceal() Value {
-	v.color = v.color.Conceal()
+	v.cc = colorConfig(v.cc.color().Conceal()) | v.cc.resetColor()
 	return v
 }
 
@@ -287,7 +310,7 @@ func (v Value) Hidden() Value {
 
 // CrossedOut, characters legible, but marked for deletion (9).
 func (v Value) CrossedOut() Value {
-	v.color = v.color.CrossedOut()
+	v.cc = colorConfig(v.cc.color().CrossedOut()) | v.cc.resetColor()
 	return v
 }
 
@@ -298,19 +321,19 @@ func (v Value) StrikeThrough() Value {
 
 // Framed (51).
 func (v Value) Framed() Value {
-	v.color = v.color.Framed()
+	v.cc = colorConfig(v.cc.color().Framed()) | v.cc.resetColor()
 	return v
 }
 
 // Encircled (52).
 func (v Value) Encircled() Value {
-	v.color = v.color.Encircled()
+	v.cc = colorConfig(v.cc.color().Encircled()) | v.cc.resetColor()
 	return v
 }
 
 // Overlined (53).
 func (v Value) Overlined() Value {
-	v.color = v.color.Overlined()
+	v.cc = colorConfig(v.cc.color().Overlined()) | v.cc.resetColor()
 	return v
 }
 
@@ -318,25 +341,25 @@ func (v Value) Overlined() Value {
 //
 // Black foreground color (30).
 func (v Value) Black() Value {
-	v.color = v.color.Black()
+	v.cc = colorConfig(v.cc.color().Black()) | v.cc.resetColor()
 	return v
 }
 
 // Red foreground color (31).
 func (v Value) Red() Value {
-	v.color = v.color.Red()
+	v.cc = colorConfig(v.cc.color().Red()) | v.cc.resetColor()
 	return v
 }
 
 // Green foreground color (32).
 func (v Value) Green() Value {
-	v.color = v.color.Green()
+	v.cc = colorConfig(v.cc.color().Green()) | v.cc.resetColor()
 	return v
 }
 
 // Yellow foreground color (33).
 func (v Value) Yellow() Value {
-	v.color = v.color.Yellow()
+	v.cc = colorConfig(v.cc.color().Yellow()) | v.cc.resetColor()
 	return v
 }
 
@@ -349,25 +372,25 @@ func (v Value) Brown() Value {
 
 // Blue foreground color (34).
 func (v Value) Blue() Value {
-	v.color = v.color.Blue()
+	v.cc = colorConfig(v.cc.color().Blue()) | v.cc.resetColor()
 	return v
 }
 
 // Magenta foreground color (35).
 func (v Value) Magenta() Value {
-	v.color = v.color.Magenta()
+	v.cc = colorConfig(v.cc.color().Magenta()) | v.cc.resetColor()
 	return v
 }
 
 // Cyan foreground color (36).
 func (v Value) Cyan() Value {
-	v.color = v.color.Cyan()
+	v.cc = colorConfig(v.cc.color().Cyan()) | v.cc.resetColor()
 	return v
 }
 
 // White foreground color (37).
 func (v Value) White() Value {
-	v.color = v.color.White()
+	v.cc = colorConfig(v.cc.color().White()) | v.cc.resetColor()
 	return v
 }
 
@@ -375,49 +398,49 @@ func (v Value) White() Value {
 //
 // BrightBlack foreground color (90).
 func (v Value) BrightBlack() Value {
-	v.color = v.color.BrightBlack()
+	v.cc = colorConfig(v.cc.color().BrightBlack()) | v.cc.resetColor()
 	return v
 }
 
 // BrightRed foreground color (91).
 func (v Value) BrightRed() Value {
-	v.color = v.color.BrightRed()
+	v.cc = colorConfig(v.cc.color().BrightRed()) | v.cc.resetColor()
 	return v
 }
 
 // BrightGreen foreground color (92).
 func (v Value) BrightGreen() Value {
-	v.color = v.color.BrightGreen()
+	v.cc = colorConfig(v.cc.color().BrightGreen()) | v.cc.resetColor()
 	return v
 }
 
 // BrightYellow foreground color (93).
 func (v Value) BrightYellow() Value {
-	v.color = v.color.BrightYellow()
+	v.cc = colorConfig(v.cc.color().BrightYellow()) | v.cc.resetColor()
 	return v
 }
 
 // BrightBlue foreground color (94).
 func (v Value) BrightBlue() Value {
-	v.color = v.color.BrightBlue()
+	v.cc = colorConfig(v.cc.color().BrightBlue()) | v.cc.resetColor()
 	return v
 }
 
 // BrightMagenta foreground color (95).
 func (v Value) BrightMagenta() Value {
-	v.color = v.color.BrightMagenta()
+	v.cc = colorConfig(v.cc.color().BrightMagenta()) | v.cc.resetColor()
 	return v
 }
 
 // BrightCyan foreground color (96).
 func (v Value) BrightCyan() Value {
-	v.color = v.color.BrightCyan()
+	v.cc = colorConfig(v.cc.color().BrightCyan()) | v.cc.resetColor()
 	return v
 }
 
 // BrightWhite foreground color (97).
 func (v Value) BrightWhite() Value {
-	v.color = v.color.BrightWhite()
+	v.cc = colorConfig(v.cc.color().BrightWhite()) | v.cc.resetColor()
 	return v
 }
 
@@ -430,13 +453,13 @@ func (v Value) BrightWhite() Value {
 //	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
 //	232-255:  grayscale from black to white in 24 steps
 func (v Value) Index(n ColorIndex) Value {
-	v.color = v.color.Index(n)
+	v.cc = colorConfig(v.cc.color().Index(n)) | v.cc.resetColor()
 	return v
 }
 
 // Gray from 0 to 24.
 func (v Value) Gray(n GrayIndex) Value {
-	v.color = v.color.Gray(n)
+	v.cc = colorConfig(v.cc.color().Gray(n)) | v.cc.resetColor()
 	return v
 }
 
@@ -444,25 +467,25 @@ func (v Value) Gray(n GrayIndex) Value {
 //
 // BgBlack background color (40).
 func (v Value) BgBlack() Value {
-	v.color = v.color.BgBlack()
+	v.cc = colorConfig(v.cc.color().BgBlack()) | v.cc.resetColor()
 	return v
 }
 
 // BgRed background color (41).
 func (v Value) BgRed() Value {
-	v.color = v.color.BgRed()
+	v.cc = colorConfig(v.cc.color().BgRed()) | v.cc.resetColor()
 	return v
 }
 
 // BgGreen background color (42).
 func (v Value) BgGreen() Value {
-	v.color = v.color.BgGreen()
+	v.cc = colorConfig(v.cc.color().BgGreen()) | v.cc.resetColor()
 	return v
 }
 
 // BgYellow background color (43).
 func (v Value) BgYellow() Value {
-	v.color = v.color.BgYellow()
+	v.cc = colorConfig(v.cc.color().BgYellow()) | v.cc.resetColor()
 	return v
 }
 
@@ -475,25 +498,25 @@ func (v Value) BgBrown() Value {
 
 // BgBlue background color (44).
 func (v Value) BgBlue() Value {
-	v.color = v.color.BgBlue()
+	v.cc = colorConfig(v.cc.color().BgBlue()) | v.cc.resetColor()
 	return v
 }
 
 // BgMagenta background color (45).
 func (v Value) BgMagenta() Value {
-	v.color = v.color.BgMagenta()
+	v.cc = colorConfig(v.cc.color().BgMagenta()) | v.cc.resetColor()
 	return v
 }
 
 // BgCyan background color (46).
 func (v Value) BgCyan() Value {
-	v.color = v.color.BgCyan()
+	v.cc = colorConfig(v.cc.color().BgCyan()) | v.cc.resetColor()
 	return v
 }
 
 // BgWhite background color (47).
 func (v Value) BgWhite() Value {
-	v.color = v.color.BgWhite()
+	v.cc = colorConfig(v.cc.color().BgWhite()) | v.cc.resetColor()
 	return v
 }
 
@@ -501,49 +524,49 @@ func (v Value) BgWhite() Value {
 //
 // BgBrightBlack background color (100).
 func (v Value) BgBrightBlack() Value {
-	v.color = v.color.BgBrightBlack()
+	v.cc = colorConfig(v.cc.color().BgBrightBlack()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightRed background color (101).
 func (v Value) BgBrightRed() Value {
-	v.color = v.color.BgBrightRed()
+	v.cc = colorConfig(v.cc.color().BgBrightRed()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightGreen background color (102).
 func (v Value) BgBrightGreen() Value {
-	v.color = v.color.BgBrightGreen()
+	v.cc = colorConfig(v.cc.color().BgBrightGreen()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightYellow background color (103).
 func (v Value) BgBrightYellow() Value {
-	v.color = v.color.BgBrightYellow()
+	v.cc = colorConfig(v.cc.color().BgBrightYellow()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightBlue background color (104).
 func (v Value) BgBrightBlue() Value {
-	v.color = v.color.BgBrightBlue()
+	v.cc = colorConfig(v.cc.color().BgBrightBlue()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightMagenta background color (105).
 func (v Value) BgBrightMagenta() Value {
-	v.color = v.color.BgBrightMagenta()
+	v.cc = colorConfig(v.cc.color().BgBrightMagenta()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightCyan background color (106).
 func (v Value) BgBrightCyan() Value {
-	v.color = v.color.BgBrightCyan()
+	v.cc = colorConfig(v.cc.color().BgBrightCyan()) | v.cc.resetColor()
 	return v
 }
 
 // BgBrightWhite background color (107).
 func (v Value) BgBrightWhite() Value {
-	v.color = v.color.BgBrightWhite()
+	v.cc = colorConfig(v.cc.color().BgBrightWhite()) | v.cc.resetColor()
 	return v
 }
 
@@ -556,13 +579,13 @@ func (v Value) BgBrightWhite() Value {
 //	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
 //	232-255:  grayscale from black to white in 24 steps
 func (v Value) BgIndex(n ColorIndex) Value {
-	v.color = v.color.BgIndex(n)
+	v.cc = colorConfig(v.cc.color().BgIndex(n)) | v.cc.resetColor()
 	return v
 }
 
 // BgGray from 0 to 24.
 func (v Value) BgGray(n GrayIndex) Value {
-	v.color = v.color.BgGray(n)
+	v.cc = colorConfig(v.cc.color().BgGray(n)) | v.cc.resetColor()
 	return v
 }
 
@@ -571,7 +594,7 @@ func (v Value) BgGray(n GrayIndex) Value {
 // Colorize removes existing colors and formats of the argument and applies
 // given.
 func (v Value) Colorize(color Color) Value {
-	v.color = color
+	v.cc = colorConfig(color) | v.cc.resetColor()
 	return v
 }
 
@@ -599,10 +622,15 @@ func (v Value) Colorize(color Color) Value {
 //
 // Successive calls replace previously set target and parameters.
 func (v Value) Hyperlink(target string, params ...HyperlinkParam) Value {
-	if !v.conf.Hyperlinks {
-		v.value = target            // drop value, use the target
-		v.hyperlink.target = target // keep for the HyperlinkTarget method
+	if !v.cc.hyperlinksEnbaled() {
+		v.value = target // drop value, use the target
+		v.hyperlink = &hyperlink{
+			target: target, // keep for the HyperlinkTarget method
+		}
 		return v
+	}
+	if v.hyperlink == nil {
+		v.hyperlink = new(hyperlink)
 	}
 	v.hyperlink.target = target
 	v.hyperlink.params = params
@@ -611,10 +639,16 @@ func (v Value) Hyperlink(target string, params ...HyperlinkParam) Value {
 
 // HyperlinkTarget if any.
 func (v Value) HyperlinkTarget() (target string) {
-	return v.hyperlink.target
+	if v.hyperlink != nil {
+		return v.hyperlink.target
+	}
+	return // nothing
 }
 
 // HyperlinkParams if any.
-func (v Value) HyperlinkParams() []HyperlinkParam {
-	return v.hyperlink.params
+func (v Value) HyperlinkParams() (params []HyperlinkParam) {
+	if v.hyperlink != nil {
+		return v.hyperlink.params
+	}
+	return // nil
 }

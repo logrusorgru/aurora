@@ -92,6 +92,16 @@ func (c *Config) Options() (opts []Option) {
 	}
 }
 
+func (c *Config) colorConfig() (cc colorConfig) {
+	if c.Colors {
+		cc |= colorPin
+	}
+	if c.Hyperlinks {
+		cc |= hyperlinksPin
+	}
+	return
+}
+
 // An Option function.
 type Option func(*Config)
 

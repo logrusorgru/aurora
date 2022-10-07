@@ -111,7 +111,14 @@ type hyperlink struct {
 	params []HyperlinkParam // hyperlink parameters
 }
 
-func (h hyperlink) stringParamsLen() (ln int) {
+func (h *hyperlink) isExists() (ok bool) {
+	if h == nil {
+		return // does not exist
+	}
+	return h.target != ""
+}
+
+func (h *hyperlink) stringParamsLen() (ln int) {
 	for i, p := range h.params {
 		if i > 0 {
 			ln++ // + colon separator
@@ -121,7 +128,7 @@ func (h hyperlink) stringParamsLen() (ln int) {
 	return
 }
 
-func (h hyperlink) headLen() int {
+func (h *hyperlink) headLen() int {
 	return len(linkStartEsc) +
 		h.stringParamsLen() +
 		len(";") +
@@ -129,7 +136,7 @@ func (h hyperlink) headLen() int {
 		+len(linkMiddleEsc)
 }
 
-func (h hyperlink) headBytes() (t []byte) {
+func (h *hyperlink) headBytes() (t []byte) {
 	t = make([]byte, 0, h.headLen())
 
 	t = append(t, linkStartEsc...)
@@ -147,31 +154,31 @@ func (h hyperlink) headBytes() (t []byte) {
 	return
 }
 
-func (h hyperlink) head() string {
+func (h *hyperlink) head() string {
 	return string(h.headBytes())
 }
 
-func (h hyperlink) tailLen() int {
+func (h *hyperlink) tailLen() int {
 	return len(linkEndEsc)
 }
 
-func (h hyperlink) tailBytes() []byte {
+func (h *hyperlink) tailBytes() []byte {
 	return []byte(linkEndEsc)
 }
 
-func (h hyperlink) tail() string {
+func (h *hyperlink) tail() string {
 	return string(h.tailBytes())
 }
 
-func (h hyperlink) writeHead(w io.Writer) {
-	if h.target == "" {
+func (h *hyperlink) writeHead(w io.Writer) {
+	if h == nil || h.target == "" {
 		return
 	}
 	w.Write(h.headBytes())
 }
 
-func (h hyperlink) writeTail(w io.Writer) {
-	if h.target == "" {
+func (h *hyperlink) writeTail(w io.Writer) {
+	if h == nil || h.target == "" {
 		return
 	}
 	w.Write(h.tailBytes())

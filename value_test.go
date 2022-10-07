@@ -77,15 +77,13 @@ func TestValue_Reset(t *testing.T) {
 	// colorized
 	var au = New()
 	assert.Equal(t, Value{
-		conf:  au.conf,
-		color: 0,
+		cc:    au.cc,
 		value: "x",
 	}, au.Red("x").BgBlack().Reset())
 	// clear
 	au = New(WithColors(false))
 	assert.Equal(t, Value{
-		conf:  au.conf,
-		color: 0,
+		cc:    au.cc,
 		value: "x",
 	}, au.Red("x").BgBlack().Reset())
 }

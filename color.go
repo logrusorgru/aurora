@@ -182,13 +182,6 @@ const (
 	clear      = esc + "0m"
 )
 
-// IsValid returns true always
-//
-// Deprecated: don't use this method anymore
-func (c Color) IsValid() bool {
-	return true
-}
-
 // Nos returns string like 1;7;31;45. It
 // may be an empty string for empty color.
 // If the zero is true, then the string

@@ -38,13 +38,15 @@ package aurora
 
 type Aurora struct {
 	conf Config
+	cc   colorConfig
 }
 
 // New returns new colorizer by given Options.
 func New(opts ...Option) (a *Aurora) {
 	a = new(Aurora)
-	a.conf = NewConfig()  // set defaults
-	a.conf.Apply(opts...) // apply options
+	a.conf = NewConfig()        // set defaults
+	a.conf.Apply(opts...)       // apply options
+	a.cc = a.conf.colorConfig() // keep the short hand
 	return
 }
 
@@ -58,7 +60,10 @@ func (a *Aurora) Reset(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Reset()
 	}
-	return Value{conf: a.conf, value: arg}
+	return Value{
+		cc:    a.cc,
+		value: arg,
+	}
 }
 
 // Clear wraps given argument returning Value without formats and colors. But
@@ -67,7 +72,10 @@ func (a *Aurora) Clear(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Reset()
 	}
-	return Value{conf: a.conf, value: arg}
+	return Value{
+		cc:    a.cc,
+		value: arg,
+	}
 }
 
 // Formats
@@ -77,7 +85,10 @@ func (a *Aurora) Bold(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Bold()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Bold()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Bold()),
+		value: arg,
+	}
 }
 
 // Faint, decreased intensity (2).
@@ -85,7 +96,10 @@ func (a *Aurora) Faint(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Faint()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Faint()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Faint()),
+		value: arg,
+	}
 }
 
 // DoublyUnderline or Bold off, double-underline per ECMA-48 (21).
@@ -93,7 +107,10 @@ func (a *Aurora) DoublyUnderline(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.DoublyUnderline()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).DoublyUnderline()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).DoublyUnderline()),
+		value: arg,
+	}
 }
 
 // Fraktur, rarely supported (20).
@@ -101,7 +118,10 @@ func (a *Aurora) Fraktur(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Fraktur()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Fraktur()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Fraktur()),
+		value: arg,
+	}
 }
 
 // Italic, not widely supported, sometimes treated as inverse (3).
@@ -109,7 +129,10 @@ func (a *Aurora) Italic(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Italic()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Italic()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Italic()),
+		value: arg,
+	}
 }
 
 // Underline (4).
@@ -117,7 +140,10 @@ func (a *Aurora) Underline(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Underline()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Underline()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Underline()),
+		value: arg,
+	}
 }
 
 // SlowBlink, blinking less than 150 per minute (5).
@@ -125,7 +151,10 @@ func (a *Aurora) SlowBlink(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.SlowBlink()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).SlowBlink()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).SlowBlink()),
+		value: arg,
+	}
 }
 
 // RapidBlink, blinking 150+ per minute, not widely supported (6).
@@ -133,7 +162,10 @@ func (a *Aurora) RapidBlink(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.RapidBlink()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).RapidBlink()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).RapidBlink()),
+		value: arg,
+	}
 }
 
 // Blink is alias for the SlowBlink.
@@ -141,7 +173,10 @@ func (a *Aurora) Blink(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Blink()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Blink()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Blink()),
+		value: arg,
+	}
 }
 
 // Reverse video, swap foreground and background colors (7).
@@ -149,7 +184,10 @@ func (a *Aurora) Reverse(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Reverse()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Reverse()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Reverse()),
+		value: arg,
+	}
 }
 
 // Inverse is alias for the Reverse
@@ -157,7 +195,10 @@ func (a *Aurora) Inverse(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Inverse()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Inverse()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Inverse()),
+		value: arg,
+	}
 }
 
 // Conceal, hidden, not widely supported (8).
@@ -165,7 +206,10 @@ func (a *Aurora) Conceal(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Conceal()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Conceal()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Conceal()),
+		value: arg,
+	}
 }
 
 // Hidden is alias for the Conceal.
@@ -173,7 +217,10 @@ func (a *Aurora) Hidden(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Hidden()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Hidden()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Hidden()),
+		value: arg,
+	}
 }
 
 // CrossedOut, characters legible, but marked for deletion (9).
@@ -181,7 +228,10 @@ func (a *Aurora) CrossedOut(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.CrossedOut()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).CrossedOut()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).CrossedOut()),
+		value: arg,
+	}
 }
 
 // StrikeThrough is alias for the CrossedOut.
@@ -189,7 +239,10 @@ func (a *Aurora) StrikeThrough(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.StrikeThrough()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).StrikeThrough()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).StrikeThrough()),
+		value: arg,
+	}
 }
 
 // Framed (51).
@@ -197,7 +250,10 @@ func (a *Aurora) Framed(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Framed()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Framed()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Framed()),
+		value: arg,
+	}
 }
 
 // Encircled (52).
@@ -205,7 +261,10 @@ func (a *Aurora) Encircled(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Encircled()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Encircled()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Encircled()),
+		value: arg,
+	}
 }
 
 // Overlined (53).
@@ -213,7 +272,10 @@ func (a *Aurora) Overlined(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Overlined()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Overlined()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Overlined()),
+		value: arg,
+	}
 }
 
 // Foreground colors
@@ -223,7 +285,10 @@ func (a *Aurora) Black(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Black()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Black()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Black()),
+		value: arg,
+	}
 }
 
 // Red foreground color (31).
@@ -231,7 +296,10 @@ func (a *Aurora) Red(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Red()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Red()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Red()),
+		value: arg,
+	}
 }
 
 // Green foreground color (32).
@@ -239,7 +307,10 @@ func (a *Aurora) Green(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Green()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Green()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Green()),
+		value: arg,
+	}
 }
 
 // Yellow foreground color (33).
@@ -247,7 +318,10 @@ func (a *Aurora) Yellow(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Yellow()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Yellow()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Yellow()),
+		value: arg,
+	}
 }
 
 // Brown foreground color (33).
@@ -257,7 +331,10 @@ func (a *Aurora) Brown(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Brown()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Brown()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Brown()),
+		value: arg,
+	}
 }
 
 // Blue foreground color (34).
@@ -265,7 +342,10 @@ func (a *Aurora) Blue(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Blue()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Blue()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Blue()),
+		value: arg,
+	}
 }
 
 // Magenta foreground color (35).
@@ -273,7 +353,10 @@ func (a *Aurora) Magenta(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Magenta()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Magenta()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Magenta()),
+		value: arg,
+	}
 }
 
 // Cyan foreground color (36).
@@ -281,7 +364,10 @@ func (a *Aurora) Cyan(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Cyan()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Cyan()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Cyan()),
+		value: arg,
+	}
 }
 
 // White foreground color (37).
@@ -289,7 +375,10 @@ func (a *Aurora) White(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.White()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).White()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).White()),
+		value: arg,
+	}
 }
 
 // Bright foreground colors.
@@ -299,7 +388,10 @@ func (a *Aurora) BrightBlack(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightBlack()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightBlack()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightBlack()),
+		value: arg,
+	}
 }
 
 // BrightRed foreground color (91).
@@ -307,7 +399,10 @@ func (a *Aurora) BrightRed(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightRed()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightRed()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightRed()),
+		value: arg,
+	}
 }
 
 // BrightGreen foreground color (92).
@@ -315,7 +410,10 @@ func (a *Aurora) BrightGreen(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightGreen()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightGreen()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightGreen()),
+		value: arg,
+	}
 }
 
 // BrightYellow foreground color (93).
@@ -323,7 +421,10 @@ func (a *Aurora) BrightYellow(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightYellow()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightYellow()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightYellow()),
+		value: arg,
+	}
 }
 
 // BrightBlue foreground color (94).
@@ -331,7 +432,10 @@ func (a *Aurora) BrightBlue(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightBlue()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightBlue()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightBlue()),
+		value: arg,
+	}
 }
 
 // BrightMagenta foreground color (95).
@@ -339,7 +443,10 @@ func (a *Aurora) BrightMagenta(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightMagenta()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightMagenta()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightMagenta()),
+		value: arg,
+	}
 }
 
 // BrightCyan foreground color (96).
@@ -347,7 +454,10 @@ func (a *Aurora) BrightCyan(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightCyan()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightCyan()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightCyan()),
+		value: arg,
+	}
 }
 
 // BrightWhite foreground color (97).
@@ -355,7 +465,10 @@ func (a *Aurora) BrightWhite(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BrightWhite()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BrightWhite()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BrightWhite()),
+		value: arg,
+	}
 }
 
 // Other colors.
@@ -370,7 +483,10 @@ func (a *Aurora) Index(n ColorIndex, arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Index(n)
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Index(n)}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Index(n)),
+		value: arg,
+	}
 }
 
 // Gray from 0 to 23.
@@ -378,7 +494,10 @@ func (a *Aurora) Gray(n GrayIndex, arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Gray(n)
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).Gray(n)}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).Gray(n)),
+		value: arg,
+	}
 }
 
 // Background colors.
@@ -388,7 +507,10 @@ func (a *Aurora) BgBlack(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBlack()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBlack()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBlack()),
+		value: arg,
+	}
 }
 
 // BgRed background color (41).
@@ -396,7 +518,10 @@ func (a *Aurora) BgRed(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgRed()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgRed()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgRed()),
+		value: arg,
+	}
 }
 
 // BgGreen background color (42).
@@ -404,7 +529,10 @@ func (a *Aurora) BgGreen(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgGreen()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgGreen()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgGreen()),
+		value: arg,
+	}
 }
 
 // BgYellow background color (43).
@@ -412,7 +540,10 @@ func (a *Aurora) BgYellow(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgYellow()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgYellow()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgYellow()),
+		value: arg,
+	}
 }
 
 // BgBrown background color (43).
@@ -422,7 +553,10 @@ func (a *Aurora) BgBrown(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrown()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrown()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrown()),
+		value: arg,
+	}
 }
 
 // BgBlue background color (44).
@@ -430,7 +564,10 @@ func (a *Aurora) BgBlue(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBlue()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBlue()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBlue()),
+		value: arg,
+	}
 }
 
 // BgMagenta background color (45).
@@ -438,7 +575,10 @@ func (a *Aurora) BgMagenta(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgMagenta()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgMagenta()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgMagenta()),
+		value: arg,
+	}
 }
 
 // BgCyan background color (46).
@@ -446,7 +586,10 @@ func (a *Aurora) BgCyan(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgCyan()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgCyan()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgCyan()),
+		value: arg,
+	}
 }
 
 // BgWhite background color (47).
@@ -454,7 +597,10 @@ func (a *Aurora) BgWhite(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgWhite()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgWhite()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgWhite()),
+		value: arg,
+	}
 }
 
 // Bright background colors.
@@ -464,7 +610,10 @@ func (a *Aurora) BgBrightBlack(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightBlack()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightBlack()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightBlack()),
+		value: arg,
+	}
 }
 
 // BgBrightRed background color (101).
@@ -472,7 +621,10 @@ func (a *Aurora) BgBrightRed(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightRed()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightRed()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightRed()),
+		value: arg,
+	}
 }
 
 // BgBrightGreen background color (102).
@@ -480,7 +632,10 @@ func (a *Aurora) BgBrightGreen(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightGreen()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightGreen()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightGreen()),
+		value: arg,
+	}
 }
 
 // BgBrightYellow background color (103).
@@ -488,7 +643,10 @@ func (a *Aurora) BgBrightYellow(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightYellow()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightYellow()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightYellow()),
+		value: arg,
+	}
 }
 
 // BgBrightBlue background color (104).
@@ -496,7 +654,10 @@ func (a *Aurora) BgBrightBlue(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightBlue()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightBlue()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightBlue()),
+		value: arg,
+	}
 }
 
 // BgBrightMagenta background color (105).
@@ -504,7 +665,10 @@ func (a *Aurora) BgBrightMagenta(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightMagenta()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightMagenta()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightMagenta()),
+		value: arg,
+	}
 }
 
 // BgBrightCyan background color (106).
@@ -512,7 +676,10 @@ func (a *Aurora) BgBrightCyan(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightCyan()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightCyan()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightCyan()),
+		value: arg,
+	}
 }
 
 // BgBrightWhite background color (107).
@@ -520,7 +687,10 @@ func (a *Aurora) BgBrightWhite(arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgBrightWhite()
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgBrightWhite()}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgBrightWhite()),
+		value: arg,
+	}
 }
 
 // Other background colors.
@@ -535,7 +705,10 @@ func (a *Aurora) BgIndex(n ColorIndex, arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgIndex(n)
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgIndex(n)}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgIndex(n)),
+		value: arg,
+	}
 }
 
 // BgGray from 0 to 23.
@@ -543,7 +716,10 @@ func (a *Aurora) BgGray(n GrayIndex, arg interface{}) Value {
 	if val, ok := arg.(Value); ok {
 		return val.BgGray(n)
 	}
-	return Value{conf: a.conf, value: arg, color: Color(0).BgGray(n)}
+	return Value{
+		cc:    a.cc | colorConfig(Color(0).BgGray(n)),
+		value: arg,
+	}
 }
 
 // Special color functions.
@@ -554,7 +730,10 @@ func (a *Aurora) Colorize(arg interface{}, color Color) Value {
 	if val, ok := arg.(Value); ok {
 		return val.Colorize(color)
 	}
-	return Value{conf: a.conf, value: arg, color: color}
+	return Value{
+		cc:    a.cc | colorConfig(color),
+		value: arg,
+	}
 }
 
 // Hyperlinks feature
@@ -584,7 +763,10 @@ func (a *Aurora) Hyperlink(arg interface{}, target string,
 	if val, ok := arg.(Value); ok {
 		return val.Hyperlink(target, params...)
 	}
-	return Value{conf: a.conf, value: arg}.Hyperlink(target, params...)
+	return Value{
+		cc:    a.cc,
+		value: arg,
+	}.Hyperlink(target, params...)
 }
 
 // HyperlinkTarget of the argument if it's a Value.
@@ -609,8 +791,11 @@ func (a *Aurora) transform(arg interface{}) (val Value, ok bool) {
 	if !ok {
 		return // Value{}, false
 	}
-	val = Value{conf: a.conf, value: ai.value, color: ai.color}
-	if a.conf.Hyperlinks {
+	// if ai.cc.resetColor() == a.cc.resetColor() {
+	// 	return // don't replace, same configurations
+	// }
+	val = Value{cc: a.cc | colorConfig(ai.cc.color()), value: ai.value}
+	if a.cc.hyperlinksEnbaled() {
 		val.hyperlink = ai.hyperlink
 	}
 	return val, true // transformed value, true
@@ -621,7 +806,7 @@ func (a *Aurora) transform(arg interface{}) (val Value, ok bool) {
 // Sprintf allows to use colored format. It allies own configurations to
 // all given values (if there is a Value).
 func (a *Aurora) Sprintf(format interface{}, args ...interface{}) string {
-	// clear colors & links as configured by the a
+	// // clear colors & links as configured by the a
 	if f, ok := a.transform(format); ok {
 		format = f
 	}
