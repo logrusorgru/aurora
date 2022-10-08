@@ -37,15 +37,10 @@ package aurora
 
 import (
 	"fmt"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func q(s string) string {
-	return strconv.Quote(s)
-}
 
 func TestValue_String(t *testing.T) {
 	var au *Aurora
@@ -144,13 +139,13 @@ func TestValue_Format(t *testing.T) {
 		fmt.Sprintf("%+1.3g", au.Red(3.14).BgBlue()))
 	const utf8Verb = "%+1.3世" // verb that fit more then 1 byte
 	assert.Equal(t, "\033[31;44m"+"%!世(float64=+3.14)"+"\033[0m",
-		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue()))
+		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue())) //nolint
 	// clear
 	au = New(WithColors(false))
 	assert.Equal(t, fmt.Sprintf("%+1.3g", 3.14),
 		fmt.Sprintf("%+1.3g", au.Red(3.14).BgBlue()))
 	assert.Equal(t, "%!世(float64=+3.14)",
-		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue()))
+		fmt.Sprintf(utf8Verb, au.Red(3.14).BgBlue())) //nolint
 }
 
 func TestValue_colors(t *testing.T) {

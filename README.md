@@ -3,8 +3,8 @@ Aurora
 
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/logrusorgru/aurora/v3?tab=doc)
 [![Unlicense](https://img.shields.io/badge/license-unlicense-blue.svg)](http://unlicense.org/)
-[![Build Status](https://travis-ci.org/logrusorgru/aurora.svg)](https://travis-ci.org/logrusorgru/aurora)
-[![Coverage Status](https://coveralls.io/repos/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/r/logrusorgru/aurora?branch=master)
+[![Build Status](https://github.com/logrusorgru/aurora/workflows/build/badge.svg)](https://github.com/logrusorgru/aurora/actions?workflow=build)
+[![Coverage Status](https://coveralls.io/repos/github/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/github/logrusorgru/aurora?branch=master)
 [![GoReportCard](https://goreportcard.com/badge/logrusorgru/aurora)](https://goreportcard.com/report/logrusorgru/aurora)
 
 Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
@@ -201,7 +201,7 @@ func main() {
 ```
 Depending flags:
 ![depending flags png](https://github.com/logrusorgru/aurora/blob/master/aurora_hyperlinks_flags.png)
-![depending flags webm](https://github.com/logrusorgru/aurora/blob/master/aurora_hyperlinks.webm)
+![depending flags gif](https://github.com/logrusorgru/aurora/blob/master/aurora_hyperlinks.gif)
 
 # Chains
 

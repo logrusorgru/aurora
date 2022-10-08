@@ -166,14 +166,14 @@ func (h *hyperlink) writeHead(w io.Writer) {
 	if h == nil || h.target == "" {
 		return
 	}
-	w.Write(h.headBytes())
+	w.Write(h.headBytes()) //nolint
 }
 
 func (h *hyperlink) writeTail(w io.Writer) {
 	if h == nil || h.target == "" {
 		return
 	}
-	w.Write(h.tailBytes())
+	w.Write(h.tailBytes()) //nolint
 }
 
 func shouldEscape(c byte) bool {

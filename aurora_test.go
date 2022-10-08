@@ -41,17 +41,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func isClear(v Value) bool {
-	return v.Color() == 0
-}
-
 func isColor(v Value, clr Color) bool {
 	return v.Color() == clr
-}
-
-func isTail(v Value, tl Color) bool {
-	// return v.tail() == tl
-	return false
 }
 
 func Test_New(t *testing.T) {
