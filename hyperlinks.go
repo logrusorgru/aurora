@@ -205,7 +205,7 @@ func unhex(c byte) byte {
 }
 
 // HyperlinkEscape escapes all symbols of given string out of [32; 126] range
-// using URL-encoding. Used to escape a hyperlink target.
+// using URL-encoding. Can be used to escape a hyperlink target.
 func HyperlinkEscape(s string) string {
 
 	var hexCount int
