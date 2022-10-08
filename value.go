@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -41,362 +41,14 @@ import (
 	"unicode/utf8"
 )
 
-// A Value represents any printable value
-// with it's color
-type Value interface {
-	// String returns string with colors. If there are any color
-	// or format the string will be terminated with \033[0m
-	fmt.Stringer
-	// Format implements fmt.Formatter interface
-	fmt.Formatter
-	// Color returns value's color
-	Color() Color
-	// Value returns value's value (welcome to the tautology club)
-	Value() interface{}
+// compile-time check
+var (
+	_ fmt.Stringer  = Value{}
+	_ fmt.Formatter = Value{}
+	_ Colored       = Value{}
+)
 
-	//  internals
-	tail() Color
-	setTail(Color) Value
-
-	// Bleach returns copy of original value without colors
-	//
-	// Deprecated: use Reset instead.
-	Bleach() Value
-	// Reset colors and formats
-	Reset() Value
-
-	//
-	// Formats
-	//
-	//
-	// Bold or increased intensity (1).
-	Bold() Value
-	// Faint, decreased intensity, reset the Bold (2).
-	Faint() Value
-	//
-	// DoublyUnderline or Bold off, double-underline
-	// per ECMA-48 (21). It depends.
-	DoublyUnderline() Value
-	// Fraktur, rarely supported (20).
-	Fraktur() Value
-	//
-	// Italic, not widely supported, sometimes
-	// treated as inverse (3).
-	Italic() Value
-	// Underline (4).
-	Underline() Value
-	//
-	// SlowBlink, blinking less than 150
-	// per minute (5).
-	SlowBlink() Value
-	// RapidBlink, blinking 150+ per minute,
-	// not widely supported (6).
-	RapidBlink() Value
-	// Blink is alias for the SlowBlink.
-	Blink() Value
-	//
-	// Reverse video, swap foreground and
-	// background colors (7).
-	Reverse() Value
-	// Inverse is alias for the Reverse
-	Inverse() Value
-	//
-	// Conceal, hidden, not widely supported (8).
-	Conceal() Value
-	// Hidden is alias for the Conceal
-	Hidden() Value
-	//
-	// CrossedOut, characters legible, but
-	// marked for deletion (9).
-	CrossedOut() Value
-	// StrikeThrough is alias for the CrossedOut.
-	StrikeThrough() Value
-	//
-	// Framed (51).
-	Framed() Value
-	// Encircled (52).
-	Encircled() Value
-	//
-	// Overlined (53).
-	Overlined() Value
-
-	//
-	// Foreground colors
-	//
-	//
-	// Black foreground color (30)
-	Black() Value
-	// Red foreground color (31)
-	Red() Value
-	// Green foreground color (32)
-	Green() Value
-	// Yellow foreground color (33)
-	Yellow() Value
-	// Brown foreground color (33)
-	//
-	// Deprecated: use Yellow instead, following specification
-	Brown() Value
-	// Blue foreground color (34)
-	Blue() Value
-	// Magenta foreground color (35)
-	Magenta() Value
-	// Cyan foreground color (36)
-	Cyan() Value
-	// White foreground color (37)
-	White() Value
-	//
-	// Bright foreground colors
-	//
-	// BrightBlack foreground color (90)
-	BrightBlack() Value
-	// BrightRed foreground color (91)
-	BrightRed() Value
-	// BrightGreen foreground color (92)
-	BrightGreen() Value
-	// BrightYellow foreground color (93)
-	BrightYellow() Value
-	// BrightBlue foreground color (94)
-	BrightBlue() Value
-	// BrightMagenta foreground color (95)
-	BrightMagenta() Value
-	// BrightCyan foreground color (96)
-	BrightCyan() Value
-	// BrightWhite foreground color (97)
-	BrightWhite() Value
-	//
-	// Other
-	//
-	// Index of pre-defined 8-bit foreground color
-	// from 0 to 255 (38;5;n).
-	//
-	//       0-  7:  standard colors (as in ESC [ 30–37 m)
-	//       8- 15:  high intensity colors (as in ESC [ 90–97 m)
-	//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
-	//     232-255:  grayscale from black to white in 24 steps
-	//
-	Index(n uint8) Value
-	// Gray from 0 to 24.
-	Gray(n uint8) Value
-
-	//
-	// Background colors
-	//
-	//
-	// BgBlack background color (40)
-	BgBlack() Value
-	// BgRed background color (41)
-	BgRed() Value
-	// BgGreen background color (42)
-	BgGreen() Value
-	// BgYellow background color (43)
-	BgYellow() Value
-	// BgBrown background color (43)
-	//
-	// Deprecated: use BgYellow instead, following specification
-	BgBrown() Value
-	// BgBlue background color (44)
-	BgBlue() Value
-	// BgMagenta background color (45)
-	BgMagenta() Value
-	// BgCyan background color (46)
-	BgCyan() Value
-	// BgWhite background color (47)
-	BgWhite() Value
-	//
-	// Bright background colors
-	//
-	// BgBrightBlack background color (100)
-	BgBrightBlack() Value
-	// BgBrightRed background color (101)
-	BgBrightRed() Value
-	// BgBrightGreen background color (102)
-	BgBrightGreen() Value
-	// BgBrightYellow background color (103)
-	BgBrightYellow() Value
-	// BgBrightBlue background color (104)
-	BgBrightBlue() Value
-	// BgBrightMagenta background color (105)
-	BgBrightMagenta() Value
-	// BgBrightCyan background color (106)
-	BgBrightCyan() Value
-	// BgBrightWhite background color (107)
-	BgBrightWhite() Value
-	//
-	// Other
-	//
-	// BgIndex of 8-bit pre-defined background color
-	// from 0 to 255 (48;5;n).
-	//
-	//       0-  7:  standard colors (as in ESC [ 40–47 m)
-	//       8- 15:  high intensity colors (as in ESC [100–107 m)
-	//      16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
-	//     232-255:  grayscale from black to white in 24 steps
-	//
-	BgIndex(n uint8) Value
-	// BgGray from 0 to 24.
-	BgGray(n uint8) Value
-
-	//
-	// Special
-	//
-	// Colorize removes existing colors and
-	// formats of the argument and applies given.
-	Colorize(color Color) Value
-}
-
-// Value without colors
-
-type valueClear struct {
-	value interface{}
-}
-
-func (vc valueClear) String() string { return fmt.Sprint(vc.value) }
-
-func (vc valueClear) Color() Color       { return 0 }
-func (vc valueClear) Value() interface{} { return vc.value }
-
-func (vc valueClear) tail() Color         { return 0 }
-func (vc valueClear) setTail(Color) Value { return vc }
-
-func (vc valueClear) Bleach() Value { return vc }
-func (vc valueClear) Reset() Value  { return vc }
-
-func (vc valueClear) Bold() Value            { return vc }
-func (vc valueClear) Faint() Value           { return vc }
-func (vc valueClear) DoublyUnderline() Value { return vc }
-func (vc valueClear) Fraktur() Value         { return vc }
-func (vc valueClear) Italic() Value          { return vc }
-func (vc valueClear) Underline() Value       { return vc }
-func (vc valueClear) SlowBlink() Value       { return vc }
-func (vc valueClear) RapidBlink() Value      { return vc }
-func (vc valueClear) Blink() Value           { return vc }
-func (vc valueClear) Reverse() Value         { return vc }
-func (vc valueClear) Inverse() Value         { return vc }
-func (vc valueClear) Conceal() Value         { return vc }
-func (vc valueClear) Hidden() Value          { return vc }
-func (vc valueClear) CrossedOut() Value      { return vc }
-func (vc valueClear) StrikeThrough() Value   { return vc }
-func (vc valueClear) Framed() Value          { return vc }
-func (vc valueClear) Encircled() Value       { return vc }
-func (vc valueClear) Overlined() Value       { return vc }
-
-func (vc valueClear) Black() Value         { return vc }
-func (vc valueClear) Red() Value           { return vc }
-func (vc valueClear) Green() Value         { return vc }
-func (vc valueClear) Yellow() Value        { return vc }
-func (vc valueClear) Brown() Value         { return vc }
-func (vc valueClear) Blue() Value          { return vc }
-func (vc valueClear) Magenta() Value       { return vc }
-func (vc valueClear) Cyan() Value          { return vc }
-func (vc valueClear) White() Value         { return vc }
-func (vc valueClear) BrightBlack() Value   { return vc }
-func (vc valueClear) BrightRed() Value     { return vc }
-func (vc valueClear) BrightGreen() Value   { return vc }
-func (vc valueClear) BrightYellow() Value  { return vc }
-func (vc valueClear) BrightBlue() Value    { return vc }
-func (vc valueClear) BrightMagenta() Value { return vc }
-func (vc valueClear) BrightCyan() Value    { return vc }
-func (vc valueClear) BrightWhite() Value   { return vc }
-func (vc valueClear) Index(uint8) Value    { return vc }
-func (vc valueClear) Gray(uint8) Value     { return vc }
-
-func (vc valueClear) BgBlack() Value         { return vc }
-func (vc valueClear) BgRed() Value           { return vc }
-func (vc valueClear) BgGreen() Value         { return vc }
-func (vc valueClear) BgYellow() Value        { return vc }
-func (vc valueClear) BgBrown() Value         { return vc }
-func (vc valueClear) BgBlue() Value          { return vc }
-func (vc valueClear) BgMagenta() Value       { return vc }
-func (vc valueClear) BgCyan() Value          { return vc }
-func (vc valueClear) BgWhite() Value         { return vc }
-func (vc valueClear) BgBrightBlack() Value   { return vc }
-func (vc valueClear) BgBrightRed() Value     { return vc }
-func (vc valueClear) BgBrightGreen() Value   { return vc }
-func (vc valueClear) BgBrightYellow() Value  { return vc }
-func (vc valueClear) BgBrightBlue() Value    { return vc }
-func (vc valueClear) BgBrightMagenta() Value { return vc }
-func (vc valueClear) BgBrightCyan() Value    { return vc }
-func (vc valueClear) BgBrightWhite() Value   { return vc }
-func (vc valueClear) BgIndex(uint8) Value    { return vc }
-func (vc valueClear) BgGray(uint8) Value     { return vc }
-func (vc valueClear) Colorize(Color) Value   { return vc }
-
-func (vc valueClear) Format(s fmt.State, verb rune) {
-	// it's enough for many cases (%-+020.10f)
-	// %          - 1
-	// availFlags - 3 (5)
-	// width      - 2
-	// prec       - 3 (.23)
-	// verb       - 1
-	// --------------
-	//             10
-	format := make([]byte, 1, 10)
-	format[0] = '%'
-	var f byte
-	for i := 0; i < len(availFlags); i++ {
-		if f = availFlags[i]; s.Flag(int(f)) {
-			format = append(format, f)
-		}
-	}
-	var width, prec int
-	var ok bool
-	if width, ok = s.Width(); ok {
-		format = strconv.AppendInt(format, int64(width), 10)
-	}
-	if prec, ok = s.Precision(); ok {
-		format = append(format, '.')
-		format = strconv.AppendInt(format, int64(prec), 10)
-	}
-	if verb > utf8.RuneSelf {
-		format = append(format, string(verb)...)
-	} else {
-		format = append(format, byte(verb))
-	}
-	fmt.Fprintf(s, string(format), vc.value)
-}
-
-// Value within colors
-
-type value struct {
-	value     interface{} // value as it
-	color     Color       // this color
-	tailColor Color       // tail color
-}
-
-func (v value) String() string {
-	if v.color != 0 {
-		if v.tailColor != 0 {
-			return esc + v.color.Nos(true) + "m" +
-				fmt.Sprint(v.value) +
-				esc + v.tailColor.Nos(true) + "m"
-		}
-		return esc + v.color.Nos(false) + "m" + fmt.Sprint(v.value) + clear
-	}
-	return fmt.Sprint(v.value)
-}
-
-func (v value) Color() Color { return v.color }
-
-func (v value) Bleach() Value {
-	v.color, v.tailColor = 0, 0
-	return v
-}
-
-func (v value) Reset() Value {
-	v.color, v.tailColor = 0, 0
-	return v
-}
-
-func (v value) tail() Color { return v.tailColor }
-
-func (v value) setTail(t Color) Value {
-	v.tailColor = t
-	return v
-}
-
-func (v value) Value() interface{} { return v.value }
-
-func (v value) Format(s fmt.State, verb rune) {
+func coloredFormat(color Color, s fmt.State, verb rune) string {
 
 	// it's enough for many cases (%-+020.10f)
 	// %          - 1
@@ -419,327 +71,567 @@ func (v value) Format(s fmt.State, verb rune) {
 	//
 	// 10 + 59 * 2 = 128
 
-	format := make([]byte, 0, 128)
-	if v.color != 0 {
+	var format = make([]byte, 0, 128)
+
+	if color != 0 {
 		format = append(format, esc...)
-		format = v.color.appendNos(format, v.tailColor != 0)
+		format = color.appendNos(format, false)
 		format = append(format, 'm')
 	}
+
 	format = append(format, '%')
+
 	var f byte
 	for i := 0; i < len(availFlags); i++ {
 		if f = availFlags[i]; s.Flag(int(f)) {
 			format = append(format, f)
 		}
 	}
-	var width, prec int
-	var ok bool
+
+	var (
+		width, prec int
+		ok          bool
+	)
 	if width, ok = s.Width(); ok {
 		format = strconv.AppendInt(format, int64(width), 10)
 	}
+
 	if prec, ok = s.Precision(); ok {
 		format = append(format, '.')
 		format = strconv.AppendInt(format, int64(prec), 10)
 	}
+
 	if verb > utf8.RuneSelf {
 		format = append(format, string(verb)...)
 	} else {
 		format = append(format, byte(verb))
 	}
-	if v.color != 0 {
-		if v.tailColor != 0 {
-			// set next (previous) format clearing current one
-			format = append(format, esc...)
-			format = v.tailColor.appendNos(format, true)
-			format = append(format, 'm')
-		} else {
-			format = append(format, clear...) // just clear
-		}
+
+	if color != 0 {
+		format = append(format, clear...) // just clear
 	}
-	fmt.Fprintf(s, string(format), v.value)
+
+	return string(format)
 }
 
-func (v value) Bold() Value {
-	v.color = (v.color &^ FaintFm) | BoldFm
+type colorConfig uint64
+
+const (
+	colorPin      colorConfig = 1 << 32
+	hyperlinksPin colorConfig = 1 << 33
+)
+
+func (cc colorConfig) colorsEnabled() bool {
+	return cc&colorPin != 0
+}
+
+func (cc colorConfig) hyperlinksEnbaled() bool {
+	return cc&hyperlinksPin != 0
+}
+
+func (cc colorConfig) color() Color {
+	if cc.colorsEnabled() {
+		return Color(uint32(cc)) // lower 32 bits only
+	}
+	return 0 // even if a color set
+}
+
+func (cc colorConfig) resetColor() colorConfig {
+	return cc & (colorPin | hyperlinksPin)
+}
+
+// A Value represents any printable value
+// with or without colors, formats and a link.
+type Value struct {
+	value     interface{} // value as is
+	cc        colorConfig // color & config
+	hyperlink *hyperlink  // hyperlink target and parameters
+}
+
+// String implements standard fmt.Stringer interface.
+func (v Value) String() string {
+	var (
+		t     []byte
+		val   = fmt.Sprint(v.value)
+		color = v.cc.color()
+	)
+
+	if v.cc.hyperlinksEnbaled() && v.hyperlink.isExists() {
+		var (
+			ln  = len(val)
+			nos string
+		)
+		// calculate length
+		ln += v.hyperlink.headLen()
+		if color != 0 {
+			ln += len(esc)
+			nos = color.Nos(false)
+			ln += len(nos) + len("m")
+			ln += len(clear)
+		}
+		ln += v.hyperlink.tailLen()
+		// fill
+		t = make([]byte, 0, ln)
+		t = append(t, v.hyperlink.headBytes()...)
+		if color != 0 {
+			t = append(t, esc...)
+			t = append(t, nos...)
+			t = append(t, 'm')
+			t = append(t, val...)
+			t = append(t, clear...)
+		} else {
+			t = append(t, val...)
+		}
+		t = append(t, v.hyperlink.tailBytes()...)
+		return string(t)
+	}
+
+	// no links, only colors & formats
+	if color != 0 {
+		return esc + color.Nos(false) + "m" + val + clear
+	}
+
+	// no links, no colors, no formats, just the value
+	return val
+}
+
+// Color returns colors and formats of the Value.
+func (v Value) Color() Color {
+	return v.cc.color()
+}
+
+// Reset colors, formats and links.
+func (v Value) Reset() Value {
+	v.cc, v.hyperlink = v.cc.resetColor(), nil
 	return v
 }
 
-func (v value) Faint() Value {
-	v.color = (v.color &^ BoldFm) | FaintFm
+// Clear colors and formats, preserving links.
+func (v Value) Clear() Value {
+	v.cc = v.cc.resetColor()
 	return v
 }
 
-func (v value) DoublyUnderline() Value {
-	v.color |= DoublyUnderlineFm
+// Value returns value's value (welcome to the tautology club)
+func (v Value) Value() interface{} {
+	return v.value
+}
+
+// Format implements standard fmt.Formatter interface.
+func (v Value) Format(s fmt.State, verb rune) {
+	if !v.cc.hyperlinksEnbaled() {
+		fmt.Fprintf(s, coloredFormat(v.Color(), s, verb), v.value)
+		return
+	}
+	v.hyperlink.writeHead(s)
+	fmt.Fprintf(s, coloredFormat(v.Color(), s, verb), v.value)
+	v.hyperlink.writeTail(s)
+}
+
+// Formats
+//
+// Bold or increased intensity (1).
+func (v Value) Bold() Value {
+	v.cc = colorConfig(v.cc.color().Bold()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Fraktur() Value {
-	v.color |= FrakturFm
+// Faint, decreased intensity, reset the Bold (2).
+func (v Value) Faint() Value {
+	v.cc = colorConfig(v.cc.color().Faint()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Italic() Value {
-	v.color |= ItalicFm
+// DoublyUnderline or Bold off, double-underline per ECMA-48 (21). It depends.
+func (v Value) DoublyUnderline() Value {
+	v.cc = colorConfig(v.cc.color().DoublyUnderline()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Underline() Value {
-	v.color |= UnderlineFm
+// Fraktur, rarely supported (20).
+func (v Value) Fraktur() Value {
+	v.cc = colorConfig(v.cc.color().Fraktur()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) SlowBlink() Value {
-	v.color = (v.color &^ RapidBlinkFm) | SlowBlinkFm
+// Italic, not widely supported, sometimes treated as inverse (3).
+func (v Value) Italic() Value {
+	v.cc = colorConfig(v.cc.color().Italic()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) RapidBlink() Value {
-	v.color = (v.color &^ SlowBlinkFm) | RapidBlinkFm
+// Underline (4).
+func (v Value) Underline() Value {
+	v.cc = colorConfig(v.cc.color().Underline()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Blink() Value {
+// SlowBlink, blinking less than 150 per minute (5).
+func (v Value) SlowBlink() Value {
+	v.cc = colorConfig(v.cc.color().SlowBlink()) | v.cc.resetColor()
+	return v
+}
+
+// RapidBlink, blinking 150+ per minute, not widely supported (6).
+func (v Value) RapidBlink() Value {
+	v.cc = colorConfig(v.cc.color().RapidBlink()) | v.cc.resetColor()
+	return v
+}
+
+// Blink is alias for the SlowBlink.
+func (v Value) Blink() Value {
 	return v.SlowBlink()
 }
 
-func (v value) Reverse() Value {
-	v.color |= ReverseFm
+// Reverse video, swap foreground and background colors (7).
+func (v Value) Reverse() Value {
+	v.cc = colorConfig(v.cc.color().Reverse()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Inverse() Value {
+// Inverse is alias for the Reverse.
+func (v Value) Inverse() Value {
 	return v.Reverse()
 }
 
-func (v value) Conceal() Value {
-	v.color |= ConcealFm
+// Conceal, hidden, not widely supported (8).
+func (v Value) Conceal() Value {
+	v.cc = colorConfig(v.cc.color().Conceal()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Hidden() Value {
+// Hidden is alias for the Conceal.
+func (v Value) Hidden() Value {
 	return v.Conceal()
 }
 
-func (v value) CrossedOut() Value {
-	v.color |= CrossedOutFm
+// CrossedOut, characters legible, but marked for deletion (9).
+func (v Value) CrossedOut() Value {
+	v.cc = colorConfig(v.cc.color().CrossedOut()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) StrikeThrough() Value {
+// StrikeThrough is alias for the CrossedOut.
+func (v Value) StrikeThrough() Value {
 	return v.CrossedOut()
 }
 
-func (v value) Framed() Value {
-	v.color |= FramedFm
+// Framed (51).
+func (v Value) Framed() Value {
+	v.cc = colorConfig(v.cc.color().Framed()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Encircled() Value {
-	v.color |= EncircledFm
+// Encircled (52).
+func (v Value) Encircled() Value {
+	v.cc = colorConfig(v.cc.color().Encircled()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Overlined() Value {
-	v.color |= OverlinedFm
+// Overlined (53).
+func (v Value) Overlined() Value {
+	v.cc = colorConfig(v.cc.color().Overlined()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Black() Value {
-	v.color = (v.color &^ maskFg) | BlackFg
+// Foreground colors.
+//
+// Black foreground color (30).
+func (v Value) Black() Value {
+	v.cc = colorConfig(v.cc.color().Black()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Red() Value {
-	v.color = (v.color &^ maskFg) | RedFg
+// Red foreground color (31).
+func (v Value) Red() Value {
+	v.cc = colorConfig(v.cc.color().Red()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Green() Value {
-	v.color = (v.color &^ maskFg) | GreenFg
+// Green foreground color (32).
+func (v Value) Green() Value {
+	v.cc = colorConfig(v.cc.color().Green()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Yellow() Value {
-	v.color = (v.color &^ maskFg) | YellowFg
+// Yellow foreground color (33).
+func (v Value) Yellow() Value {
+	v.cc = colorConfig(v.cc.color().Yellow()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Brown() Value {
-	return v.Yellow()
-}
-
-func (v value) Blue() Value {
-	v.color = (v.color &^ maskFg) | BlueFg
+// Blue foreground color (34).
+func (v Value) Blue() Value {
+	v.cc = colorConfig(v.cc.color().Blue()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Magenta() Value {
-	v.color = (v.color &^ maskFg) | MagentaFg
+// Magenta foreground color (35).
+func (v Value) Magenta() Value {
+	v.cc = colorConfig(v.cc.color().Magenta()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Cyan() Value {
-	v.color = (v.color &^ maskFg) | CyanFg
+// Cyan foreground color (36).
+func (v Value) Cyan() Value {
+	v.cc = colorConfig(v.cc.color().Cyan()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) White() Value {
-	v.color = (v.color &^ maskFg) | WhiteFg
+// White foreground color (37).
+func (v Value) White() Value {
+	v.cc = colorConfig(v.cc.color().White()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightBlack() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | BlackFg
+// Bright foreground colors.
+//
+// BrightBlack foreground color (90).
+func (v Value) BrightBlack() Value {
+	v.cc = colorConfig(v.cc.color().BrightBlack()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightRed() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | RedFg
+// BrightRed foreground color (91).
+func (v Value) BrightRed() Value {
+	v.cc = colorConfig(v.cc.color().BrightRed()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightGreen() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | GreenFg
+// BrightGreen foreground color (92).
+func (v Value) BrightGreen() Value {
+	v.cc = colorConfig(v.cc.color().BrightGreen()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightYellow() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | YellowFg
+// BrightYellow foreground color (93).
+func (v Value) BrightYellow() Value {
+	v.cc = colorConfig(v.cc.color().BrightYellow()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightBlue() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | BlueFg
+// BrightBlue foreground color (94).
+func (v Value) BrightBlue() Value {
+	v.cc = colorConfig(v.cc.color().BrightBlue()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightMagenta() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | MagentaFg
+// BrightMagenta foreground color (95).
+func (v Value) BrightMagenta() Value {
+	v.cc = colorConfig(v.cc.color().BrightMagenta()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightCyan() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | CyanFg
+// BrightCyan foreground color (96).
+func (v Value) BrightCyan() Value {
+	v.cc = colorConfig(v.cc.color().BrightCyan()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) BrightWhite() Value {
-	v.color = (v.color &^ maskFg) | BrightFg | WhiteFg
+// BrightWhite foreground color (97).
+func (v Value) BrightWhite() Value {
+	v.cc = colorConfig(v.cc.color().BrightWhite()) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Index(n uint8) Value {
-	v.color = (v.color &^ maskFg) | (Color(n) << shiftFg) | flagFg
+// Other colors.
+//
+// Index of pre-defined 8-bit foreground color from 0 to 255 (38;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 30–37 m)
+//	  8- 15:  high intensity colors (as in ESC [ 90–97 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (v Value) Index(n ColorIndex) Value {
+	v.cc = colorConfig(v.cc.color().Index(n)) | v.cc.resetColor()
 	return v
 }
 
-func (v value) Gray(n uint8) Value {
-	if n > 23 {
-		n = 23
+// Gray from 0 to 24.
+func (v Value) Gray(n GrayIndex) Value {
+	v.cc = colorConfig(v.cc.color().Gray(n)) | v.cc.resetColor()
+	return v
+}
+
+// Background colors
+//
+// BgBlack background color (40).
+func (v Value) BgBlack() Value {
+	v.cc = colorConfig(v.cc.color().BgBlack()) | v.cc.resetColor()
+	return v
+}
+
+// BgRed background color (41).
+func (v Value) BgRed() Value {
+	v.cc = colorConfig(v.cc.color().BgRed()) | v.cc.resetColor()
+	return v
+}
+
+// BgGreen background color (42).
+func (v Value) BgGreen() Value {
+	v.cc = colorConfig(v.cc.color().BgGreen()) | v.cc.resetColor()
+	return v
+}
+
+// BgYellow background color (43).
+func (v Value) BgYellow() Value {
+	v.cc = colorConfig(v.cc.color().BgYellow()) | v.cc.resetColor()
+	return v
+}
+
+// BgBlue background color (44).
+func (v Value) BgBlue() Value {
+	v.cc = colorConfig(v.cc.color().BgBlue()) | v.cc.resetColor()
+	return v
+}
+
+// BgMagenta background color (45).
+func (v Value) BgMagenta() Value {
+	v.cc = colorConfig(v.cc.color().BgMagenta()) | v.cc.resetColor()
+	return v
+}
+
+// BgCyan background color (46).
+func (v Value) BgCyan() Value {
+	v.cc = colorConfig(v.cc.color().BgCyan()) | v.cc.resetColor()
+	return v
+}
+
+// BgWhite background color (47).
+func (v Value) BgWhite() Value {
+	v.cc = colorConfig(v.cc.color().BgWhite()) | v.cc.resetColor()
+	return v
+}
+
+// Bright background colors.
+//
+// BgBrightBlack background color (100).
+func (v Value) BgBrightBlack() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightBlack()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightRed background color (101).
+func (v Value) BgBrightRed() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightRed()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightGreen background color (102).
+func (v Value) BgBrightGreen() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightGreen()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightYellow background color (103).
+func (v Value) BgBrightYellow() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightYellow()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightBlue background color (104).
+func (v Value) BgBrightBlue() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightBlue()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightMagenta background color (105).
+func (v Value) BgBrightMagenta() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightMagenta()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightCyan background color (106).
+func (v Value) BgBrightCyan() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightCyan()) | v.cc.resetColor()
+	return v
+}
+
+// BgBrightWhite background color (107).
+func (v Value) BgBrightWhite() Value {
+	v.cc = colorConfig(v.cc.color().BgBrightWhite()) | v.cc.resetColor()
+	return v
+}
+
+// Other background colors.
+//
+// BgIndex of 8-bit pre-defined background color from 0 to 255 (48;5;n).
+//
+//	  0-  7:  standard colors (as in ESC [ 40–47 m)
+//	  8- 15:  high intensity colors (as in ESC [100–107 m)
+//	 16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+//	232-255:  grayscale from black to white in 24 steps
+func (v Value) BgIndex(n ColorIndex) Value {
+	v.cc = colorConfig(v.cc.color().BgIndex(n)) | v.cc.resetColor()
+	return v
+}
+
+// BgGray from 0 to 24.
+func (v Value) BgGray(n GrayIndex) Value {
+	v.cc = colorConfig(v.cc.color().BgGray(n)) | v.cc.resetColor()
+	return v
+}
+
+// Special colorization method.
+//
+// Colorize removes existing colors and formats of the argument and applies
+// given.
+func (v Value) Colorize(color Color) Value {
+	v.cc = colorConfig(color) | v.cc.resetColor()
+	return v
+}
+
+// Hyperlinks feature
+//
+// Hyperlink with given target and parameters. If hyperlinks feature is
+// disabled, then the 'arg' argument dropped and the 'target' used instead,
+// inheriting all colors and format from the 'arg' (if it's a Colored).
+//
+// See https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+// for details about the hyperlinks feature.
+//
+// The Hyperlink doesn't escape the target and the parameters. They should be
+// checked and escaped before. See HyperlinkEscape function.
+//
+// See also HyperlinkID function.
+//
+// For a simple example
+//
+//	val.Hyperlink("http://example.com")
+//
+// and an example with ID
+//
+//	val.Hyperlink("http://example.com", aurora.HyperlinkID("10"))
+//
+// Successive calls replace previously set target and parameters.
+func (v Value) Hyperlink(target string, params ...HyperlinkParam) Value {
+	if !v.cc.hyperlinksEnbaled() {
+		v.value = target // drop value, use the target
+		v.hyperlink = &hyperlink{
+			target: target, // keep for the HyperlinkTarget method
+		}
+		return v
 	}
-	v.color = (v.color &^ maskFg) | (Color(232+n) << shiftFg) | flagFg
-	return v
-}
-
-func (v value) BgBlack() Value {
-	v.color = (v.color &^ maskBg) | BlackBg
-	return v
-}
-
-func (v value) BgRed() Value {
-	v.color = (v.color &^ maskBg) | RedBg
-	return v
-}
-
-func (v value) BgGreen() Value {
-	v.color = (v.color &^ maskBg) | GreenBg
-	return v
-}
-
-func (v value) BgYellow() Value {
-	v.color = (v.color &^ maskBg) | YellowBg
-	return v
-}
-
-func (v value) BgBrown() Value {
-	return v.BgYellow()
-}
-
-func (v value) BgBlue() Value {
-	v.color = (v.color &^ maskBg) | BlueBg
-	return v
-}
-
-func (v value) BgMagenta() Value {
-	v.color = (v.color &^ maskBg) | MagentaBg
-	return v
-}
-
-func (v value) BgCyan() Value {
-	v.color = (v.color &^ maskBg) | CyanBg
-	return v
-}
-
-func (v value) BgWhite() Value {
-	v.color = (v.color &^ maskBg) | WhiteBg
-	return v
-}
-
-func (v value) BgBrightBlack() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | BlackBg
-	return v
-}
-
-func (v value) BgBrightRed() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | RedBg
-	return v
-}
-
-func (v value) BgBrightGreen() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | GreenBg
-	return v
-}
-
-func (v value) BgBrightYellow() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | YellowBg
-	return v
-}
-
-func (v value) BgBrightBlue() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | BlueBg
-	return v
-}
-
-func (v value) BgBrightMagenta() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | MagentaBg
-	return v
-}
-
-func (v value) BgBrightCyan() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | CyanBg
-	return v
-}
-
-func (v value) BgBrightWhite() Value {
-	v.color = (v.color &^ maskBg) | BrightBg | WhiteBg
-	return v
-}
-
-func (v value) BgIndex(n uint8) Value {
-	v.color = (v.color &^ maskBg) | (Color(n) << shiftBg) | flagBg
-	return v
-}
-
-func (v value) BgGray(n uint8) Value {
-	if n > 23 {
-		n = 23
+	if v.hyperlink == nil {
+		v.hyperlink = new(hyperlink)
 	}
-	v.color = (v.color &^ maskBg) | (Color(232+n) << shiftBg) | flagBg
+	v.hyperlink.target = target
+	v.hyperlink.params = params
 	return v
 }
 
-func (v value) Colorize(color Color) Value {
-	v.color = color
-	return v
+// HyperlinkTarget if any.
+func (v Value) HyperlinkTarget() (target string) {
+	if v.hyperlink != nil {
+		return v.hyperlink.target
+	}
+	return // nothing
+}
+
+// HyperlinkParams if any.
+func (v Value) HyperlinkParams() (params []HyperlinkParam) {
+	if v.hyperlink != nil {
+		return v.hyperlink.params
+	}
+	return // nil
 }

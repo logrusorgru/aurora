@@ -6,7 +6,6 @@ Aurora
 [![Build Status](https://travis-ci.org/logrusorgru/aurora.svg)](https://travis-ci.org/logrusorgru/aurora)
 [![Coverage Status](https://coveralls.io/repos/logrusorgru/aurora/badge.svg?branch=master)](https://coveralls.io/r/logrusorgru/aurora?branch=master)
 [![GoReportCard](https://goreportcard.com/badge/logrusorgru/aurora)](https://goreportcard.com/report/logrusorgru/aurora)
-[![Gitter](https://img.shields.io/badge/chat-on_gitter-46bc99.svg?logo=data:image%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTQiIHdpZHRoPSIxNCI%2BPGcgZmlsbD0iI2ZmZiI%2BPHJlY3QgeD0iMCIgeT0iMyIgd2lkdGg9IjEiIGhlaWdodD0iNSIvPjxyZWN0IHg9IjIiIHk9IjQiIHdpZHRoPSIxIiBoZWlnaHQ9IjciLz48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMSIgaGVpZ2h0PSI3Ii8%2BPHJlY3QgeD0iNiIgeT0iNCIgd2lkdGg9IjEiIGhlaWdodD0iNCIvPjwvZz48L3N2Zz4%3D&logoWidth=10)](https://gitter.im/logrusorgru/aurora)
 
 Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
 
@@ -21,6 +20,7 @@ Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
   + [Printf](#printf)
   + [aurora.Sprintf](#aurorasprintf)
   + [Enable/Disable colors](#enabledisable-colors)
+  + [Hyperlinks, default colorizer, and configurations](#hyperlinks-default-colorizer-and-configurations)
 - [Chains](#chains)
 - [Colorize](#colorize)
 - [Grayscale](#grayscale)
@@ -37,7 +37,7 @@ Ultimate ANSI colors for Golang. The package supports Printf/Sprintf etc.
 
 # Installation
 
-### Version 1.x
+##### Version 1.x
 
 Using gopkg.in.
 
@@ -45,13 +45,13 @@ Using gopkg.in.
 go get -u gopkg.in/logrusorgru/aurora.v1
 ```
 
-### Version 2.x
+##### Version 2.x
 
 ```
 go get -u github.com/logrusorgru/aurora
 ```
 
-### Go modules support, version v3+
+##### Go modules support, version v3+
 
 Get
 ```
@@ -61,10 +61,18 @@ go get -u github.com/logrusorgru/aurora/v3
 The v3 was introduced to support `go.mod` and leave previous import paths as is.
 Currently, there is no changes between them (excluding the importpath's /v3 tail).
 
+##### The latest version
+
+```
+go get -u github.com/logrusorgru/aurora/v4
+```
+
+With hyperlinks.
+
 # Test
 
 ```
-go test -cover github.com/logrusorgru/aurora/v3
+go test -cover -race github.com/logrusorgru/aurora/v4
 ```
 
 Replace the import path with your, if it's different.
@@ -79,7 +87,7 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora"
+	. "github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
@@ -99,7 +107,7 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora"
+	. "github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
@@ -119,7 +127,7 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora"
+	. "github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
@@ -139,17 +147,17 @@ import (
 	"fmt"
 	"flag"
 
-	"github.com/logrusorgru/aurora"
+	"github.com/logrusorgru/aurora/v4"
 )
 
 // colorizer
-var au aurora.Aurora
+var au *aurora.Aurora
 
 var colors = flag.Bool("colors", false, "enable or disable colors")
 
 func init() {
 	flag.Parse()
-	au = aurora.NewAurora(*colors)
+	au = aurora.New(WithColors(*colors))
 }
 
 func main() {
@@ -163,6 +171,37 @@ Without flags:
 
 With `-colors` flag:
 ![enable png](https://github.com/logrusorgru/aurora/blob/master/enable.png)
+
+### Hyperlinks, default colorizer, and configurations
+
+[Hyperlinks feature description](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda).
+
+Add a red hyperlinks with text "Example" that is referencing to
+http://example.com.
+
+```go
+package main
+
+import (
+	"flag"
+	"fmt"
+
+	"github.com/logrusorgru/aurora/v4"
+)
+
+func main() {
+	var conf = aurora.NewConfig()
+	conf.AddFlags(flag.CommandLine, "prefix.")
+	flag.Parse()
+
+	aurora.DefaultColorizer = aurora.New(conf.Options()...) // set global
+
+	fmt.Println(aurora.Red("Example").Hyperlink("http://example.com/"))
+}
+```
+Depending flags:
+![depending flags png](https://github.com/logrusorgru/aurora/blob/master/aurora_hyperlinks_flags.png)
+![depending flags webm](https://github.com/logrusorgru/aurora/blob/master/aurora_hyperlinks.webm)
 
 # Chains
 
@@ -345,7 +384,7 @@ on colors for a terminal only, and turn them off for a file.
 
 ### Licensing
 
-Copyright &copy; 2016-2020 The Aurora Authors. This work is free.
+Copyright &copy; 2016-2022 The Aurora Authors. This work is free.
 It comes without any warranty, to the extent permitted by applicable
 law. You can redistribute it and/or modify it under the terms of the
 the Unlicense. See the LICENSE file for more details.

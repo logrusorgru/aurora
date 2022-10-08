@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2020 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -37,6 +37,8 @@ package aurora
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func testFunc(t *testing.T, name string, v Value, clr Color) {
@@ -46,9 +48,6 @@ func testFunc(t *testing.T, name string, v Value, clr Color) {
 	} else if str != "x" {
 		t.Errorf("%s wrong value: '%v', expected 'x'", name, v.Value())
 	}
-	if !isTail(v, 0) {
-		t.Errorf("%s wrong tail: %d", name, v.tail())
-	}
 	if !isColor(v, clr) {
 		t.Errorf("%s wrong color: %d, want: %d", name, v.Color(), clr)
 	}
@@ -57,6 +56,12 @@ func testFunc(t *testing.T, name string, v Value, clr Color) {
 func Test_Reset(t *testing.T) {
 	testFunc(t, "Reset", Reset("x"), 0)
 	testFunc(t, "Complex Reset", Reset(DoublyUnderline(Underline("x"))),
+		0)
+}
+
+func Test_Clear(t *testing.T) {
+	testFunc(t, "Clear", Clear("x"), 0)
+	testFunc(t, "Complex Clear", Clear(DoublyUnderline(Underline("x"))),
 		0)
 }
 
@@ -192,12 +197,6 @@ func Test_Yellow(t *testing.T) {
 		YellowFg|BoldFm|BrightBg|MagentaBg)
 }
 
-func Test_Brown(t *testing.T) {
-	testFunc(t, "Brown", Brown("x"), BrownFg)
-	testFunc(t, "Complex Brown", Brown(BgBrightBlue("x").Bold()),
-		BrownFg|BrightBg|BlueBg|BoldFm)
-}
-
 func Test_Blue(t *testing.T) {
 	testFunc(t, "Blue", Blue("x"), BlueFg)
 	testFunc(t, "Complex Blue", Blue(Fraktur("x").Underline()),
@@ -306,12 +305,6 @@ func Test_BgYellow(t *testing.T) {
 		YellowBg|BlinkFm)
 }
 
-func Test_BgBrown(t *testing.T) {
-	testFunc(t, "BgBrown", BgBrown("x"), BrownBg)
-	testFunc(t, "Complex BgBrown", BgBrown(Hidden("x")),
-		BrownBg|HiddenFm)
-}
-
 func Test_BgBlue(t *testing.T) {
 	testFunc(t, "BgBlue", BgBlue("x"), BlueBg)
 	testFunc(t, "Complex BgBlue", BgBlue(Framed("x")),
@@ -407,4 +400,54 @@ func Test_Colorize(t *testing.T) {
 func Test_bigGray(t *testing.T) {
 	testFunc(t, "Gray", Gray(115, "x"), Color(232+23)<<shiftFg|flagFg)
 	testFunc(t, "BgGray", BgGray(215, "x"), Color(232+23)<<shiftBg|flagBg)
+}
+
+func Test_Hyperlink(t *testing.T) {
+	assert.EqualValues(t,
+		Value{
+			value: "Example",
+			cc:    DefaultColorizer.cc,
+			hyperlink: &hyperlink{
+				target: "http://example.com",
+				params: []HyperlinkParam{{
+					Key:   "id",
+					Value: "10",
+				}},
+			},
+		},
+		Hyperlink("Example", "http://example.com", HyperlinkID("10")))
+
+	assert.EqualValues(t,
+		Value{
+			value: "Example",
+			cc:    DefaultColorizer.cc | colorConfig(RedFg),
+			hyperlink: &hyperlink{
+				target: "http://example.com",
+				params: []HyperlinkParam{{
+					Key:   "id",
+					Value: "10",
+				}},
+			},
+		},
+		Hyperlink(Red("Example"), "http://example.com", HyperlinkID("10")))
+}
+
+func Test_HyperlinkTarget(t *testing.T) {
+	assert.Equal(t, "", HyperlinkTarget("Example"))
+	assert.Equal(t, "http://example.com",
+		HyperlinkTarget(Hyperlink(
+			Red("Example"), "http://example.com", HyperlinkID("10")),
+		))
+}
+
+func Test_HyperlinkParams(t *testing.T) {
+	assert.Equal(t, HyperlinkParams(nil), HyperlinkParams("Example"))
+	assert.EqualValues(t,
+		[]HyperlinkParam{{
+			Key:   "id",
+			Value: "10",
+		}},
+		HyperlinkParams(Hyperlink(
+			Red("Example"), "http://example.com", HyperlinkID("10")),
+		))
 }

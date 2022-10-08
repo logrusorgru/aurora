@@ -2,6 +2,45 @@ Changes
 =======
 
 ---
+14:15:14
+Thursday, October 8, 2022
+
+New version v4. Breaking changes. [Migrate from v3](#migrate-from-v3).
+
+- Drop deprecated `Bleach` methods. Use `Reset` or `Clear` instead.
+- Drop deprecated `Brows` and `BgBrows` methods, and `BrownFg` and `BrownBg`
+  colors. Use `Yellow` variants instead.
+- Instead of `Aurora` interface introduced `Aurora` structure.
+- Instead of `Value` interface introduced `Value` structure.
+- Implemented [hyperlinks feature](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda).
+  - added `Hyperlink` method
+  - added `HyperlinkTarget` and `HyperlinkParams` methods
+  - added `HyperlinkParam` type, `IsValidHyperlinkTarget`,
+    `IsValidHyperlinkParam`, `HyperlinkID`, `HyperlinkEscape`,
+    `HyperlinkUnescape` helper functions.
+- Introduced `Config` and related functions and methods, such as `NewConfig`,
+  `WithColors`, `WithHyperlinks`.
+- Removed `NewAurora` function, new function `New` introduced.
+- Introduced global `DefaultColorizer` that used by package root methods.
+- `Sprintf` method now belongs to a colorizer and depends on its configurations.
+  For package root `Sprintf` it's the `DefaultColorizer`.
+
+Performance for all methods is almost the same. But for color- and
+format-methods `aurora` now takes less allocations. But, unfortunately, for
+`Sprintf` it takes more allocations.
+
+###### Migrate from v3
+
+1. Use `Reset` or `Clear` instead of `Bleach`.
+2. Use `Yellow` instead of `Brows`.
+3. Use `BgYellow` instead of `BgBrown`.
+4. Use `YellowFg` instead of `BrownFg`.
+5. Use `YellowBg` instead of `BrownBg`.
+6. Use `New` instead of `NewAurora`.
+7. Use `New(WithColors(false))` to disable colors.
+8. Use `New(WithHyperlinks(false))` to disable hyperlinks.
+
+---
 16:05:02
 Thursday, July 2, 2020
 

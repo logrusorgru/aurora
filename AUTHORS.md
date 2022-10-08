@@ -6,3 +6,4 @@ AUTHORS
 - Ousmane Traore @otraore
 - Simon Legner @simon04
 - Sevenate @sevenate
+- JP Hastings-Spital @jphastings

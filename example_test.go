@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2019 The Aurora Authors. All rights reserved.
+// Copyright (c) 2016-2022 The Aurora Authors. All rights reserved.
 // This program is free software. It comes without any warranty,
 // to the extent permitted by applicable law. You can redistribute
 // it and/or modify it under the terms of the Unlicense. See LICENSE
@@ -51,15 +51,15 @@ func ExampleBold() {
 	// Output: value: [1;32m99[0m
 }
 
-func ExampleNewAurora_no_colors() {
-	a := NewAurora(false)
+func ExampleNew_no_colors() {
+	var a = New(WithColors(false), WithHyperlinks(false))
 	fmt.Println(a.Red("Not red"))
 
 	// Output: Not red
 }
 
-func ExampleNewAurora_colors() {
-	a := NewAurora(true)
+func ExampleNew_colors() {
+	var a = New()
 	fmt.Println(a.Red("Red"))
 
 	// Output: [31mRed[0m
@@ -81,4 +81,10 @@ func ExampleSprintf() {
 	)
 
 	// Output: [34mwe've got [0;36m5[0;34m cats, but want [0;1;35m25[0;34m[0m
+}
+
+func ExampleHyperlink() {
+	fmt.Println(Hyperlink(Red("Example"), "http://example.com/"))
+
+	// Output: ]8;;http://example.com/\[31mExample[0m]8;;\
 }
