@@ -87,12 +87,12 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora/v4"
+	"github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
-	fmt.Println("Hello,", Magenta("Aurora"))
-	fmt.Println(Bold(Cyan("Cya!")))
+	fmt.Println("Hello,", aurora.Magenta("Aurora"))
+	fmt.Println(aurora.Bold(aurora.Cyan("Cya!")))
 }
 
 ```
@@ -107,12 +107,12 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora/v4"
+	"github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
-	fmt.Printf("Got it %d times\n", Green(1240))
-	fmt.Printf("PI is %+1.2e\n", Cyan(3.14))
+	fmt.Printf("Got it %d times\n", aurora.Green(1240))
+	fmt.Printf("PI is %+1.2e\n", aurora.Cyan(3.14))
 }
 
 ```
@@ -127,11 +127,11 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora/v4"
+	"github.com/logrusorgru/aurora/v4"
 )
 
 func main() {
-	fmt.Println(Sprintf(Magenta("Got it %d times"), Green(1240)))
+	fmt.Println(aurora.Sprintf(aurora.Magenta("Got it %d times"), aurora.Green(1240)))
 }
 
 ```
@@ -208,11 +208,11 @@ Depending flags:
 The following samples are equal
 
 ```go
-x := BgMagenta(Bold(Red("x")))
+x := aurora.BgMagenta(aurora.Bold(aurora.Red("x")))
 ```
 
 ```go
-x := Red("x").Bold().BgMagenta()
+x := aurora.Red("x").Bold().BgMagenta()
 ```
 
 The second is more readable
@@ -231,34 +231,34 @@ func getColors() Color {
 // [...]
 
 func main() {
-	fmt.Println(Colorize("Greeting", getColors()))
+	fmt.Println(aurora.Colorize("Greeting", getColors()))
 }
 
 ```
 Less complicated example
 
 ```go
-x := Colorize("Greeting", GreenFg|GrayBg|BoldFm)
+x := aurora.Colorize("Greeting", GreenFg|GrayBg|BoldFm)
 ```
 
 Unlike other color functions and methods (such as Red/BgBlue etc)
 a `Colorize` clears previous colors
 
 ```go
-x := Red("x").Colorize(BgGreen) // will be with green background only
+x := aurora.Red("x").Colorize(BgGreen) // will be with green background only
 ```
 
 # Grayscale
 
 ```go
 fmt.Println("  ",
-	Gray(1-1, " 00-23 ").BgGray(24-1),
-	Gray(4-1, " 03-19 ").BgGray(20-1),
-	Gray(8-1, " 07-15 ").BgGray(16-1),
-	Gray(12-1, " 11-11 ").BgGray(12-1),
-	Gray(16-1, " 15-07 ").BgGray(8-1),
-	Gray(20-1, " 19-03 ").BgGray(4-1),
-	Gray(24-1, " 23-00 ").BgGray(1-1),
+	aurora.Gray(1-1, " 00-23 ").BgGray(24-1),
+	aurora.Gray(4-1, " 03-19 ").BgGray(20-1),
+	aurora.Gray(8-1, " 07-15 ").BgGray(16-1),
+	aurora.Gray(12-1, " 11-11 ").BgGray(12-1),
+	aurora.Gray(16-1, " 15-07 ").BgGray(8-1),
+	aurora.Gray(20-1, " 19-03 ").BgGray(4-1),
+	aurora.Gray(24-1, " 23-00 ").BgGray(1-1),
 )
 ```
 
@@ -350,13 +350,15 @@ package main
 import (
 	"fmt"
 
-	. "github.com/logrusorgru/aurora"
+	"github.com/logrusorgru/aurora"
 )
 
 func main() {
-	r := Red("red")
-	var i int
-	fmt.Printf("%T %p\n", r, Green(&i))
+	var (
+		r = aurora.Red("red")
+		i int
+	)
+	fmt.Printf("%T %p\n", r, aurora.Green(&i))
 }
 ```
 
