@@ -37,7 +37,7 @@ package aurora
 
 // DefaultColorizer is global colorizer that used for package root color
 // methods.
-var DefaultColorizer = New(WithColors(true), WithHyperlinks(true))
+var DefaultColorizer = New()
 
 // Colorize wraps given value into Value with given colors. For example
 //

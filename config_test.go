@@ -44,8 +44,15 @@ import (
 )
 
 func TestNewConfig(t *testing.T) {
+	t.Setenv("NO_COLOR", "")
 	assert.Equal(t, Config{
 		Colors:     true,
+		Hyperlinks: true,
+	}, NewConfig())
+
+	t.Setenv("NO_COLOR", "1")
+	assert.Equal(t, Config{
+		Colors:     false,
 		Hyperlinks: true,
 	}, NewConfig())
 }
@@ -155,3 +162,16 @@ func TestWithHyperlinks(t *testing.T) {
 		Hyperlinks: false,
 	}, conf)
 }
+
+func TestWithNoColorEnv(t *testing.T) {
+	t.Setenv("NO_COLOR", "")
+	var conf = Config{Colors: true}
+	conf.Apply(WithNoColorEnv())
+	assert.True(t, conf.Colors)
+
+	t.Setenv("NO_COLOR", "1")
+	conf = Config{Colors: true}
+	conf.Apply(WithNoColorEnv())
+	assert.False(t, conf.Colors)
+}
+

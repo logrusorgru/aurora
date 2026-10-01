@@ -35,7 +35,10 @@
 
 package aurora
 
-import "flag"
+import (
+	"flag"
+	"os"
+)
 
 // Config represents configurations of a colorizer.
 type Config struct {
@@ -46,8 +49,10 @@ type Config struct {
 }
 
 // NewConfig returns new default Config.
+// Colors are enabled by default, unless the NO_COLOR environment variable is
+// present and not empty (per https://no-color.org/).
 func NewConfig() (conf Config) {
-	conf.Colors = true
+	conf.Colors = os.Getenv("NO_COLOR") == ""
 	conf.Hyperlinks = true
 	return
 }
@@ -116,5 +121,15 @@ func WithColors(t bool) Option {
 func WithHyperlinks(t bool) Option {
 	return func(c *Config) {
 		c.Hyperlinks = t
+	}
+}
+
+// WithNoColorEnv is an Option that disables colors if the NO_COLOR environment
+// variable is present and not empty (per https://no-color.org/).
+func WithNoColorEnv() Option {
+	return func(c *Config) {
+		if os.Getenv("NO_COLOR") != "" {
+			c.Colors = false
+		}
 	}
 }
