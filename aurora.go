@@ -36,6 +36,8 @@
 // Package aurora implements ANSI-colors
 package aurora
 
+import "os"
+
 type Aurora struct {
 	conf Config
 	cc   colorConfig
@@ -48,6 +50,16 @@ func New(opts ...Option) (a *Aurora) {
 	a.conf.Apply(opts...)       // apply options
 	a.cc = a.conf.colorConfig() // keep the short hand
 	return
+}
+
+// NewAurora returns new colorizer with colors enabled or disabled.
+// If enableColors is true, colors are enabled unless the NO_COLOR
+// environment variable is present and not empty.
+func NewAurora(enableColors bool) *Aurora {
+	if enableColors && os.Getenv("NO_COLOR") != "" {
+		enableColors = false
+	}
+	return New(WithColors(enableColors))
 }
 
 // Config of the colorizer. It returns copy of the configurations.

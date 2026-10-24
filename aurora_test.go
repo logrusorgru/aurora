@@ -62,6 +62,36 @@ func Test_New(t *testing.T) {
 
 }
 
+func Test_New_noColorEnv(t *testing.T) {
+	// without NO_COLOR
+	t.Setenv("NO_COLOR", "")
+	var a = New()
+	assert.True(t, a.conf.Colors)
+	assert.NotZero(t, a.Red("x").Color())
+	assert.Equal(t, "\033[31mx\033[0m", a.Red("x").String())
+	assert.True(t, NewAurora(true).conf.Colors)
+	assert.False(t, NewAurora(false).conf.Colors)
+
+	// with NO_COLOR set to non-empty string
+	t.Setenv("NO_COLOR", "1")
+	a = New()
+	assert.False(t, a.conf.Colors)
+	assert.Zero(t, a.Red("x").Color())
+	assert.Equal(t, "x", a.Red("x").String())
+	assert.False(t, New(WithNoColorEnv()).conf.Colors)
+	assert.False(t, NewAurora(true).conf.Colors)
+	assert.False(t, NewAurora(false).conf.Colors)
+
+	// explicit WithColors(true) takes precedence over NO_COLOR
+	a = New(WithColors(true))
+	assert.True(t, a.conf.Colors)
+	assert.NotZero(t, a.Red("x").Color())
+
+	// WithNoColorEnv applied after WithColors(true) respects NO_COLOR
+	a = New(WithColors(true), WithNoColorEnv())
+	assert.False(t, a.conf.Colors)
+}
+
 func TestAurora_Config(t *testing.T) {
 	assert.Equal(t, NewConfig(), New().Config())
 }
